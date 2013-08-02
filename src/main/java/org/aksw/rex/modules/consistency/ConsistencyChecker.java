@@ -1,4 +1,4 @@
-package org.aksw.rex.modules;
+package org.aksw.rex.modules.consistency;
 
 import java.util.Set;
 
