@@ -1,4 +1,4 @@
-package org.aksw.rex.modules.examplegenerator;
+package org.aksw.rex.examplegenerator;
 
 
 import org.aksw.rex.util.Pair;

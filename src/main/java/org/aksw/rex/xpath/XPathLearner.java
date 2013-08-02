@@ -1,6 +1,6 @@
-package org.aksw.rex.modules.xpath;
+package org.aksw.rex.xpath;
 
-import org.aksw.rex.modules.results.ExtractionResult;
+import org.aksw.rex.results.ExtractionResult;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;

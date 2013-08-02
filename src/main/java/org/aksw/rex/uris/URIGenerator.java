@@ -1,6 +1,6 @@
 package org.aksw.rex.uris;
 
-import org.aksw.rex.modules.results.ExtractionResult;
+import org.aksw.rex.results.ExtractionResult;
 import java.util.Set;
 
 import org.aksw.rex.util.Pair;

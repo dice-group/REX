@@ -1,4 +1,4 @@
-package org.aksw.rex.modules.results;
+package org.aksw.rex.results;
 
 public interface ExtractionResult {
 

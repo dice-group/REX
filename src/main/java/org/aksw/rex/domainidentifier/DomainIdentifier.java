@@ -1,4 +1,4 @@
-package org.aksw.rex.modules.domainidentifier;
+package org.aksw.rex.domainidentifier;
 
 import java.net.URL;
 import java.util.Set;
