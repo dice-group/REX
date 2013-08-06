@@ -17,7 +17,7 @@ public class URIGeneratorImpl implements URIGenerator {
     private SurfaceFormIndex index;
 
     public URIGeneratorImpl() {
-        String file = "en_surface_forms.tsv";
+        String file = "en_surface_forms.tsv.gz";
         String idxDirectory = "index/";
         String type = SurfaceFormIndex.TSV;
         String baseURI = "http://dbpedia.org/resource/";

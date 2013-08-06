@@ -2,10 +2,15 @@ package org.aksw.rex.uris;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -85,7 +90,10 @@ public class SurfaceFormIndex {
 
     private void indexTSVFile(String surfaceFormsTSV) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(surfaceFormsTSV));
+            InputStream fileStream = new FileInputStream(surfaceFormsTSV);
+            InputStream gzipStream = new GZIPInputStream(fileStream);
+            Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+            BufferedReader br = new BufferedReader(decoder);
             while (br.ready()) {
                 String[] line = br.readLine().split("\t");
                 String subject = line[0];
