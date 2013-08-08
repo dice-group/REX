@@ -136,8 +136,10 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
             }
         }
 
+        cache.put(p, result);
+        
         if (useCache) {
-            writeCache();
+                writeCache();
         }
 
         return result;
@@ -187,6 +189,6 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
         Resource r4 = ResourceFactory.createResource("http://dbpedia.org/resource/Miami_Vice");
         posExamples.add(new Pair(r3, r4));
         GoogleDomainIdentifier gdi = new GoogleDomainIdentifier();
-        System.out.println(gdi.getDomain(null, posExamples, negExamples, false));
+        System.out.println(gdi.getDomain(ResourceFactory.createProperty("http://dbpedia.org/ontology/starring"), posExamples, negExamples, true));
     }
 }
