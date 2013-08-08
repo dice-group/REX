@@ -18,7 +18,6 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.rex.util.Pair;
 import org.apache.log4j.Logger;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;

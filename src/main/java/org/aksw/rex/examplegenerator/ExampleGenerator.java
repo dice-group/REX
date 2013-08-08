@@ -2,7 +2,7 @@ package org.aksw.rex.examplegenerator;
 
 import java.util.Set;
 
-import org.aksw.commons.collections.Pair;
+import org.aksw.rex.util.Pair;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.rdf.model.Property;
