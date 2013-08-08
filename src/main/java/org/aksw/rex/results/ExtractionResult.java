@@ -1,17 +1,8 @@
 package org.aksw.rex.results;
 
 public interface ExtractionResult {
-    /**
-     * 
-     * @return String extracted via XPath
-     */
-
-    public String getPlainString();
-
-    /**
-     * 
-     * @param plainString
-     *            extracted via XPath
-     */
-    public void setPlainString(String plainString);
+    public String getSubject();
+    public String getObject();
+    public void setSubject(String s);
+    public void setObject(String o);
 }

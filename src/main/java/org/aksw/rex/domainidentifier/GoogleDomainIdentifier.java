@@ -20,9 +20,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.aksw.commons.collections.Pair;
 import org.aksw.rex.util.GoogleResults;
 import org.aksw.rex.util.GoogleResults.Result;
+import org.aksw.rex.util.Pair;
 
 /**
  *
@@ -33,6 +33,16 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
     public static String google = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=";
     public String charset = "UTF-8";
 
+    /**
+     * Returns the domain from which knowledge on the posExamples can be
+     * extracted
+     *
+     * @param p
+     * @param posExamples
+     * @param negExamples
+     * @param useCache
+     * @return URL of domain
+     */
     public URL getDomain(Property p, Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, boolean useCache) {
         Map<URL, Double> count = new HashMap<URL, Double>();
 
@@ -41,7 +51,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
         examples.addAll(negExamples);
         try {
             for (Pair<Resource, Resource> pair : examples) {
-                String search = "\"" + getLabel(pair.first) + "\" " + "\"" + getLabel(pair.second) + "\"";
+                String search = "\"" + getLabel(pair.getLeft()) + "\" " + "\"" + getLabel(pair.getRight()) + "\"";
                 URL url = new URL(google + URLEncoder.encode(search, charset));
                 System.out.println(url);
                 Reader reader = new InputStreamReader(url.openStream(), charset);
@@ -58,9 +68,9 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
                         double c = count.get(domain);
                         count.remove(domain);
                         if (posExamples.contains(pair)) {
-                            count.put(domain, c + (1d / (double) (i+1)));
+                            count.put(domain, c + (1d / (double) (i + 1)));
                         } else {
-                            count.put(domain, c - (1d / (double) (i+1)));
+                            count.put(domain, c - (1d / (double) (i + 1)));
                         }
                     }
                 }

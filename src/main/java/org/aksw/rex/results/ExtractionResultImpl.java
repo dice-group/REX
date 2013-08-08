@@ -2,18 +2,29 @@ package org.aksw.rex.results;
 
 public class ExtractionResultImpl implements ExtractionResult {
 
-    private String plainString;
+    private String subject;
+    private String object;
 
-    public ExtractionResultImpl(String plainString) {
-        this.plainString = plainString;
+    public String getSubject() {
+        return subject;
     }
 
-    public String getPlainString() {
-        return plainString;
+    public String getObject() {
+        return object;
     }
 
-    public void setPlainString(String plainString) {
-        this.plainString = plainString;
+    public void setSubject(String s) {
+        subject = s;
     }
 
+    public void setObject(String o) {
+        object = o;
+    }
+    
+    public ExtractionResultImpl(String s, String o)
+    {
+        subject = s;
+        object = o;
+    }
+    
 }
