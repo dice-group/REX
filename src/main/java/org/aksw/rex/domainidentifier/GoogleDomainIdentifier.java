@@ -8,8 +8,7 @@ import com.google.gson.Gson;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -32,6 +31,50 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 
     public static String google = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=";
     public String charset = "UTF-8";
+    public static String cacheLocation = "resources/googlecache";
+    public Map<Property, URL> cache;
+
+    public GoogleDomainIdentifier() {
+        readCache();
+    }
+
+    /**
+     * Read the cache to a file
+     */
+    public void readCache() {
+        cache = new HashMap<Property, URL>();
+        try {
+            if (new File(cacheLocation).exists()) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(cacheLocation), "UTF8"));
+                String s = reader.readLine();
+                while (s != null) {
+                    Property p = ResourceFactory.createProperty(s.split("\t")[0]);
+                    URL u = new URL(s.split("\t")[1]);
+                    cache.put(p, u);
+                    s = reader.readLine();
+                }
+                reader.close();
+            }
+        } catch (Exception e) {
+            Logger.getLogger(GoogleDomainIdentifier.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    /**
+     * Write the cache to a file
+     */
+    public void writeCache() {
+        try {
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(cacheLocation)));
+            for(Property p: cache.keySet())
+            {
+                writer.println(p.getURI()+"\t"+cache.get(p));
+            }
+            writer.close();
+        } catch (Exception e) {
+            Logger.getLogger(GoogleDomainIdentifier.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
 
     /**
      * Returns the domain from which knowledge on the posExamples can be
@@ -46,6 +89,11 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
     public URL getDomain(Property p, Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, boolean useCache) {
         Map<URL, Double> count = new HashMap<URL, Double>();
 
+        if (useCache) {
+            if (cache.containsKey(p)) {
+                return cache.get(p);
+            }
+        }
         //assume that positive and negative examples are disjoint
         Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource, Resource>>(posExamples);
         examples.addAll(negExamples);
@@ -87,7 +135,11 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
                 result = u;
             }
         }
-        System.out.println(count);
+
+        if (useCache) {
+            writeCache();
+        }
+
         return result;
     }
 

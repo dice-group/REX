@@ -10,5 +10,4 @@ import org.aksw.rex.util.Pair;
 
 public interface DomainIdentifier {
     URL getDomain(Property p, Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, boolean useCache);
-
 }
