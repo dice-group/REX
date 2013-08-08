@@ -1,13 +1,13 @@
 package org.aksw.rex.uris;
 
-import org.aksw.rex.results.ExtractionResult;
 import java.util.Set;
 
-import org.aksw.rex.util.Pair;
+import org.aksw.commons.collections.Pair;
+import org.aksw.rex.results.ExtractionResult;
 
 import com.hp.hpl.jena.graph.Triple;
 
 public interface URIGenerator {
-    Set<Triple> getTriples(Set<Pair<ExtractionResult, ExtractionResult>> posNegEx);
+    Set<Triple> getTriples(Set<Pair<ExtractionResult, ExtractionResult>> posNegEx) throws Exception;
 
 }

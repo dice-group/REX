@@ -3,7 +3,7 @@ package org.aksw.rex.domainidentifier;
 import java.net.URL;
 import java.util.Set;
 
-import org.aksw.rex.util.Pair;
+import org.aksw.commons.collections.Pair;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
