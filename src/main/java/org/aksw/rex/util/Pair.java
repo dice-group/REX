@@ -33,5 +33,13 @@ public class Pair<L, R> {
         return this.left.equals(pairo.getLeft()) &&
                 this.right.equals(pairo.getRight());
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return "<" + left + ", " + right + ">";
+    }
 
 }
