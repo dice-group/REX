@@ -1,12 +1,16 @@
-*.class
 
 # Package Files #
 *.jar
 *.war
 *.ear
-/target
+*.class
+target/*
 
 # Eclipse Files #
 .classpath
 .project
 .settings/*
+
+# Index of Surface Forms #
+index/*
+/target

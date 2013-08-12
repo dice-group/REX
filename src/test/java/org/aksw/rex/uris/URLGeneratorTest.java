@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.aksw.commons.collections.Pair;
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.results.ExtractionResultImpl;
 import org.junit.Test;
@@ -40,43 +39,21 @@ public class URLGeneratorTest {
         Set<ExtractionResult> posNegEx = new HashSet<ExtractionResult>();
         posNegEx.add(res);
         Set<Triple> result = gen.getTriples(posNegEx, p);
+        assertEquals("One Triple expected.", 1, result.size());
+
         boolean found = false;
         for (Triple t : result) {
-            if (t.getSubject().getURI().equals("http://dbpedia.org/resource/Paris") && 
-                    t.getObject().getURI().equals("http://dbpedia.org/resource/London") )
+            if (t.getSubject().getURI().equals("http://dbpedia.org/resource/Paris"))
                 found = true;
         }
-        assertTrue("All good.", found);
-        assertEquals("One Triple expected.", 1, result.size());
-//
-//        posNegEx = new HashSet<ExtractionResult>();
-//        posNegEx.add(res);
-//        result = gen.getTriples(posNegEx, p);
-//        found = false;
-//        for (Triple t : result) {
-//            if (t.getObject().getURI().equals("http://dbpedia.org/resource/London"))
-//                found = true;
-//        }
-//        assertTrue("Negativ should be London", found);
-//        assertEquals("One Triple expected.", 1, result.size());
-//
-//        posNegEx = new HashSet<ExtractionResult>();
-//        posNegEx.add(res);
-//        result = gen.getTriples(posNegEx);
-//        found = false;
-//        for (Triple t : result) {
-//            if (t.getObject().getURI().equals("http://dbpedia.org/resource/London"))
-//                found = true;
-//        }
-//        assertTrue("Negativ should be London", found);
-//        found = false;
-//        for (Triple t : result) {
-//            if (t.getObject().getURI().equals("http://dbpedia.org/resource/Paris"))
-//                found = true;
-//        }
-//        assertTrue("Positiv should be Paris", found);
-//        assertEquals("Two Triple expected.", 2, result.size());
+        assertTrue("Subject should be Paris", found);
 
+        found = false;
+        for (Triple t : result) {
+            if (t.getObject().getURI().equals("http://dbpedia.org/resource/London"))
+                found = true;
+        }
+        assertTrue("Object should be London", found);
     }
 
     @Test
@@ -87,7 +64,7 @@ public class URLGeneratorTest {
 
         Set<ExtractionResult> posNegEx = new HashSet<ExtractionResult>();
         posNegEx.add(r);
-        Property p = OWL.sameAs;        
+        Property p = OWL.sameAs;
         Set<Triple> result = gen.getTriples(posNegEx, p);
         boolean found = false;
         for (Triple t : result) {

@@ -1,6 +1,7 @@
 package org.aksw.rex.uris;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,6 @@ public class URIGeneratorImpl implements URIGenerator {
         index = new SurfaceFormIndex(file, idxDirectory, type, baseURI);
     }
 
-    // TODO give me subject and predicate
     public Set<Triple> getTriples(Set<ExtractionResult> posNegEx, Property p) throws Exception {
         Set<Triple> set = new HashSet<Triple>();
         // for each pos and neg example
@@ -40,37 +40,44 @@ public class URIGeneratorImpl implements URIGenerator {
         return set;
     }
 
+    // TODO discuss this
     // this does not seem to do what it is supposed to. It should lookup uris for
     // both subject and object, then create a triple out of these uris. The method
     // should always return a uri, even if the resource cannot be found DBpedia
     // The system should take the most prominent URI (or simply use AGDISTIS) to resolve
     // cases where there are several URIs from which we can choose
-    
-    private Triple process(ExtractionResult res, Property p) throws Exception {
-        if (res != null) {
-            String extractedString = res.getSubject();
 
-            // lookup in index
-            HashSet<Triple> indexURL = index.search(extractedString);
-            log.debug("indexURL.size(): " + indexURL.size());
-            for (Triple tmp : indexURL) {
-                log.debug("\t" + extractedString + " -> " + tmp.getObject());
-            }
-            if (indexURL != null && indexURL.size() == 1) {
-                return indexURL.iterator().next();
-            } else if (indexURL.size() == 0) {
-                // TODO if not in index generate URI, read about URI Generation at DIEF Framework
-                URI uri = new URI("http", "aksw.org", "/resource", extractedString);
-                log.debug("Constructed URI: " + uri);
-                // TODO replace dummy subject, predicate
-                Node fakeSubject = NodeFactory.createURI("http://dbpedia.org/resource/Leipzig");
-                Node fakePredicate = NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#label");
-                return new Triple(fakeSubject, fakePredicate, NodeFactory.createURI(uri.toString()));
-            } else {
-                throw new Exception("More than one candidate for \"" + extractedString + "\" detected!");
-            }
-        } else {
-            return null;
+    private Triple process(ExtractionResult res, Property p) throws Exception {
+        String subjectString = res.getSubject();
+        String objectString = res.getObject();
+
+        Node s = null;
+        Node o = null;
+        s = generateURI(subjectString, s);
+        o = generateURI(objectString, o);
+        Triple t = new Triple(s, p.asNode(), o);
+        return t;
+    }
+
+    private Node generateURI(String subjectString, Node s) throws URISyntaxException, Exception {
+        // lookup in index
+        HashSet<String> possibleSubjectURIs = index.search(subjectString);
+        // ---DEBUG---//
+        log.debug("Number of candidates for Subject: " + possibleSubjectURIs.size());
+        for (String tmp : possibleSubjectURIs) {
+            log.debug("\t" + subjectString + " -> " + tmp);
         }
+        // ---END DEBUG---//
+        if (possibleSubjectURIs != null && possibleSubjectURIs.size() == 1) {
+            s = NodeFactory.createURI(possibleSubjectURIs.iterator().next());
+        } else if (possibleSubjectURIs.size() == 0) {
+            // generate URI, if not in index
+            URI uri = new URI("http", "aksw.org", "/resource", subjectString);
+            log.debug("Constructed URI: " + uri);
+            s = NodeFactory.createURI(uri.toString());
+        } else {
+            throw new Exception("More than one candidate for \"" + subjectString + "\" detected!");
+        }
+        return s;
     }
 }

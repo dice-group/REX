@@ -37,14 +37,10 @@ import org.openrdf.rio.ntriples.NTriplesParser;
 import org.openrdf.rio.turtle.TurtleParser;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-
 public class SurfaceFormIndex {
     private org.slf4j.Logger log = LoggerFactory.getLogger(SurfaceFormIndex.class);
     public static final String TSV = "TSV";
-    public static final String N_TRIPLES = "NTriples";
+    public static final String N_StringS = "NStrings";
     public static final String TTL = "TTL";
     private String FIELD_NAME_URL = "url";
     private String FIELD_NAME_LABEL = "label";
@@ -54,7 +50,7 @@ public class SurfaceFormIndex {
     private QueryParser parser;
     private DirectoryReader ireader;
     private IndexWriter iwriter;
-    private HashMap<String, HashSet<Triple>> cacheSearch;
+    private HashMap<String, HashSet<String>> cacheSearch;
     private String baseURI;
 
     public SurfaceFormIndex(String file, String idxDirectory, String type, String baseURI) {
@@ -73,15 +69,15 @@ public class SurfaceFormIndex {
                 iwriter = new IndexWriter(directory, config);
                 if (type.equals(TTL))
                     indexTTLFile(file, baseURI);
-                if (type.equals(N_TRIPLES))
-                    indexNTriplesFile(file, baseURI);
+                if (type.equals(N_StringS))
+                    indexNStringsFile(file, baseURI);
                 if (type.equals(TSV))
                     indexTSVFile(file);
                 iwriter.close();
             }
             ireader = DirectoryReader.open(directory);
             isearcher = new IndexSearcher(ireader);
-            cacheSearch = new HashMap<String, HashSet<Triple>>();
+            cacheSearch = new HashMap<String, HashSet<String>>();
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
@@ -112,11 +108,11 @@ public class SurfaceFormIndex {
         }
     }
 
-    public HashSet<Triple> search(String label) {
+    public HashSet<String> search(String label) {
         if (cacheSearch.containsKey(label)) {
             return cacheSearch.get(label);
         }
-        HashSet<Triple> triples = new HashSet<Triple>();
+        HashSet<String> result = new HashSet<String>();
         try {
             analyzer = new StandardAnalyzer(Version.LUCENE_43);
             parser = new QueryParser(Version.LUCENE_43, FIELD_NAME_LABEL, analyzer);
@@ -125,19 +121,16 @@ public class SurfaceFormIndex {
             ScoreDoc[] hits = isearcher.search(query, 10000).scoreDocs;
             for (int i = 0; i < hits.length; i++) {
                 Document hitDoc = isearcher.doc(hits[i].doc);
-                String subject = java.net.URLDecoder.decode(hitDoc.get(FIELD_NAME_URL), "UTF-8");
-                if (subject.replace(baseURI, "").equals(label)) {
-                    // TODO replace dummy subject, predicate
-                    Node fakeSubject = NodeFactory.createURI("http://dbpedia.org/resource/Leipzig");
-                    Node fakePredicate = NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#label");
-                    triples.add(new Triple(fakeSubject, fakePredicate, NodeFactory.createURI(subject)));
+                String URI = java.net.URLDecoder.decode(hitDoc.get(FIELD_NAME_URL), "UTF-8");
+                if (URI.replace(baseURI, "").equals(label)) {
+                    result.add(URI);
                 }
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage() + " -> " + label);
         }
-        cacheSearch.put(label, triples);
-        return triples;
+        cacheSearch.put(label, result);
+        return result;
     }
 
     public void close() {
@@ -178,7 +171,7 @@ public class SurfaceFormIndex {
 
     }
 
-    private void indexNTriplesFile(String file, String baseUri) {
+    private void indexNStringsFile(String file, String baseUri) {
         try {
             log.info("Start parsing: " + file);
             RDFParser parser = new NTriplesParser();
