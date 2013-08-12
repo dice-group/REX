@@ -1,0 +1,10 @@
+http://dbpedia.org/ontology/SportsTeamMember	554952	
+http://dbpedia.org/ontology/Album	224498	
+http://dbpedia.org/ontology/Village	185124	
+http://dbpedia.org/ontology/PersonFunction	180976	
+http://dbpedia.org/ontology/SoccerPlayer	162876	
+http://dbpedia.org/ontology/Film	143430	
+http://dbpedia.org/ontology/Insect	124872	
+http://dbpedia.org/ontology/Ship	102256	
+http://dbpedia.org/ontology/Single	83548	
+http://dbpedia.org/ontology/Town	75994	
