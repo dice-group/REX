@@ -108,7 +108,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
                 // Show title and URL of 1st result.
                 for (int i = 0; i < results.getResponseData().getResults().size(); i++) {
                     Result r = results.getResponseData().getResults().get(i);
-                    URL domain = getDomain(r);
+                    URL domain = getHost(r);
                     if (domain != null) {
                         if (!count.containsKey(domain)) {
                             count.put(domain, 0d);
@@ -168,7 +168,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
      * @param r Google result
      * @return URL
      */
-    public URL getDomain(Result r) {
+    public URL getHost(Result r) {
         URL result = null;
         try {
             URL url = new URL(r.getUrl());
