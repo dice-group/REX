@@ -4,8 +4,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
-import org.aksw.rex.util.Pair;
 import org.aksw.rex.results.ExtractionResult;
+import org.aksw.rex.util.Pair;
 import org.w3c.dom.xpath.XPathExpression;
 
 import com.hp.hpl.jena.rdf.model.Resource;

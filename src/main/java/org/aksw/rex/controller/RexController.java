@@ -4,12 +4,10 @@
  */
 package org.aksw.rex.controller;
 
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+
 import org.aksw.rex.consistency.ConsistencyChecker;
 import org.aksw.rex.domainidentifier.DomainIdentifier;
 import org.aksw.rex.examplegenerator.ExampleGenerator;
@@ -19,6 +17,10 @@ import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.XPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.w3c.dom.xpath.XPathExpression;
+
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  *

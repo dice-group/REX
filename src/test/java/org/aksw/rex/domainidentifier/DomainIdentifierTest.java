@@ -4,14 +4,17 @@
  */
 package org.aksw.rex.domainidentifier;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.aksw.rex.util.Pair;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
  * Test for domain identifier
