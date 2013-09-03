@@ -14,3 +14,7 @@ target/*
 # Index of Surface Forms #
 index/*
 /target
+
+# HTML CRAWLER INDEX #
+htmlindex/*
+crawl/*
