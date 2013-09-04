@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathFactory;
 import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.util.Pair;
 import org.jsoup.Jsoup;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +23,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XPathExtractor {
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(XPathExtractor.class);
+
 	private CrawlIndex index;
 
 	public XPathExtractor() {
@@ -33,7 +36,7 @@ public class XPathExtractor {
 		XPathExtractor xpathExtractor = new XPathExtractor();
 		ArrayList<String> paths = xpathExtractor.extractPathsFromCrawlIndex("Tom Cruise");
 		for (String path : paths) {
-			System.out.println(path);
+			log.debug(path);
 		}
 	}
 
@@ -42,17 +45,19 @@ public class XPathExtractor {
 		// search for all pages containing this string
 		ArrayList<Pair<String, String>> docs = index.searchHTML(query);
 		int d = 0;
+		log.debug("Start working on HTML to extract XPATHs");
 		for (Pair<String, String> document : docs) {
-			System.out.println("Progress: " + ((double) d++ / (double) docs.size()));
+			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
 			// search for all xpath containing this string in the content
 			String url = document.getLeft();
 			String html = document.getRight();
 			try {
 				paths.addAll(extractXPaths(query, html));
 			} catch (Exception e) {
-				System.out.println("Could not process URL: " + url);
+				log.debug("Could not process URL: " + url);
 			}
 		}
+		log.debug("Finished working on HTML to extract XPATHs");
 
 		return paths;
 	}

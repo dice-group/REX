@@ -29,11 +29,11 @@ public class CrawlerTest {
 	public void testSearchIndex() throws Exception {
 
 		ArrayList<Pair<String, String>> data = index.searchHTML("Cruise");
-		System.out.println("#URL with Tom Cruise: " + data.size());
+		log.debug("#URL with Tom Cruise: " + data.size());
 		for (Pair<String, String> row : data) {
 			String url = row.getLeft();
 			String html = row.getRight();
-			log.debug("URL with Tom Cruise: " + url);
+     		log.debug("URL with Tom Cruise: " + url);
 		}
 		assertTrue("Found Tom Cruise in the index.", data != null);
 		assertTrue("Found several entries in index.", data.size() > 0);

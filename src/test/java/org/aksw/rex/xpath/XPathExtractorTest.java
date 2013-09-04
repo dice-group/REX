@@ -77,4 +77,15 @@ public class XPathExtractorTest {
 		assertTrue("Paths may not zero in this example", paths.size() > 0);
 		assertTrue("Three is the correct number of Xpaths", paths.size() == 3);
 	}
+	
+	@Test
+	public void testXPathsForTomCruise() throws Exception {
+		String query = "Tom Cruise";
+		ArrayList<String> data = ex.extractPathsFromCrawlIndex(query);
+		log.debug("#URL with Tom Cruise: " + data.size());
+		for (String path : data) {
+			log.debug(path);
+		}
+		assertTrue("Paths may not zero in this example", data.size() > 0);
+	}
 }
