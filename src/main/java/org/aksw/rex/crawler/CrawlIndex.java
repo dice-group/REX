@@ -57,7 +57,9 @@ public class CrawlIndex {
 			}
 
 		} catch (IOException e) {
+			e.printStackTrace();
 			log.error(e.getLocalizedMessage());
+			log.error("ERROR while building index");
 		}
 		log.info("Finished building CrawlIndex!");
 	}

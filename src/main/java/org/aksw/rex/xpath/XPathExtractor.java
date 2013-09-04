@@ -31,13 +31,13 @@ public class XPathExtractor {
 
 	public static void main(String args[]) throws FileNotFoundException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		XPathExtractor xpathExtractor = new XPathExtractor();
-		ArrayList<String> paths = xpathExtractor.extractPathsForString("Tom Cruise");
+		ArrayList<String> paths = xpathExtractor.extractPathsFromCrawlIndex("Tom Cruise");
 		for (String path : paths) {
 			System.out.println(path);
 		}
 	}
 
-	private ArrayList<String> extractPathsForString(String query) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+	public ArrayList<String> extractPathsFromCrawlIndex(String query) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		ArrayList<String> paths = new ArrayList<String>();
 		// search for all pages containing this string
 		ArrayList<Pair<String, String>> docs = index.searchHTML(query);
@@ -48,21 +48,7 @@ public class XPathExtractor {
 			String url = document.getLeft();
 			String html = document.getRight();
 			try {
-				// XPATH PART
-				org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(html);
-				Document W3CDoc = org.aksw.rex.crawler.DOMBuilder.jsoup2DOM(jsoupDoc);
-
-				XPathFactory factory = XPathFactory.newInstance();
-				XPath xpath = factory.newXPath();
-				// all nodes that contains text that contains "query"
-				String expression = "//*[contains(.,'" + query + "')]";
-				NodeList nodeList = (NodeList) xpath.evaluate(expression, W3CDoc, XPathConstants.NODESET);
-				// TODO select appropriate nodes
-				for (int i = 0; i < nodeList.getLength(); i++) {
-					Node item = nodeList.item(i);
-					String xPath = getXPath(item);
-					paths.add(xPath);
-				}
+				paths.addAll(extractXPaths(query, html));
 			} catch (Exception e) {
 				System.out.println("Could not process URL: " + url);
 			}
@@ -71,9 +57,49 @@ public class XPathExtractor {
 		return paths;
 	}
 
+	public ArrayList<String> extractXPaths(String query, String html) throws XPathExpressionException {
+		ArrayList<String> paths = new ArrayList<String>();
+
+		// XPATH PART
+		org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(html);
+		Document W3CDoc = org.aksw.rex.crawler.DOMBuilder.jsoup2DOM(jsoupDoc);
+
+		XPathFactory factory = XPathFactory.newInstance();
+		XPath xpath = factory.newXPath();
+		// all nodes that contains text that contains "query"
+		String expression = "//*[contains(.,'" + query + "')]";
+		NodeList nodeList = (NodeList) xpath.evaluate(expression, W3CDoc, XPathConstants.NODESET);
+		// select appropriate nodes
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node item = nodeList.item(i);
+			if (checkChildsDoContainText(item, query)) {
+				String xPath = getXPath(item);
+				paths.add(xPath);
+			}
+		}
+		return paths;
+	}
+
+	private boolean checkChildsDoContainText(Node item, String query) {
+		NodeList childs = item.getChildNodes();
+		for (int i = 0; i < childs.getLength(); ++i) {
+			Node child = childs.item(i);
+			if (child.getNodeType() == Node.TEXT_NODE) {
+				if (child.getTextContent().contains(query)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private String getXPath(Node item) {
 		Element element = (Element) item;
 		String elementXpath = $(element).xpath();
 		return elementXpath;
+	}
+
+	public CrawlIndex getIndex() {
+		return index;
 	}
 }

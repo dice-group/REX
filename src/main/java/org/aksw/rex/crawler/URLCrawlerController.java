@@ -1,6 +1,5 @@
 package org.aksw.rex.crawler;
 
-import org.aksw.rex.uris.SurfaceFormIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
