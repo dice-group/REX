@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,10 @@ public class XPathExtractorTest {
 	@BeforeClass
 	public static void init(){
 		ex = new XPathExtractor();
+	}
+	@AfterClass
+	public static void finish(){
+		ex.getIndex().close();
 	}
 	@Test
 	public void testXPathExtractor() throws Exception {
