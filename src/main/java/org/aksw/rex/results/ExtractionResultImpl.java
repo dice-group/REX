@@ -5,19 +5,23 @@ public class ExtractionResultImpl implements ExtractionResult {
     private String subject;
     private String object;
 
-    public String getSubject() {
+    @Override
+	public String getSubject() {
         return subject;
     }
 
-    public String getObject() {
+    @Override
+	public String getObject() {
         return object;
     }
 
-    public void setSubject(String s) {
+    @Override
+	public void setSubject(String s) {
         subject = s;
     }
 
-    public void setObject(String o) {
+    @Override
+	public void setObject(String o) {
         object = o;
     }
     

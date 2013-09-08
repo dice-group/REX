@@ -62,7 +62,8 @@ public class GoogleResults {
         public void setTitle(String title) {
             this.title = title;
         }
-        public String toString() {
+        @Override
+		public String toString() {
             return "Result[url:" + url + ",title:" + title + "]";
         }
     }

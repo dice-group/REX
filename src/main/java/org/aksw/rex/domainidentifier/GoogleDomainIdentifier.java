@@ -95,7 +95,8 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
      * @param useCache
      * @return URL of domain
      */
-    public URL getDomain(Property p, Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, boolean useCache) {
+    @Override
+	public URL getDomain(Property p, Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, boolean useCache) {
         Map<URL, Double> count = new HashMap<URL, Double>();
 
         if (useCache) {
@@ -125,9 +126,9 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
                         double c = count.get(domain);
                         count.remove(domain);
                         if (posExamples.contains(pair)) {
-                            count.put(domain, c + (1d / (double) (i + 1)));
+                            count.put(domain, c + (1d / (i + 1)));
                         } else {
-                            count.put(domain, c - (1d / (double) (i + 1)));
+                            count.put(domain, c - (1d / (i + 1)));
                         }
                     }
                 }
