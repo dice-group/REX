@@ -27,8 +27,10 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -92,13 +94,26 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 	 */
 	@Override
 	public Set<Pair<Resource, Resource>> getPositiveExamples() {
+		return getMostProminentPositiveExamples();
+//		return getRandomPositiveExamples();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.examplegenerator.ExampleGenerator#getNegativeExamples()
+	 */
+	@Override
+	public Set<Pair<Resource, Resource>> getNegativeExamples() {
 		Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource,Resource>>();
-		
-		ParameterizedSparqlString queryString = new ParameterizedSparqlString("SELECT ?s ?o WHERE {?s ?p ?o.}");
-		queryString.setIri("p", property.getURI());
-		Query query = queryString.asQuery();
-		query.setLimit(maxNrOfPositiveExamples);
+		examples.addAll(getNegativeExamplesRandomSubjectInDomain(10));
+//		examples.addAll(getNegativeExamplesRandomObjectInRange(10));
+//		examples.addAll(getNegativeExamplesRandomSubjectInDomainRandomObjectInRange(10));
+		return examples;
+	}
 	
+	private Set<Pair<Resource, Resource>> getMostProminentPositiveExamples(){
+		Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource,Resource>>();
+		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "
+				+ "GROUP BY ?s ?o ORDER BY DESC(COUNT(?s_in)+COUNT(?o_in)) LIMIT " + maxNrOfPositiveExamples;
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Resource subject;
@@ -111,7 +126,7 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 				logger.warn("Omitting triple:Subject " + qs.get("s") + " is not a URI resource!");
 				continue;
 			}
-			if(qs.get("s").isURIResource()){
+			if(qs.get("o").isURIResource()){
 				object = qs.getResource("o");
 			} else {
 				logger.warn("Omitting triple:Object " + qs.get("o") + " is not a URI resource!");
@@ -119,19 +134,45 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 			}
 			examples.add(new Pair<Resource, Resource>(subject, object));
 		}
-		
 		return examples;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aksw.rex.examplegenerator.ExampleGenerator#getNegativeExamples()
-	 */
-	@Override
-	public Set<Pair<Resource, Resource>> getNegativeExamples() {
+	
+	private Set<Pair<Resource, Resource>> getRandomPositiveExamples(){
 		Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource,Resource>>();
-		examples.addAll(getNegativeExamplesRandomSubjectInDomain(10));
-		examples.addAll(getNegativeExamplesRandomObjectInRange(10));
-		examples.addAll(getNegativeExamplesRandomSubjectInDomainRandomObjectInRange(10));
+		
+		ParameterizedSparqlString queryString = new ParameterizedSparqlString("SELECT ?s ?o WHERE {?s ?p ?o.}");
+		queryString.setIri("p", property.getURI());
+		
+		QuerySolution qs;
+		Resource subject;
+		Resource object;
+		int propCnt = reasoner.getPopularity(new ObjectProperty(property.getURI()));
+		while(examples.size() < Math.min(maxNrOfPositiveExamples, propCnt)){
+			int offset = rnd.nextInt(propCnt);
+			
+			Query query = queryString.asQuery();
+			query.setLimit(1);
+			query.setOffset(offset);
+		
+			ResultSet rs = executeSelectQuery(query);
+			if(rs.hasNext()){
+				qs = rs.next();
+				if(qs.get("s").isURIResource()){
+					subject = qs.getResource("s");
+				} else {
+					logger.warn("Omitting triple:Subject " + qs.get("s") + " is not a URI resource!");
+					continue;
+				}
+				if(qs.get("o").isURIResource()){
+					object = qs.getResource("o");
+				} else {
+					logger.warn("Omitting triple:Object " + qs.get("o") + " is not a URI resource!");
+					continue;
+				}
+				examples.add(new Pair<Resource, Resource>(subject, object));
+			}
+		}
+		
 		return examples;
 	}
 	
@@ -146,13 +187,14 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		if(rs.hasNext()){
 			domain = rs.next().getResource("domain");
 		}
-		//count triples with p
-		int propCnt = reasoner.getPopularity(new ObjectProperty(property.getURI()));
-		int domainCnt = reasoner.getPopularity(new NamedClass(domain.getURI()));
 		
-		int innerOffset;
-		int outerOffset;
 		if(domain != null){
+			//count triples with p
+			int propCnt = reasoner.getPopularity(new ObjectProperty(property.getURI()));
+			//count instances of domain
+			int domainCnt = reasoner.getPopularity(new NamedClass(domain.getURI()));
+			int innerOffset;
+			int outerOffset;
 			for (int i = 0; i < limit; i++) {
 				innerOffset = rnd.nextInt(domainCnt);
 				outerOffset = rnd.nextInt(propCnt);
@@ -187,13 +229,14 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		if(rs.hasNext()){
 			range = rs.next().getResource("range");
 		}
-		//count triples with p
-		int propCnt = reasoner.getPopularity(new ObjectProperty(property.getURI()));
-		int rangeCnt = reasoner.getPopularity(new NamedClass(range.getURI()));
 		
-		int innerOffset;
-		int outerOffset;
 		if(range != null){
+			int innerOffset;
+			int outerOffset;
+			//count triples with p
+			int propCnt = reasoner.getPopularity(new ObjectProperty(property.getURI()));
+			//count instances of range
+			int rangeCnt = reasoner.getPopularity(new NamedClass(range.getURI()));
 			for (int i = 0; i < limit; i++) {
 				innerOffset = rnd.nextInt(rangeCnt);
 				outerOffset = rnd.nextInt(propCnt);
@@ -272,16 +315,20 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		return examples;
 	}
 	
-	private ResultSet executeSelectQuery(Query query){
+	private ResultSet executeSelectQuery(Query query){System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		return rs;
 	}
 	
+	private ResultSet executeSelectQuery(String query){
+		return executeSelectQuery(QueryFactory.create(query, Syntax.syntaxARQ));
+	}
+	
 	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		Model model = ModelFactory.createDefaultModel();
-		Property property = model.createProperty("http://dbpedia.org/ontology/birthPlace");
+		Property property = model.createProperty("http://dbpedia.org/ontology/director");
 		ExampleGenerator gen = new SimpleExampleGenerator();
 		gen.setEndpoint(endpoint);
 		gen.setPredicate(property);

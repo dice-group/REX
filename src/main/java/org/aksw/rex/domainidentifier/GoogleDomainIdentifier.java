@@ -107,7 +107,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
         Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource, Resource>>(posExamples);
         examples.addAll(negExamples);
         try {
-            for (Pair<Resource, Resource> pair : examples) {
+            for (Pair<Resource, Resource> pair : examples) {System.out.println(pair);
                 String search = "\"" + getLabel(pair.getLeft()) + "\" " + "\"" + getLabel(pair.getRight()) + "\"";
                 URL url = new URL(google + URLEncoder.encode(search, charset));
                 System.out.println(url);
@@ -117,7 +117,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
                 // Show title and URL of 1st result.
                 for (int i = 0; i < results.getResponseData().getResults().size(); i++) {
                     Result r = results.getResponseData().getResults().get(i);
-                    URL domain = getHost(r);
+                    URL domain = getHost(r);System.out.println(domain);
                     if (domain != null) {
                         if (!count.containsKey(domain)) {
                             count.put(domain, 0d);
