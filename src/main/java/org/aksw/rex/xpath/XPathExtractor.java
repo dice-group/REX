@@ -5,6 +5,9 @@ import static org.joox.JOOX.$;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -60,6 +63,28 @@ public class XPathExtractor {
 		log.debug("Finished working on HTML to extract XPATHs");
 
 		return paths;
+	}
+	
+	public Map<String, Collection<String>> extractPathsFromCrawlIndexWithURL(String query) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		Map<String, Collection<String>> url2paths = new HashMap<String, Collection<String>>();
+		// search for all pages containing this string
+		ArrayList<Pair<String, String>> docs = index.searchHTML(query);
+		int d = 0;
+		log.debug("Start working on HTML to extract XPATHs");
+		for (Pair<String, String> document : docs) {
+			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
+			// search for all xpath containing this string in the content
+			String url = document.getLeft();
+			String html = document.getRight();
+			try {
+				url2paths.put(url, extractXPaths(query, html));
+			} catch (Exception e) {
+				log.debug("Could not process URL: " + url);
+			}
+		}
+		log.debug("Finished working on HTML to extract XPATHs");
+
+		return url2paths;
 	}
 
 	public ArrayList<String> extractXPaths(String query, String html) throws XPathExpressionException {

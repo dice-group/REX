@@ -12,6 +12,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
@@ -147,7 +148,7 @@ public class CrawlIndex {
 
 	public void addDocumentToIndex(String url, String html) {
 		Document doc = new Document();
-		doc.add(new TextField(FIELD_NAME_URL, url, Store.YES));
+		doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
 		doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
 		try {
 			iwriter.addDocument(doc);

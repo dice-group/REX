@@ -3,6 +3,9 @@ package org.aksw.rex.xpath;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -81,10 +84,16 @@ public class XPathExtractorTest {
 	@Test
 	public void testXPathsForTomCruise() throws Exception {
 		String query = "Tom Cruise";
-		ArrayList<String> data = ex.extractPathsFromCrawlIndex(query);
+		Map<String, Collection<String>> data = ex.extractPathsFromCrawlIndexWithURL(query);
 		log.debug("#URL with Tom Cruise: " + data.size());
-		for (String path : data) {
-			log.debug(path);
+		
+		for (Entry<String, Collection<java.lang.String>> entry : data.entrySet()) {
+			String key = entry.getKey();
+			Collection<java.lang.String> paths = entry.getValue();
+			log.debug(key);
+			for (String path : paths) {
+				log.debug(path);
+			}
 		}
 		assertTrue("Paths may not zero in this example", data.size() > 0);
 	}
