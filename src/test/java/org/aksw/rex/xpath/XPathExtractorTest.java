@@ -36,6 +36,9 @@ public class XPathExtractorTest {
 		"     <div>"+
 		"         <p> Another Tom hides here</p>  " +
 		"     </div>"+
+		"     <div>"+
+		"         <p>Tom</p>  " +
+		"     </div>"+
 		"</div>" +
 		"<p>Kate does not like Tom anymore</p>" + 
 		"</body></html>";

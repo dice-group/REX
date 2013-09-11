@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,6 +66,105 @@ public class XPathExtractor {
 		return paths;
 	}
 	
+	public List<Pair<String, String>> extractPathsFromCrawlIndex(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		List<Pair<String, String>> paths = new ArrayList<Pair<String, String>>();
+		// search for all pages containing subject and object
+		ArrayList<Pair<String, String>> docs = index.searchHTML(subject + " AND " + object);
+		int d = 0;
+		log.debug("Start working on HTML to extract XPATHs");
+		for (Pair<String, String> document : docs) {
+			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
+			// search for all xpath containing this string in the content
+			String url = document.getLeft();
+			String html = document.getRight();
+			try {
+				log.debug("URL: " + url);
+				ArrayList<String> subjectXPaths = extractXPaths(subject, html);
+				ArrayList<String> objectXPaths = extractXPaths(object, html);
+				for (String subjectXPath : subjectXPaths) {
+					for (String objectXPath : objectXPaths) {
+						log.debug("Subject: " + subjectXPath);
+						log.debug("Object: " + objectXPath);
+						paths.add(new Pair<String, String>(subjectXPath, objectXPath));
+					}
+				}
+			} catch (Exception e) {
+				log.debug("Could not process URL: " + url);
+			}
+		}
+		log.debug("Finished working on HTML to extract XPATHs");
+
+		return paths;
+	}
+	
+	public List<Pair<String, String>> extractPathsFromCrawlIndex(String subject, String object, String domain) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		List<Pair<String, String>> paths = new ArrayList<Pair<String, String>>();
+		// search for all pages containing subject and object
+		ArrayList<Pair<String, String>> docs = index.searchHTML(subject + " AND " + object);
+		int d = 0;
+		log.debug("Start working on HTML to extract XPATHs");
+		for (Pair<String, String> document : docs) {
+			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
+			// search for all xpath containing this string in the content
+			String url = document.getLeft();
+			String html = document.getRight();
+			if(url.startsWith(domain)){
+				try {
+					log.debug("URL: " + url);
+					ArrayList<String> subjectXPaths = extractXPaths(subject, html);
+					ArrayList<String> objectXPaths = extractXPaths(object, html);
+					for (String subjectXPath : subjectXPaths) {
+						for (String objectXPath : objectXPaths) {
+							log.debug("Subject: " + subjectXPath);
+							log.debug("Object: " + objectXPath);
+							paths.add(new Pair<String, String>(subjectXPath, objectXPath));
+						}
+					}
+				} catch (Exception e) {
+					log.debug("Could not process URL: " + url);
+				}
+			}
+		}
+		log.debug("Finished working on HTML to extract XPATHs");
+
+		return paths;
+	}
+	
+	public Map<String, List<Pair<String, String>>> extractPathsFromCrawlIndexWithURL(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		Map<String, List<Pair<String, String>>> url2XpathPairs = new HashMap<String, List<Pair<String, String>>>();
+		
+		// search for all pages containing subject and object
+		ArrayList<Pair<String, String>> docs = index.searchHTML(subject + " AND " + object);
+		int d = 0;
+		log.debug("Start working on HTML to extract XPATHs");
+		for (Pair<String, String> document : docs) {
+			List<Pair<String, String>> paths = new ArrayList<Pair<String, String>>();
+			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
+			// search for all xpath containing this string in the content
+			String url = document.getLeft();
+			String html = document.getRight();
+			try {
+				log.debug("URL: " + url);
+				ArrayList<String> subjectXPaths = extractXPaths(subject, html);
+				ArrayList<String> objectXPaths = extractXPaths(object, html);
+				for (String subjectXPath : subjectXPaths) {
+					for (String objectXPath : objectXPaths) {
+						log.debug("Subject: " + subjectXPath);
+						log.debug("Object: " + objectXPath);
+						paths.add(new Pair<String, String>(subjectXPath, objectXPath));
+					}
+				}
+				url2XpathPairs.put(url, paths);
+			} catch (Exception e) {
+				log.debug("Could not process URL: " + url);
+			}
+		}
+		log.debug("Finished working on HTML to extract XPATHs");
+
+		return url2XpathPairs;
+	}
+	
+	
 	public Map<String, Collection<String>> extractPathsFromCrawlIndexWithURL(String query) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		Map<String, Collection<String>> url2paths = new HashMap<String, Collection<String>>();
 		// search for all pages containing this string
@@ -97,7 +197,8 @@ public class XPathExtractor {
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath xpath = factory.newXPath();
 		// all nodes that contains text that contains "query"
-		String expression = "//*[contains(.,'" + query + "')]";
+//		String expression = "//*[contains(.,'" + query + "')]";
+		String expression = "//*[text()='" + query + "']";
 		NodeList nodeList = (NodeList) xpath.evaluate(expression, W3CDoc, XPathConstants.NODESET);
 		// select appropriate nodes
 		for (int i = 0; i < nodeList.getLength(); i++) {

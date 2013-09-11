@@ -315,7 +315,7 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		return examples;
 	}
 	
-	private ResultSet executeSelectQuery(Query query){System.out.println(query);
+	private ResultSet executeSelectQuery(Query query){
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		return rs;
