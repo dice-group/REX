@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.aksw.rex.domainidentifier;
+package org.aksw.rex.test.domainidentifier;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aksw.rex.domainidentifier.GoogleDomainIdentifier;
 import org.aksw.rex.util.Pair;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;

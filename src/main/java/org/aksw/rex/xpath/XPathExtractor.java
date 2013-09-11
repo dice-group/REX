@@ -121,12 +121,11 @@ public class XPathExtractor {
 						}
 					}
 				} catch (Exception e) {
-					log.debug("Could not process URL: " + url);
+					log.error("Could not process URL: " + url);
 				}
 			}
 		}
 		log.debug("Finished working on HTML to extract XPATHs");
-
 		return paths;
 	}
 	

@@ -1,4 +1,4 @@
-package org.aksw.rex.uris;
+package org.aksw.rex.test.uris;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.results.ExtractionResultImpl;
+import org.aksw.rex.uris.URIGeneratorImpl;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 

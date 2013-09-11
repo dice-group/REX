@@ -1,10 +1,8 @@
 /**
  * 
  */
-package org.aksw.rex.xpath;
+package org.aksw.rex.test.xpath;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.xpath.XPath;
@@ -14,9 +12,13 @@ import javax.xml.xpath.XPathFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.rex.util.Pair;
+import org.aksw.rex.xpath.XPathExtractor;
+import org.aksw.rex.xpath.XPathGeneralizer;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
@@ -25,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -36,8 +37,18 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class XPathGeneralizerTest {
 	
+	private static XPathExtractor ex;
 	private org.slf4j.Logger log = LoggerFactory.getLogger(XPathGeneralizerTest.class);
+	@BeforeClass
+	public static void init() {
+		ex = new XPathExtractor();
+		 
+	}
 
+	@AfterClass
+	public static void finish() {
+		ex.getIndex().close();
+	}
 	/**
 	 * Test method for {@link org.aksw.rex.xpath.XPathGeneralizer#generalizeXPathExpressions(java.lang.String, java.lang.String)}.
 	 */
@@ -79,7 +90,7 @@ public class XPathGeneralizerTest {
 	 */
 	@Test
 	public void testGeneralizeXPathExpressions2() throws Exception{
-		XPathExtractor ex = new XPathExtractor();
+		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 		String domain = "http://www.imdb.com/title/";

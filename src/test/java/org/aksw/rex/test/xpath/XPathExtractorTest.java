@@ -1,4 +1,4 @@
-package org.aksw.rex.xpath;
+package org.aksw.rex.test.xpath;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.aksw.rex.xpath.XPathExtractor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class XPathExtractorTest {
 			log.debug(path);
 		}
 		assertTrue("Paths may not zero in this example", paths.size() > 0);
-		assertTrue("Five is the correct number of Xpaths", paths.size() == 5);
+		assertTrue("One is the correct number of Xpaths", paths.size() == 1);
 	}
 
 	@Test

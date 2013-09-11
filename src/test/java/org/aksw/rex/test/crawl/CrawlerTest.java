@@ -1,4 +1,4 @@
-package org.aksw.rex.crawl;
+package org.aksw.rex.test.crawl;
 
 import static org.junit.Assert.assertTrue;
 
