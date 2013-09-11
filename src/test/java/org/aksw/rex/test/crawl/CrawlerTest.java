@@ -33,10 +33,22 @@ public class CrawlerTest {
 		for (Pair<String, String> row : data) {
 			String url = row.getLeft();
 			String html = row.getRight();
-     		log.debug("URL with Tom Cruise: " + url);
+			log.debug("URL with Tom Cruise: " + url);
 		}
 		assertTrue("Found Tom Cruise in the index.", data != null);
 		assertTrue("Found several entries in index.", data.size() > 0);
 	}
 
+	@Test
+	public void testSearchSubjectObject() {
+		String subject = "Tom Cruise";
+		String object = "Minority Report";
+		ArrayList<Pair<String, String>> data = index.searchHTML(subject + " AND " + object);
+		log.debug("#URL with Tom Cruise: " + data.size());
+		for (Pair<String, String> row : data) {
+			String url = row.getLeft();
+			String html = row.getRight();
+			log.debug(url +" "+ html.length());
+		}
+	}
 }
