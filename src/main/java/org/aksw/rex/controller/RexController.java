@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.xpath.XPathExpression;
+
 import org.aksw.rex.consistency.ConsistencyChecker;
 import org.aksw.rex.consistency.ConsistencyCheckerImpl;
 import org.aksw.rex.domainidentifier.DomainIdentifier;
@@ -19,7 +21,8 @@ import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.XPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.w3c.dom.xpath.XPathExpression;
+
+import rules.xpath.XPathRule;
 
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -62,7 +65,7 @@ public class RexController {
         Set<Pair<Resource, Resource>> negExamples = exampleGenerator.getNegativeExamples();
         URL domain = di.getDomain(property, posExamples, negExamples, false);
         System.out.println("Domain: " + domain);
-        List<Pair<XPathExpression,XPathExpression>> expressions = xpath.getXPathExpressions(posExamples, negExamples, domain);
+        List<Pair<XPathRule,XPathRule>> expressions = xpath.getXPathExpressions(posExamples, negExamples, domain);
         Set<ExtractionResult> results = xpath.getExtractionResults(expressions);
         Set<Triple> triples = uriGenerator.getTriples(results, property);
         triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));

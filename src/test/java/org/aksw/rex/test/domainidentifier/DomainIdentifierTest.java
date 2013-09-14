@@ -43,5 +43,7 @@ public class DomainIdentifierTest {
 		if (domain.equals(new URL("http://www.imdb.com")))
 			correct = true;
 		assertTrue("Should be imdb", correct);
+		
+		log.debug(r1.toString());
 	}
 }

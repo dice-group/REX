@@ -6,12 +6,13 @@ import java.util.Set;
 
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.util.Pair;
-import org.w3c.dom.xpath.XPathExpression;
+
+import rules.xpath.XPathRule;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface XPathLearner {
-    List<Pair<XPathExpression, XPathExpression>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, URL Domain);
-    Set<ExtractionResult> getExtractionResults(List<Pair<XPathExpression, XPathExpression>> expressions);
+    List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, URL Domain);
+    Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions);
 
 }
