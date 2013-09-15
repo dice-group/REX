@@ -114,4 +114,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 						+ resources.getRight().getLocalName().replace("_", " ") + "'")
 				.subList(0, 3);
 	}
+
+	public CrawlIndex getIndex() {
+		return index;
+	}
 }
