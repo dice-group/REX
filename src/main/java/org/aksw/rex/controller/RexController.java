@@ -30,60 +30,74 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
- *
+ * 
  * @author ngonga
  */
 public class RexController {
-    
-    ExampleGenerator exampleGenerator;
-    DomainIdentifier di;
-    Property property;
-    XPathLearner xpath;
-    URIGenerator uriGenerator;
-    ConsistencyChecker consistency;
-    SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-    
-    public RexController(Property p, ExampleGenerator e, DomainIdentifier d, 
-            XPathLearner l, ConsistencyChecker c, SparqlEndpoint s)
-    {
-       property = p;
-       exampleGenerator = e;
-       di = d;        
-       xpath = l;
-       consistency = c;
-       endpoint = s;
-    }
-    
-    /** Runs the extraction pipeline
-     * 
-     * @return A set of triples
-     * @throws Exception If URI generation does not work
-     */
-    public Set<Triple> run() throws Exception
-    {
-        Set<Pair<Resource, Resource>> posExamples = exampleGenerator.getPositiveExamples();
-        Set<Pair<Resource, Resource>> negExamples = exampleGenerator.getNegativeExamples();
-        URL domain = di.getDomain(property, posExamples, negExamples, false);
-        System.out.println("Domain: " + domain);
-        List<Pair<XPathRule,XPathRule>> expressions = xpath.getXPathExpressions(posExamples, negExamples, domain);
-        Set<ExtractionResult> results = xpath.getExtractionResults(expressions);
-        Set<Triple> triples = uriGenerator.getTriples(results, property);
-        triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
-        return triples;
-    }
-    
-    public static void main(String[] args) throws Exception {
-    	Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
-    	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-    	ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
-    	exampleGenerator.setEndpoint(endpoint);
-    	exampleGenerator.setPredicate(property);
-		new RexController(
-				property, 
-				exampleGenerator, 
-				new GoogleDomainIdentifier(),
-				null,
-				new ConsistencyCheckerImpl(),
-				endpoint).run();
+
+	ExampleGenerator exampleGenerator;
+	DomainIdentifier di;
+	Property property;
+	XPathLearner xpath;
+	URIGenerator uriGenerator;
+	ConsistencyChecker consistency;
+	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+
+	public RexController(Property p, ExampleGenerator e, DomainIdentifier d, XPathLearner l, ConsistencyChecker c, SparqlEndpoint s) {
+		property = p;
+		exampleGenerator = e;
+		di = d;
+		xpath = l;
+		consistency = c;
+		endpoint = s;
+	}
+
+	/**
+	 * Runs the extraction pipeline
+	 * 
+	 * @return A set of triples
+	 * @throws Exception
+	 *             If URI generation does not work
+	 */
+	public Set<Triple> run(URL d) throws Exception {
+		Set<Pair<Resource, Resource>> posExamples = exampleGenerator.getPositiveExamples();
+		Set<Pair<Resource, Resource>> negExamples = exampleGenerator.getNegativeExamples();
+		URL domain = null;
+		if (d == null) {
+			domain = di.getDomain(property, posExamples, negExamples, false);
+		}else{
+			domain =d;
+		}
+		System.out.println("Domain: " + domain);
+
+		List<Pair<XPathRule, XPathRule>> expressions = xpath.getXPathExpressions(posExamples, negExamples, domain);
+		Set<ExtractionResult> results = xpath.getExtractionResults(expressions);
+		Set<Triple> triples = uriGenerator.getTriples(results, property);
+		triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
+		return triples;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
+		exampleGenerator.setEndpoint(endpoint);
+		exampleGenerator.setPredicate(property);
+		new RexController(property, exampleGenerator, new GoogleDomainIdentifier(), null, new ConsistencyCheckerImpl(), endpoint).run(null);
+	}
+
+	public static void main2(String[] args) throws Exception {
+		PropertySupplier ps = new PropertySupplier();
+
+		for (RexPropertiesWithGoldstandard p : ps.getPropertiesToCheck()) {
+			String propertyURL = p.getPropertyURL();
+			URL domainURL = new URL(p.getExtractionDomainURL());
+			Property property = ResourceFactory.createProperty(propertyURL);
+			SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+			ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
+			exampleGenerator.setEndpoint(endpoint);
+			exampleGenerator.setPredicate(property);
+			new RexController(property, exampleGenerator, new GoogleDomainIdentifier(), null, new ConsistencyCheckerImpl(), endpoint).run(domainURL);
+		}
 	}
 }

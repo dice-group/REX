@@ -167,4 +167,12 @@ public class CrawlIndex {
 			log.error(e.getLocalizedMessage());
 		}
 	}
+
+	public int size() throws IOException {
+		if (ireader == null) {
+			ireader = DirectoryReader.open(directory);
+			isearcher = new IndexSearcher(ireader);
+		}
+		return ireader.numDocs();
+	}
 }
