@@ -17,5 +17,9 @@ public interface ExampleGenerator {
     Set<Pair<Resource, Resource>> getPositiveExamples();
 
     Set<Pair<Resource, Resource>> getNegativeExamples();
+    
+    void setMaxNrOfPositiveExamples(int maxNrOfPositiveExamples);
+    
+    void setMaxNrOfNegativeExamples(int maxNrOfNegativeExamples);
 
 }

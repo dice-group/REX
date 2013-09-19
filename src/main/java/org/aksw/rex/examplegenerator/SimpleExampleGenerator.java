@@ -110,6 +110,22 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		return examples;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.examplegenerator.ExampleGenerator#setMaxNrOfPositiveExamples(int)
+	 */
+	@Override
+	public void setMaxNrOfPositiveExamples(int maxNrOfPositiveExamples) {
+		this.maxNrOfPositiveExamples = maxNrOfPositiveExamples;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.examplegenerator.ExampleGenerator#setMaxNrOfNegativeExamples(int)
+	 */
+	@Override
+	public void setMaxNrOfNegativeExamples(int maxNrOfNegativeExamples) {
+		this.maxNrOfNegativeExamples = maxNrOfNegativeExamples;
+	}
+	
 	private Set<Pair<Resource, Resource>> getMostProminentPositiveExamples(){
 		Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource,Resource>>();
 		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "

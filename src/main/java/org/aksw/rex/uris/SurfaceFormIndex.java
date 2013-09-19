@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -40,14 +42,14 @@ public class SurfaceFormIndex {
 	private QueryParser parser;
 	private DirectoryReader ireader;
 	private IndexWriter iwriter;
-	private HashMap<String, HashSet<String>> cacheSearch;
+	private Map<String, Set<String>> cacheSearch;
 	private String baseURI;
 
 	public SurfaceFormIndex(String file, String idxDirectory, String type, String baseURI) {
 		log.info("Building surface form index!");
 		this.baseURI = baseURI;
 		try {
-			analyzer = new StandardAnalyzer(Version.LUCENE_40);
+			analyzer = new StandardAnalyzer(Version.LUCENE_43);
 			File indexDirectory = new File(idxDirectory);
 
 			if (indexDirectory.exists() && indexDirectory.isDirectory() && indexDirectory.listFiles().length > 0) {
@@ -55,7 +57,7 @@ public class SurfaceFormIndex {
 			} else {
 				indexDirectory.mkdir();
 				directory = new MMapDirectory(indexDirectory);
-				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 				iwriter = new IndexWriter(directory, config);
 				if (type.equals(TSV))
 					indexTSVFile(file);
@@ -63,7 +65,7 @@ public class SurfaceFormIndex {
 			}
 			ireader = DirectoryReader.open(directory);
 			isearcher = new IndexSearcher(ireader);
-			cacheSearch = new HashMap<String, HashSet<String>>();
+			cacheSearch = new HashMap<String, Set<String>>();
 		} catch (IOException e) {
 			log.error(e.getLocalizedMessage());
 		}
@@ -94,28 +96,47 @@ public class SurfaceFormIndex {
 		}
 	}
 
-	public HashSet<String> search(String label) {
+	public Set<String> search(String label) {
 		if (cacheSearch.containsKey(label)) {
 			return cacheSearch.get(label);
 		}
-		HashSet<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<String>();
 		try {
-			analyzer = new StandardAnalyzer(Version.LUCENE_40);
-			parser = new QueryParser(Version.LUCENE_40, FIELD_NAME_LABEL, analyzer);
+			analyzer = new StandardAnalyzer(Version.LUCENE_43);
+			parser = new QueryParser(Version.LUCENE_43, FIELD_NAME_LABEL, analyzer);
 			parser.setDefaultOperator(QueryParser.Operator.AND);
 			Query query = parser.parse(label);
 			ScoreDoc[] hits = isearcher.search(query, 10000).scoreDocs;
 			for (int i = 0; i < hits.length; i++) {
 				Document hitDoc = isearcher.doc(hits[i].doc);
-				String URI = java.net.URLDecoder.decode(hitDoc.get(FIELD_NAME_URL), "UTF-8");
-				if (URI.replace(baseURI, "").equals(label)) {
-					result.add(URI);
+				String uri = java.net.URLDecoder.decode(hitDoc.get(FIELD_NAME_URL), "UTF-8");
+				if (uri.replace(baseURI, "").replace("_", " ").equals(label)) {
+					result.add(uri);
 				}
 			}
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage() + " -> " + label);
 		}
 		cacheSearch.put(label, result);
+		return result;
+	}
+	
+	public Set<String> getSurfaceForms(String uri) {
+		Set<String> result = new HashSet<String>();
+		try {
+			analyzer = new StandardAnalyzer(Version.LUCENE_43);
+			parser = new QueryParser(Version.LUCENE_43, FIELD_NAME_URL, analyzer);
+			parser.setDefaultOperator(QueryParser.Operator.AND);
+			Query query = parser.parse("\"" + uri + "\"");
+			ScoreDoc[] hits = isearcher.search(query, 10000).scoreDocs;
+			for (int i = 0; i < hits.length; i++) {
+				Document hitDoc = isearcher.doc(hits[i].doc);
+				String label = java.net.URLDecoder.decode(hitDoc.get(FIELD_NAME_LABEL), "UTF-8");
+				result.add(label);
+			}
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage() + " -> " + uri);
+		}
 		return result;
 	}
 

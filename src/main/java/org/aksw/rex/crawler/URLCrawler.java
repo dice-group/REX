@@ -67,7 +67,7 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	/**
-	 * You should implement this function to specify whether the given url
+	 * You should implement this function to specify whether the given URL
 	 * should be crawled or not (based on your crawling logic).
 	 */
 	@Override
@@ -78,8 +78,12 @@ public class URLCrawler extends WebCrawler {
 		// if (href.startsWith("http://www.imdb.com/name"))
 		// return true;
 		// return false;
-		if (href.startsWith("http://www.imdb.com/"))
-			return true;
-		return !FILTERS.matcher(href).matches();
+//		if (href.startsWith("http://www.imdb.com/"))
+//			return true;
+//		return !FILTERS.matcher(href).matches();
+//		return (href.startsWith("http://www.allmusic.com/") && !FILTERS.matcher(href).matches());
+//		return (href.startsWith("http://espn.go.com/") && !FILTERS.matcher(href).matches());
+		return (href.contains("espn") && !href.contains("blog") && !FILTERS.matcher(href).matches());
+//		return (href.startsWith("http://www.imdb.com/") && !FILTERS.matcher(href).matches());
 	}
 }

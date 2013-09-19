@@ -9,7 +9,6 @@ import org.aksw.rex.results.ExtractionResult;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 
@@ -19,7 +18,7 @@ public class URIGeneratorImpl implements URIGenerator {
 
     public URIGeneratorImpl() {
         String file = "en_surface_forms.tsv.gz";
-        String idxDirectory = "index/";
+        String idxDirectory = "surfaceform-index/";
         String type = SurfaceFormIndex.TSV;
         String baseURI = "http://dbpedia.org/resource/";
         index = new SurfaceFormIndex(file, idxDirectory, type, baseURI);
@@ -62,20 +61,20 @@ public class URIGeneratorImpl implements URIGenerator {
 
     private Node generateURI(String subjectString, Node s) throws URISyntaxException, Exception {
         // lookup in index
-        HashSet<String> possibleSubjectURIs = index.search(subjectString);
+        Set<String> possibleSubjectURIs = index.search(subjectString);
         // ---DEBUG---//
-        log.debug("Number of candidates for Subject: " + possibleSubjectURIs.size());
+        log.trace("Number of candidates for Subject: " + possibleSubjectURIs.size());
         for (String tmp : possibleSubjectURIs) {
-            log.debug("\t" + subjectString + " -> " + tmp);
+            log.trace("\t" + subjectString + " -> " + tmp);
         }
         // ---END DEBUG---//
         if (possibleSubjectURIs != null && possibleSubjectURIs.size() == 1) {
-            s = NodeFactory.createURI(possibleSubjectURIs.iterator().next());
+            s = Node.createURI(possibleSubjectURIs.iterator().next());
         } else if (possibleSubjectURIs.size() == 0) {
             // generate URI, if not in index
             URI uri = new URI("http", "aksw.org", "/resource", subjectString);
-            log.debug("Constructed URI: " + uri);
-            s = NodeFactory.createURI(uri.toString());
+            log.trace("Constructed URI: " + uri);
+            s = Node.createURI(uri.toString());
         } else {
             throw new Exception("More than one candidate for \"" + subjectString + "\" detected!");
         }

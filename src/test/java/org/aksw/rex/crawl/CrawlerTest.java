@@ -17,7 +17,7 @@ public class CrawlerTest {
 
 	@BeforeClass
 	public static void init() {
-		index = new CrawlIndex("htmlindex/");
+		index = new CrawlIndex("test-index/");
 	}
 
 	@AfterClass

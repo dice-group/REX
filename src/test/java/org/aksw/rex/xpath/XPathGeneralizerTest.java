@@ -3,9 +3,11 @@
  */
 package org.aksw.rex.xpath;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -14,21 +16,20 @@ import javax.xml.xpath.XPathFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.rex.util.Pair;
+import org.aksw.rex.util.SurfaceFormGenerator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.utilities.MapUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.util.IRIShortFormProvider;
-import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author Lorenz Buehmann
@@ -79,35 +80,101 @@ public class XPathGeneralizerTest {
 	 */
 	@Test
 	public void testGeneralizeXPathExpressions2() throws Exception{
+		XPathFactory factory = XPathFactory.newInstance();
+		XPath xpath = factory.newXPath();
 		XPathExtractor ex = new XPathExtractor();
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 		String domain = "http://www.imdb.com/title/";
-		String property = "http://dbpedia.org/ontology/starring";
-		String query = "SELECT ?s ?o WHERE {"
-						+ "?s <" + property + "> ?o. }"
+		String property = "dbo:starring";
+		String query = "PREFIX dbo: <http://dbpedia.org/ontology/> "
+						+ "SELECT ?s ?o WHERE {"
+						+ "?s " + property + " ?o. }"
 						+ "ORDER BY DESC ( <LONG::IRI_RANK> (?o) + <LONG::IRI_RANK> (?s)) "
-						+ "LIMIT 20";
+						+ "LIMIT 1000 OFFSET 20";
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		ResultSet rs = qef.createQueryExecution(query).execSelect();
 		QuerySolution qs;
 		
 		//Extract pairs of XPath expressions
-		List<Pair<String, String>> xPathPairs = Lists.newArrayList();
+		List<XPathExtractionRule> extractionRules = Lists.newArrayList();
 		while(rs.hasNext()){
 			qs = rs.next();
-			String subject = sfp.getShortForm(IRI.create(qs.getResource("s").getURI())).replace("_", " ");
-			String object = sfp.getShortForm(IRI.create(qs.getResource("o").getURI())).replace("_", " ");
+			Resource subject = qs.getResource("s");
+			Resource object = qs.getResource("o");
+			//get the surface forms
+			Set<String> subjectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, subject.getURI());
+			Set<String> objectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, object.getURI());
 			
-			log.debug("Extracting XPath expressions for '" + subject + "' and '" + object + "'");
-			List<Pair<String, String>> xPathPairsTmp = ex.extractPathsFromCrawlIndex(subject, object, domain);
-			log.debug("Got " + xPathPairsTmp.size() + " XPath expression pairs.");
-			xPathPairs.addAll(xPathPairsTmp);
+			for (String sub : subjectSurfaceForms) {
+				if(sub.contains("(")){
+					sub = sub.substring(0, sub.indexOf('(')).trim();
+				}
+				for (String obj : objectSurfaceForms) {
+					if(obj.contains("(")){
+						obj = obj.substring(0, obj.indexOf('(')).trim();
+					}
+					log.debug("Extracting XPath expressions for '" + sub + "' and '" + obj + "'");
+					List<XPathExtractionRule> extractionRulesTmp = ex.extractPathsFromCrawlIndex(sub, obj, domain);
+					log.debug("Got " + extractionRulesTmp.size() + " XPath expression pairs.");
+					extractionRules.addAll(extractionRulesTmp);
+				}
+			}
 		}
 		
-		List<Pair<String, String>> generalizedXPathPairs = XPathGeneralizer.generalizeXPathExpressions(xPathPairs);
+		Map<XPathExtractionRule, Double> genralizedExtractionRules = XPathGeneralizer.generateXPathExtractionRules(extractionRules);
+		List<Entry<XPathExtractionRule, Double>> extractionRulesSortedByFrequency = MapUtils.sortByValues(genralizedExtractionRules);
+		//use only the most frequent rule now
+		extractionRulesSortedByFrequency = extractionRulesSortedByFrequency.subList(0, 1);
+		log.debug("Most frequent rule:\n" + extractionRulesSortedByFrequency.get(0));
 		
+		//take some random IMDB pages and check the output
 		
+		List<Pair<String, String>> documents = ex.getIndex().getDocumentsWithDomain(domain);
+		
+		for (Pair<String, String> document : documents) {
+			String url = document.getLeft();
+			String html = document.getRight();
+			try {
+				Document doc = Jsoup.parse(html);
+//				log.debug("Trying URL " + url);
+
+				for (Entry<XPathExtractionRule, Double> ruleWithFrequency : extractionRulesSortedByFrequency) {
+					XPathExtractionRule rule = ruleWithFrequency.getKey();
+					String subjectXPath = rule.getSubjectXPathExpression();
+					String objectXPath = rule.getObjectXPathExpression();
+//					log.debug("Applying \nFor subject:" + subjectXPath + "\nFor object:" + objectXPath);
+
+					Set<String> subjects = new HashSet<String>();
+					Set<String> objects = new HashSet<String>();
+
+					NodeList nodeList = (NodeList) xpath.evaluate(subjectXPath,
+							org.aksw.rex.crawler.DOMBuilder.jsoup2DOM(doc), XPathConstants.NODESET);
+					for (int i = 0; i < nodeList.getLength(); i++) {
+						Node item = nodeList.item(i);
+						subjects.add(item.getTextContent());
+					}
+
+					nodeList = (NodeList) xpath.evaluate(objectXPath, org.aksw.rex.crawler.DOMBuilder.jsoup2DOM(doc),
+							XPathConstants.NODESET);
+					for (int i = 0; i < nodeList.getLength(); i++) {
+						Node item = nodeList.item(i);
+						objects.add(item.getTextContent());
+					}
+					if(!subjects.isEmpty() && !objects.isEmpty()){
+						log.debug("Trying URL " + url);
+//						log.debug("Found triple(s) using\nFor subject:" + subjectXPath + "\nFor object:" + objectXPath);
+					}
+					for (String sub : subjects) {
+						for (String obj : objects) {
+							log.debug(sub + " " + property + " " + obj);
+						}
+					}
+				}
+
+			} catch (Exception e) {
+				log.debug("Could not process URL: " + url);
+			}
+		}
 	}
 	
 

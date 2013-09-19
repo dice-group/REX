@@ -2,8 +2,8 @@ package org.aksw.rex.xpath;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,7 +44,7 @@ public class XPathExtractorTest {
 		"</body></html>";
 		// @formatter:on
 		String query = "Tom";
-		ArrayList<String> paths = ex.extractXPaths(query, html);
+		List<String> paths = ex.extractXPaths(query, html);
 		for (String path : paths) {
 			log.debug(path);
 		}
@@ -76,7 +76,7 @@ public class XPathExtractorTest {
 		"</body></html>";
 		// @formatter:on
 		String query = "Berlin";
-		ArrayList<String> paths = ex.extractXPaths(query, html);
+		List<String> paths = ex.extractXPaths(query, html);
 		for (String path : paths) {
 			log.debug(path);
 		}
@@ -86,16 +86,15 @@ public class XPathExtractorTest {
 	
 	@Test
 	public void testXPathsForTomCruise() throws Exception {
-		String query = "Tom Cruise";
-		Map<String, Collection<String>> data = ex.extractPathsFromCrawlIndexWithURL(query);
+		Map<String, List<XPathExtractionRule>> data = ex.extractPathsFromCrawlIndexWithURL("Tom Cruise", "Mission Impossible");
 		log.debug("#URL with Tom Cruise: " + data.size());
 		
-		for (Entry<String, Collection<java.lang.String>> entry : data.entrySet()) {
+		for (Entry<String, List<XPathExtractionRule>> entry : data.entrySet()) {
 			String key = entry.getKey();
-			Collection<java.lang.String> paths = entry.getValue();
+			Collection<XPathExtractionRule> paths = entry.getValue();
 			log.debug(key);
-			for (String path : paths) {
-				log.debug(path);
+			for (XPathExtractionRule path : paths) {
+				log.debug(path.toString());
 			}
 		}
 		assertTrue("Paths may not zero in this example", data.size() > 0);

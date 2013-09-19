@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.aksw.rex.util.Pair;
 import org.apache.lucene.analysis.Analyzer;
@@ -21,6 +22,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
@@ -99,7 +102,7 @@ public class CrawlIndex {
 				ireader = DirectoryReader.open(directory);
 				isearcher = new IndexSearcher(ireader);
 			}
-			log.debug("\tStart asking index...");
+			log.debug("\tRetrieving documents from index...");
 
 			BooleanQuery bq = new BooleanQuery();
 			TokenStream stream = analyzer.tokenStream(FIELD_NAME_HTML, new StringReader(queryString));
@@ -116,13 +119,38 @@ public class CrawlIndex {
 				Document hitDoc = isearcher.doc(hits[i].doc);
 				sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 			}
-			log.debug("\tFinished asking index...");
+			log.debug("\t...got " + sites.size() + " documents.");
 		} catch (IOException e) {
 			log.error("COULD NOT SEARCH INDEX");
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e.getMessage());
 			log.error(e.getLocalizedMessage() + " -> " + queryString);
+		}
+		return sites;
+	}
+	
+	public List<Pair<String, String>> getDocumentsWithDomain(String domainURL){
+		List<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
+		try {
+			if (ireader == null) {
+				ireader = DirectoryReader.open(directory);
+				isearcher = new IndexSearcher(ireader);
+			}
+			log.debug("\tStart asking index...");
+			Query q = new PrefixQuery(new Term(FIELD_NAME_URL, domainURL));
+			TopScoreDocCollector collector = TopScoreDocCollector.create(1000, true);
+			isearcher.search(q, collector);
+			ScoreDoc[] hits = collector.topDocs().scoreDocs;
+			for (int i = 0; i < hits.length; i++) {
+				Document hitDoc = isearcher.doc(hits[i].doc);
+				sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
+			}
+			log.debug("\tFinished asking index...");
+		} catch (IOException e) {
+			log.error("COULD NOT SEARCH INDEX");
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage() + " -> " + domainURL);
 		}
 		return sites;
 	}

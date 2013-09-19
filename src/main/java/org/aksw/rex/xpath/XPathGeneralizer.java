@@ -6,6 +6,7 @@ package org.aksw.rex.xpath;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -110,22 +112,22 @@ public class XPathGeneralizer {
 	 * @param xPath2
 	 * @return
 	 */
-	public static List<Pair<String, String>> generalizeXPathExpressions(List<Pair<String, String>> xPathPairs){
-		List<Pair<String, String>> generalizedXPathPairs = Lists.newArrayList();
+	public static List<XPathExtractionRule> generalizeXPathExpressions(List<XPathExtractionRule> extractionRules){
+		List<XPathExtractionRule> generalizedExtractionRules = Lists.newArrayList();
 		
 		//cluster by HTML element sequence
-		List<List<Pair<String, String>>> clusters = clusterByHTMLElementSequence(xPathPairs);
+		List<List<XPathExtractionRule>> clusters = clusterByHTMLElementSequence(extractionRules);
 		
 		//for each cluster generalize the XPaths
-		for (List<Pair<String, String>> cluster : clusters) {
+		for (List<XPathExtractionRule> cluster : clusters) {
 			log.debug("Processing cluster with size " + cluster.size());
-			String generalizedSubjectXPath = cluster.get(0).getLeft();
-			String generalizedObjectXPath = cluster.get(0).getRight();
+			String generalizedSubjectXPath = cluster.get(0).getSubjectXPathExpression();
+			String generalizedObjectXPath = cluster.get(0).getObjectXPathExpression();
 
 			if (cluster.size() > 1) {
-				for (Pair<String, String> xPathPair : cluster) {
-					String subjectXPath = xPathPair.getLeft();
-					String objectXPath = xPathPair.getRight();
+				for (XPathExtractionRule rule : cluster) {
+					String subjectXPath = rule.getSubjectXPathExpression();
+					String objectXPath = rule.getObjectXPathExpression();
 
 					generalizedSubjectXPath = XPathGeneralizer.generalizeXPathExpressions(generalizedSubjectXPath, subjectXPath);
 					generalizedObjectXPath = XPathGeneralizer.generalizeXPathExpressions(generalizedObjectXPath, objectXPath);
@@ -135,41 +137,83 @@ public class XPathGeneralizer {
 			log.debug("Generalized XPath for subjects:" + generalizedSubjectXPath);
 			log.debug("Generalized XPath for objects:" + generalizedObjectXPath);
 			
-			generalizedXPathPairs.add(new Pair<String, String>(generalizedSubjectXPath, generalizedSubjectXPath));
+			generalizedExtractionRules.add(new XPathExtractionRule(generalizedSubjectXPath, generalizedObjectXPath));
 		}
-		return generalizedXPathPairs;
+		return generalizedExtractionRules;
 	}
 	
-	private static List<List<Pair<String, String>>> clusterByHTMLElementSequence(List<Pair<String, String>> xPathsPairs){
-		List<List<Pair<String, String>>> clusters = new ArrayList<List<Pair<String,String>>>();
+	/**
+	 * Generates generalized XPath expressions for subject and object
+	 * @param xPath1
+	 * @param xPath2
+	 * @return
+	 */
+	public static Map<XPathExtractionRule, Double> generateXPathExtractionRules(List<XPathExtractionRule> extractionRules){
+		Map<XPathExtractionRule, Double> generalizedExtractionRules = Maps.newHashMap();
 		
-		Iterator<Pair<String, String>> iter = xPathsPairs.iterator();
+		//cluster by HTML element sequence
+		List<List<XPathExtractionRule>> clusters = clusterByHTMLElementSequence(extractionRules);
+		
+		//for each cluster generalize the XPaths
+		for (List<XPathExtractionRule> cluster : clusters) {
+			log.debug("Processing cluster with size " + cluster.size());
+			String generalizedSubjectXPath = cluster.get(0).getSubjectXPathExpression();
+			String generalizedObjectXPath = cluster.get(0).getObjectXPathExpression();
+
+			if (cluster.size() > 1) {
+				for (XPathExtractionRule rule : cluster) {
+					String subjectXPath = rule.getSubjectXPathExpression();
+					String objectXPath = rule.getObjectXPathExpression();
+
+					generalizedSubjectXPath = XPathGeneralizer.generalizeXPathExpressions(generalizedSubjectXPath, subjectXPath);
+					generalizedObjectXPath = XPathGeneralizer.generalizeXPathExpressions(generalizedObjectXPath, objectXPath);
+				}
+			}
+
+			log.debug("Generalized XPath for subjects:" + generalizedSubjectXPath);
+			log.debug("Generalized XPath for objects:" + generalizedObjectXPath);
+			
+			XPathExtractionRule rule = new XPathExtractionRule(generalizedSubjectXPath, generalizedObjectXPath);
+			
+			generalizedExtractionRules.put(rule, Double.valueOf(cluster.size()));
+		}
+		return generalizedExtractionRules;
+	}
+	
+	private static List<List<XPathExtractionRule>> clusterByHTMLElementSequence(List<XPathExtractionRule> xPathsPairs){
+		List<List<XPathExtractionRule>> clusters = new ArrayList<List<XPathExtractionRule>>();
+		
+		Iterator<XPathExtractionRule> iter = xPathsPairs.iterator();
 		//initialize with the first pair
 		clusters.add(Lists.newArrayList(iter.next()));
 		
 		//for each pair add to corresponding cluster or create new one
-		for (Pair<String, String> pair : xPathsPairs) {
+		XPathExtractionRule rule;
+		while(iter.hasNext()){
+			rule = iter.next();
+			
 			boolean added = false;
-			for (List<Pair<String, String>> cluster : clusters) {
-				Pair<String, String> representative = cluster.get(0);
+			for (List<XPathExtractionRule> cluster : clusters) {
+				XPathExtractionRule representative = cluster.get(0);
 				
-				List<String> representativeSubjectNodes = extractHTMLElementSequence(representative.getLeft());
-				List<String> representativeObjectNodes = extractHTMLElementSequence(representative.getRight());
+				List<String> representativeSubjectNodes = extractHTMLElementSequence(representative.getSubjectXPathExpression());
+				List<String> representativeObjectNodes = extractHTMLElementSequence(representative.getObjectXPathExpression());
 				
-				List<String> subjectNodes = extractHTMLElementSequence(pair.getLeft());
-				List<String> objectNodes = extractHTMLElementSequence(pair.getRight());
+				List<String> subjectNodes = extractHTMLElementSequence(rule.getSubjectXPathExpression());
+				List<String> objectNodes = extractHTMLElementSequence(rule.getObjectXPathExpression());
 				if(representativeSubjectNodes.equals(subjectNodes) && representativeObjectNodes.equals(objectNodes)){
-					cluster.add(pair);
+					cluster.add(rule);
 					added = true;
 					break;
 				}
 			}
 			if(!added){
-				List<Pair<String, String>> cluster = Lists.newArrayList();
-				cluster.add(pair);
+				List<XPathExtractionRule> cluster = Lists.newArrayList();
+				cluster.add(rule);
 				clusters.add(cluster);
 			}
 		}
+		
 		
 		return clusters;
 	}

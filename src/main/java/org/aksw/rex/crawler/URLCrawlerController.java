@@ -19,7 +19,7 @@ public class URLCrawlerController {
 	public static void main(String[] args) throws Exception {
 		URLCrawlerController crawlControl = new URLCrawlerController("crawl");
 		System.out.println("Now adding Seeds.");
-		crawlControl.addSeed("http://www.imdb.com/");
+		crawlControl.addSeed("http://espn.go.com/");
 		System.out.println("Seeds have been added. Crawler will be started.");
 		crawlControl.startCrawler();
 		System.out.println("Crawler finished.");
@@ -30,21 +30,26 @@ public class URLCrawlerController {
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
 		int maxPagesToFetch = 10000;
+		String userAgentName = "googlebot";
+		userAgentName = "crawler4j";
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
 		config.setMaxOutgoingLinksToFollow(maxOutgoingLinksToFollow);
 		config.setMaxPagesToFetch(maxPagesToFetch);
+		config.setIncludeBinaryContentInCrawling(false);
+		config.setUserAgentString(userAgentName);
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
 		PageFetcher pageFetcher = new PageFetcher(config);
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+		robotstxtConfig.setUserAgentName(userAgentName);
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-		String idxDirectory = "htmlindex/";
-		index = new CrawlIndex(  idxDirectory);
+		String idxDirectory = "espn-index/";
+		index = new CrawlIndex(idxDirectory);
 		this.controller.setCustomData(index);
 	}
 
