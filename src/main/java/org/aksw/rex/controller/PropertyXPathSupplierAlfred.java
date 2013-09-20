@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author r.usbeck
  * 
  */
-public class PropertyXPathSupplierAlfred {
+public class PropertyXPathSupplierAlfred implements PropertyXPathSupplier {
 	private ArrayList<RexPropertiesWithGoldstandard> propertiesToCheck;
 
 	public PropertyXPathSupplierAlfred() {
@@ -29,7 +29,7 @@ public class PropertyXPathSupplierAlfred {
 
 		// ========================For http://www.imdb.com/name/ sub-domain
 
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@itemprop='name']/text()", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.imdb.com/name"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@itemprop='name']/text()#NO", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.imdb.com/name"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@itemprop='birthDate']/A[1]/text()", "http://dbpedia.org/ontology/birthDate", "http://www.imdb.com/name"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@itemprop='birthDate']/A[2]/text()", "http://dbpedia.org/ontology/birthYear", "http://www.imdb.com/name"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@itemprop='jobTitle'][1]/text()", "http://dbpedia.org/property/occupation", "http://www.imdb.com/name"));

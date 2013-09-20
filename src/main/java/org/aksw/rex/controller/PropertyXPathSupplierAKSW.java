@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author r.usbeck
  * 
  */
-public class PropertyXPathSupplierAKSW {
+public class PropertyXPathSupplierAKSW implements PropertyXPathSupplier {
 	private ArrayList<RexPropertiesWithGoldstandard> propertiesToCheck;
 
 	public PropertyXPathSupplierAKSW() {
@@ -16,7 +16,7 @@ public class PropertyXPathSupplierAKSW {
 
 		// =====================For http://www.imdb.com/title/ sub-domain
 
-		//TODO discuss aksw.org properties
+		// TODO discuss aksw.org properties
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='overview-top']/h1/span[1]", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.imdb.com/title"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='title_recs']/div[2]/div[1]/div[3]/div/div[1]/div[1]/a/b", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.imdb.com/title"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='overview-top']/div[4]/a/span", "http://dbpedia.org/ontology/director", "http://www.imdb.com/title"));
@@ -39,16 +39,26 @@ public class PropertyXPathSupplierAKSW {
 
 		// =============== All Music Album subdomain
 
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@class='album-title']/text()", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.allmusic.com/"));
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='microdata-rating']/div", "http://aksw.org/rating", "http://www.allmusic.com/"));
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[2]/span", "http://dbpedia.org/ontology/releaseDate", "http://www.allmusic.com/"));
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[3]/span", "http://dbpedia.org/ontology/runtime", "http://www.allmusic.com/"));
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[4]/div/a", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/"));
-		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[5]/div/a", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@class='album-title']/text()", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.allmusic.com/album"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='microdata-rating']/div", "http://aksw.org/rating", "http://www.allmusic.com/album"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[2]/span", "http://dbpedia.org/ontology/releaseDate", "http://www.allmusic.com/album"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[3]/span", "http://dbpedia.org/ontology/runtime", "http://www.allmusic.com/album"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[4]/div/a", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/album"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[2]/div[5]/div/a", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/album"));
 
 		// =============== All Music Bands subdomain
 
-		// TODO all music bands
+		// =====================All music, Artist subdomain ================
+		// TODO this field has no match in dbpedia ontology since it is a range
+		// TODO genre and styles are hard to match to a property in dbpedia owl
+		// TODO aliases has no counterpart in dbpedia
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[2]/header/hgroup/h2", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[2]/section[2]/ul/li/div/div[2]/a", "http://www.w3.org/2000/01/rdf-schema#label", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//html/body/div/div[3]/div[1]/section[1]/div[2]/div", "http://dbpedia.org/ontology/activeYearsStartYear", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[1]/div[4]/div", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[1]/div[5]/div", "http://dbpedia.org/ontology/genre", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[1]/div[3]/div", "http://dbpedia.org/ontology/birthDate", "http://www.allmusic.com/artist/"));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div/div[3]/div[1]/section[1]/div[6]/div", "http://aksw.org/aliases", "http://www.allmusic.com/artist/"));
 
 		// ======================== Espnn.com subdomain team
 
@@ -69,6 +79,7 @@ public class PropertyXPathSupplierAKSW {
 
 	}
 
+	@Override
 	public ArrayList<RexPropertiesWithGoldstandard> getPropertiesToCheck() {
 		return propertiesToCheck;
 	}
@@ -76,4 +87,5 @@ public class PropertyXPathSupplierAKSW {
 	public void setPropertiesToCheck(ArrayList<RexPropertiesWithGoldstandard> propertiesToCheck) {
 		this.propertiesToCheck = propertiesToCheck;
 	}
+
 }
