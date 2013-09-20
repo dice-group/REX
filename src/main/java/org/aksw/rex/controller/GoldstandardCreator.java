@@ -24,7 +24,7 @@ public class GoldstandardCreator {
 	static Logger log = LoggerFactory.getLogger(GoldstandardCreator.class);
 
 	public static void main(String args[]) throws XPathExpressionException, DOMException, IOException {
-		PropertySupplier ps = new PropertySupplier();
+		PropertyXPathSupplierAlfred ps = new PropertyXPathSupplierAlfred();
 		CrawlIndex index = new CrawlIndex("htmlIndex/");
 		URIGeneratorImpl gen = new URIGeneratorImpl();
 		// for (int j = 0; j < index.size(); ++j) {

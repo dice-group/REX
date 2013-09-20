@@ -87,7 +87,7 @@ public class RexController {
 	}
 
 	public static void main2(String[] args) throws Exception {
-		PropertySupplier ps = new PropertySupplier();
+		PropertyXPathSupplierAlfred ps = new PropertyXPathSupplierAlfred();
 
 		for (RexPropertiesWithGoldstandard p : ps.getPropertiesToCheck()) {
 			String propertyURL = p.getPropertyURL();
