@@ -73,13 +73,21 @@ public class URLCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		String href = url.getURL().toLowerCase();
-		// if (href.startsWith("http://www.imdb.com/title"))
-		// return true;
-		// if (href.startsWith("http://www.imdb.com/name"))
-		// return true;
-		// return false;
-		if (href.startsWith("http://www.imdb.com/"))
+//		if (href.startsWith("http://www.imdb.com/title"))
+//			return true;
+//		if (href.startsWith("http://www.imdb.com/name"))
+//			return true;
+		if (href.equals("http://espnfc.com/"))
 			return true;
-		return !FILTERS.matcher(href).matches();
+		if (href.startsWith("http://espnfc.com/team/"))
+			return true;
+		if (href.startsWith("http://espnfc.com/player/"))
+			return true;
+//		if (href.startsWith("http://www.allmusic.com/artist/"))
+//			return true;
+//		if (href.startsWith("http://www.allmusic.com/album"))
+//			return true;
+//		return !FILTERS.matcher(href).matches();
+		return false;
 	}
 }
