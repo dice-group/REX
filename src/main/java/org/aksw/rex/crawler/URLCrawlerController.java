@@ -17,9 +17,9 @@ public class URLCrawlerController {
 	private CrawlIndex index;
 
 	public static void main(String[] args) throws Exception {
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdbIndex");
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdbIndex");
 //		URLCrawlerController crawlControl = new URLCrawlerController("crawlAllMusic", "allmusicIndex");
-		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
 		System.out.println("Now adding Seeds.");
 		crawlControl.addSeed("http://imdb.com/");
 //		crawlControl.addSeed("http://www.imdb.com/");
@@ -35,10 +35,10 @@ public class URLCrawlerController {
 		numberOfCrawlers = 10;
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
-//		int maxPagesToFetch = 10000;
+		int maxPagesToFetch = 10000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 200000;
+//		int maxPagesToFetch = 200000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
