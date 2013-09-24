@@ -108,10 +108,10 @@ public class CrawlIndex {
 			log.debug("\tRetrieving documents from index...");
 
 			BooleanQuery bq = new BooleanQuery();
-			TokenStream stream = analyzer.tokenStream(FIELD_NAME_CONTENT, new StringReader(queryString));
+			TokenStream stream = analyzer.tokenStream(FIELD_NAME_HTML, new StringReader(queryString));
 			stream.reset();
 			while (stream.incrementToken()) {
-				TermQuery tq = new TermQuery(new Term(FIELD_NAME_CONTENT, stream.getAttribute(CharTermAttribute.class).toString()));
+				TermQuery tq = new TermQuery(new Term(FIELD_NAME_HTML, stream.getAttribute(CharTermAttribute.class).toString()));
 				bq.add(tq, BooleanClause.Occur.MUST);
 			}
 
@@ -124,6 +124,8 @@ public class CrawlIndex {
 			}
 			log.debug("\t...got " + sites.size() + " documents.");
 		} catch (IOException e) {
+			System.out.println(queryString);
+			e.printStackTrace();
 			log.error("COULD NOT SEARCH INDEX");
 		} catch (Exception e) {
 			e.printStackTrace();
