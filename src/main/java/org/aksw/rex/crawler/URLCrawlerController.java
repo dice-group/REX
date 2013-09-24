@@ -17,21 +17,28 @@ public class URLCrawlerController {
 	private CrawlIndex index;
 
 	public static void main(String[] args) throws Exception {
-		URLCrawlerController crawlControl = new URLCrawlerController("crawl");
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdbIndex");
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlAllMusic", "allmusicIndex");
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
 		System.out.println("Now adding Seeds.");
 		crawlControl.addSeed("http://imdb.com/");
+//		crawlControl.addSeed("http://www.imdb.com/");
+//		crawlControl.addSeed("http://www.allmusic.com/artist/jack-johnson-mn0000120010");
+//		crawlControl.addSeed("http://espnfc.com/");
+//		crawlControl.addSeed("http://espnfc.com/tables/_/league/uefa.champions/uefa-champions-league?cc=5739");
 		System.out.println("Seeds have been added. Crawler will be started.");
 		crawlControl.startCrawler();
 		System.out.println("Crawler finished.");
 	}
 
-	public URLCrawlerController(String crawlStorageFolder) throws Exception {
+	public URLCrawlerController(String crawlStorageFolder, String idxDirectory) throws Exception {
 		numberOfCrawlers = 10;
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
-		int maxPagesToFetch = 10000;
+//		int maxPagesToFetch = 10000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
+		int maxPagesToFetch = 200000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
@@ -49,7 +56,6 @@ public class URLCrawlerController {
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-		String idxDirectory = "imdb-name-index/";
 		index = new CrawlIndex(idxDirectory);
 		this.controller.setCustomData(index);
 	}

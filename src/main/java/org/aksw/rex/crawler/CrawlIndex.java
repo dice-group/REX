@@ -43,8 +43,10 @@ public class CrawlIndex {
 	private IndexSearcher isearcher;
 	private DirectoryReader ireader;
 	private IndexWriter iwriter;
+	private String name;
 
 	public CrawlIndex(String file) {
+		this.name = file;
 		log.info("Building CrawlIndex!");
 		try {
 			analyzer = new StandardAnalyzer(Version.LUCENE_43);
@@ -168,6 +170,7 @@ public class CrawlIndex {
 			sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 			log.debug("\t finished asking index...");
 		} catch (IOException e) {
+			e.printStackTrace();
 			log.error("COULD NOT SEARCH INDEX");
 		} catch (Exception e) {
 			log.error("Could not find document: " + i);
@@ -201,5 +204,17 @@ public class CrawlIndex {
 		} catch (IOException e) {
 			log.error(e.getLocalizedMessage());
 		}
+	}
+
+	public int size() throws IOException {
+		if (ireader == null) {
+			ireader = DirectoryReader.open(directory);
+			isearcher = new IndexSearcher(ireader);
+		}
+		return ireader.numDocs();
+	}
+
+	public String getName() {
+		return name;
 	}
 }

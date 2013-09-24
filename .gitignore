@@ -16,5 +16,7 @@ index/*
 /target
 
 # HTML CRAWLER INDEX #
-htmlindex/*
+htmlIndex/*
 crawl/*
+espnfcIndex/
+imdbIndex/

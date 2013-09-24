@@ -6,8 +6,6 @@ package org.aksw.rex.controller;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.aksw.rex.consistency.ConsistencyChecker;
@@ -21,21 +19,20 @@ import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.uris.URIGeneratorImpl;
 import org.aksw.rex.util.Pair;
-import org.aksw.rex.xpath.XPathExtractionRule;
 import org.aksw.rex.xpath.XPathExtractor;
 import org.aksw.rex.xpath.XPathLearner;
 import org.aksw.rex.xpath.XPathLearnerImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.utilities.MapUtils;
 
-import com.google.common.collect.Lists;
+import rules.xpath.XPathRule;
+
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
- *
+ * 
  * @author ngonga
  */
 public class RexController {
@@ -76,18 +73,14 @@ public class RexController {
         URL domain = di.getDomain(property, posExamples, negExamples, false);
         
         //XPath expression generation
-        Map<XPathExtractionRule, Double> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
+        List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
         
-        //get the top N XPath rules only
-        List<XPathExtractionRule> topNExtractionRules = Lists.newArrayList();
-        List<Entry<XPathExtractionRule, Double>> extractionRulesSortedByValues = MapUtils.sortByValues(extractionRules);
-        for (Entry<XPathExtractionRule, Double> ruleWithScore : extractionRulesSortedByValues.subList(0, Math.min(topNRules, extractionRulesSortedByValues.size()))) {
-			topNExtractionRules.add(ruleWithScore.getKey());
-		}
-        System.out.println("Top rules:\n" + topNExtractionRules);
+        //currently, we assume that the best rule is the first one in the list, thus we
+        extractionRules = extractionRules.subList(0, 1);
+        System.out.println("Top rule:\n" + extractionRules);
         
         //extract results from the corpus
-        Set<ExtractionResult> results = xpath.getExtractionResults(topNExtractionRules, domain);
+        Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
         
         //triple generation
         Set<Triple> triples = uriGenerator.getTriples(results, property);
@@ -128,6 +121,39 @@ public class RexController {
 		
 		for (Triple triple : triples) {
 			System.out.println(triple);
+		}
+    }
+
+	public static void main2(String[] args) throws Exception {
+		PropertyXPathSupplierAlfred ps = new PropertyXPathSupplierAlfred();
+
+		for (RexPropertiesWithGoldstandard p : ps.getPropertiesToCheck()) {
+			String propertyURL = p.getPropertyURL();
+			URL domainURL = new URL(p.getExtractionDomainURL());
+			Property property = ResourceFactory.createProperty(propertyURL);
+			SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+			ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
+			exampleGenerator.setEndpoint(endpoint);
+			exampleGenerator.setPredicate(property);
+			
+			DomainIdentifier domainIdentifier = new ManualDomainIdentifier(domainURL);
+			
+			CrawlIndex crawlIndex = new CrawlIndex("imdb-index/");
+	    	XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
+	    	
+	    	XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
+	    	xPathLearner.setUseExactMatch(false);
+	    	
+	    	URIGenerator uriGenerator = new URIGeneratorImpl();
+	    	
+			new RexController(
+					property, 
+					exampleGenerator, 
+					domainIdentifier,
+					xPathLearner,
+					uriGenerator,
+					new ConsistencyCheckerImpl(),
+					endpoint).run();
 		}
 	}
 }

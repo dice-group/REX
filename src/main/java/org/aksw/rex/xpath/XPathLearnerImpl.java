@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import rules.xpath.XPathRule;
 
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -59,11 +60,11 @@ public class XPathLearnerImpl implements XPathLearner{
 	 * @see org.aksw.rex.xpath.XPathLearner#getXPathExpressions(java.util.Set, java.util.Set, java.net.URL)
 	 */
 	@Override
-	public Map<XPathExtractionRule, Double> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples,
+	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples,
 			Set<Pair<Resource, Resource>> negExamples, URL domain) {
 		
 		//generate XPath extraction rules for each positive example
-		List<XPathExtractionRule> extractionRules = Lists.newArrayList();
+		List<Pair<XPathRule, XPathRule>> extractionRules = Lists.newArrayList();
 		for (Pair<Resource,Resource> pair : posExamples) {
 			Resource subject = pair.getLeft();
 			Resource object = pair.getRight();
@@ -75,7 +76,7 @@ public class XPathLearnerImpl implements XPathLearner{
 				for (String obj : objectSurfaceForms) {
 					try {
 						log.debug("Generating XPath extraction rules for '" + sub + "' and '" + obj + "'...");
-						List<XPathExtractionRule> extractionRulesTmp = xPathExtractor.extractPathsFromCrawlIndex(sub, obj, domain.toString(), useExactMatch);
+						List<Pair<XPathRule, XPathRule>> extractionRulesTmp = xPathExtractor.extractPathsFromCrawlIndex(sub, obj, domain.toString(), useExactMatch);
 						log.debug("...got " + extractionRulesTmp.size() + " XPath extraction rules.");
 						extractionRules.addAll(extractionRulesTmp);
 					} catch (FileNotFoundException e) {
@@ -94,7 +95,7 @@ public class XPathLearnerImpl implements XPathLearner{
 		}
 		
 		//generate generalized extraction rules
-		Map<XPathExtractionRule, Double> generalizedExtractionRules = XPathGeneralizer.generateXPathExtractionRules(extractionRules);
+		List<Pair<XPathRule, XPathRule>> generalizedExtractionRules = XPathGeneralizer.generateXPathExtractionRules(extractionRules);
 		
 		return generalizedExtractionRules;
 	}
@@ -103,7 +104,7 @@ public class XPathLearnerImpl implements XPathLearner{
 	 * @see org.aksw.rex.xpath.XPathLearner#getExtractionResults(java.util.List)
 	 */
 	@Override
-	public Set<ExtractionResult> getExtractionResults(List<XPathExtractionRule> extractionRules, URL domain) {
+	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> extractionRules, URL domain) {
 		Set<ExtractionResult> extractionResults = new HashSet<ExtractionResult>();
 		
 		//get documents of domain
@@ -117,9 +118,9 @@ public class XPathLearnerImpl implements XPathLearner{
 				Document doc = Jsoup.parse(html);
 //				log.debug("Trying URL " + url);
 
-				for (XPathExtractionRule rule : extractionRules) {
-					String subjectXPath = rule.getSubjectXPathExpression();
-					String objectXPath = rule.getObjectXPathExpression();
+				for (Pair<XPathRule, XPathRule> rule : extractionRules) {
+					String subjectXPath = rule.getLeft().toString();
+					String objectXPath = rule.getRight().toString();
 
 					Set<String> subjects = new HashSet<String>();
 					Set<String> objects = new HashSet<String>();

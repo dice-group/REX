@@ -25,6 +25,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import rules.xpath.XPathRule;
+
 public class XPathExtractor {
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(XPathExtractor.class);
 
@@ -38,20 +40,20 @@ public class XPathExtractor {
 		index = crawlIndex;
 	}
 	
-	public List<XPathExtractionRule> extractPathsFromCrawlIndex(String subject, String object, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		return extractPathsFromCrawlIndex(subject, object, null);
 	}
 
-	public List<XPathExtractionRule> extractPathsFromCrawlIndex(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		return extractPathsFromCrawlIndex(subject, object, null);
 	}
 	
-	public List<XPathExtractionRule> extractPathsFromCrawlIndex(String subject, String object, String domainURL) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, String domainURL) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		return extractPathsFromCrawlIndex(subject, object, domainURL, true);
 	}
 	
-	public List<XPathExtractionRule> extractPathsFromCrawlIndex(String subject, String object, String domainURL, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
-		List<XPathExtractionRule> paths = new ArrayList<XPathExtractionRule>();
+	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, String domainURL, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		List<Pair<XPathRule, XPathRule>> paths = new ArrayList<Pair<XPathRule, XPathRule>>();
 		// search for all pages containing subject and object
 		ArrayList<Pair<String, String>> docs = index.searchHTML(subject + " AND " + object);
 		int d = 0;
@@ -72,27 +74,26 @@ public class XPathExtractor {
 						for (String objectXPath : objectXPaths) {
 							log.trace("For subject: " + subjectXPath);
 							log.trace("For object: " + objectXPath);
-							paths.add(new XPathExtractionRule(subjectXPath, objectXPath));
+							paths.add(new Pair<XPathRule, XPathRule>(new XPathRule(subjectXPath), new XPathRule(objectXPath)));
 						}
 					}
 				} catch (Exception e) {
-					log.debug("Could not process URL: " + url);
+					log.error("Could not process URL: " + url);
 				}
 			}
 		}
-
 		return paths;
 	}
 	
-	public Map<String, List<XPathExtractionRule>> extractPathsFromCrawlIndexWithURL(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
-		Map<String, List<XPathExtractionRule>> url2XpathPairs = new HashMap<String, List<XPathExtractionRule>>();
+	public Map<String, List<Pair<XPathRule, XPathRule>>> extractPathsFromCrawlIndexWithURL(String subject, String object) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
+		Map<String, List<Pair<XPathRule, XPathRule>>> url2XpathPairs = new HashMap<String, List<Pair<XPathRule, XPathRule>>>();
 		
 		// search for all pages containing subject and object
 		List<Pair<String, String>> docs = index.searchHTML(subject + " AND " + object);
 		int d = 0;
 		log.debug("Start working on HTML to extract XPATHs");
 		for (Pair<String, String> document : docs) {
-			List<XPathExtractionRule> paths = new ArrayList<XPathExtractionRule>();
+			List<Pair<XPathRule, XPathRule>> paths = new ArrayList<Pair<XPathRule, XPathRule>>();
 			log.debug("Progress: " + ((double) d++ / (double) docs.size()));
 			// search for all xpath containing this string in the content
 			String url = document.getLeft();
@@ -105,7 +106,7 @@ public class XPathExtractor {
 					for (String objectXPath : objectXPaths) {
 						log.debug("Subject: " + subjectXPath);
 						log.debug("Object: " + objectXPath);
-						paths.add(new XPathExtractionRule(subjectXPath, objectXPath));
+						paths.add(new Pair<XPathRule, XPathRule>(new XPathRule(subjectXPath), new XPathRule(objectXPath)));
 					}
 				}
 				url2XpathPairs.put(url, paths);
@@ -176,8 +177,8 @@ public class XPathExtractor {
 	
 	public static void main(String args[]) throws FileNotFoundException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		XPathExtractor xpathExtractor = new XPathExtractor();
-		List<XPathExtractionRule> paths = xpathExtractor.extractPathsFromCrawlIndex("Tom Cruise", "Mission Impossible");
-		for (XPathExtractionRule path : paths) {
+		List<Pair<XPathRule, XPathRule>> paths = xpathExtractor.extractPathsFromCrawlIndex("Tom Cruise", "Mission Impossible");
+		for (Pair<XPathRule, XPathRule> path : paths) {
 			log.debug(path.toString());
 		}
 	}
