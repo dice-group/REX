@@ -14,7 +14,6 @@ import org.aksw.rex.consistency.ConsistencyChecker;
 import org.aksw.rex.consistency.ConsistencyCheckerImpl;
 import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.domainidentifier.DomainIdentifier;
-import org.aksw.rex.domainidentifier.GoogleDomainIdentifier;
 import org.aksw.rex.domainidentifier.ManualDomainIdentifier;
 import org.aksw.rex.examplegenerator.ExampleGenerator;
 import org.aksw.rex.examplegenerator.SimpleExampleGenerator;
@@ -48,6 +47,7 @@ public class RexController {
     URIGenerator uriGenerator;
     ConsistencyChecker consistency;
     SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+    int topNRules = 1;
     
     public RexController(Property p, ExampleGenerator e, DomainIdentifier d, 
             XPathLearner l, URIGenerator uriGenerator, ConsistencyChecker c, SparqlEndpoint s)
@@ -79,12 +79,12 @@ public class RexController {
         Map<XPathExtractionRule, Double> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
         
         //get the top N XPath rules only
-        int n = 1;
         List<XPathExtractionRule> topNExtractionRules = Lists.newArrayList();
         List<Entry<XPathExtractionRule, Double>> extractionRulesSortedByValues = MapUtils.sortByValues(extractionRules);
-        for (Entry<XPathExtractionRule, Double> ruleWithScore : extractionRulesSortedByValues.subList(0, Math.min(n, extractionRulesSortedByValues.size()))) {
+        for (Entry<XPathExtractionRule, Double> ruleWithScore : extractionRulesSortedByValues.subList(0, Math.min(topNRules, extractionRulesSortedByValues.size()))) {
 			topNExtractionRules.add(ruleWithScore.getKey());
 		}
+        System.out.println("Top rules:\n" + topNExtractionRules);
         
         //extract results from the corpus
         Set<ExtractionResult> results = xpath.getExtractionResults(topNExtractionRules, domain);

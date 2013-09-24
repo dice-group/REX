@@ -48,9 +48,11 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
-		CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
-		index.addDocumentToIndex(url, content);
-		log.debug("\tAdded document: " + url);
+		if(url.startsWith("http://www.imdb.com/name")){
+			CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
+			index.addDocumentToIndex(url, content);
+			log.debug("\tAdded document: " + url);
+		}
 	}
 
 	public void writeFile(String filename, String content) {
@@ -83,7 +85,9 @@ public class URLCrawler extends WebCrawler {
 //		return !FILTERS.matcher(href).matches();
 //		return (href.startsWith("http://www.allmusic.com/") && !FILTERS.matcher(href).matches());
 //		return (href.startsWith("http://espn.go.com/") && !FILTERS.matcher(href).matches());
-		return (href.contains("espn") && !href.contains("blog") && !FILTERS.matcher(href).matches());
-//		return (href.startsWith("http://www.imdb.com/") && !FILTERS.matcher(href).matches());
+//		return (href.contains("espn") && !href.contains("blog") && !FILTERS.matcher(href).matches());
+		return (href.startsWith("http://www.imdb.com/") && !FILTERS.matcher(href).matches());
+//		return (href.startsWith("http://www.imdb.com/name") && !FILTERS.matcher(href).matches()); DOES NOT WORK
+//		return (href.startsWith("http://www.imdb.com/title") && !FILTERS.matcher(href).matches()); DOES NOT WORK
 	}
 }

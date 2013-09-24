@@ -37,6 +37,7 @@ public class CrawlIndex {
 	public static final String TSV = "TSV";
 	private String FIELD_NAME_URL = "url";
 	private String FIELD_NAME_HTML = "html";
+	private String FIELD_NAME_CONTENT = "content";
 	private Directory directory;
 	private Analyzer analyzer;
 	private IndexSearcher isearcher;
@@ -46,17 +47,17 @@ public class CrawlIndex {
 	public CrawlIndex(String file) {
 		log.info("Building CrawlIndex!");
 		try {
-			analyzer = new StandardAnalyzer(Version.LUCENE_40);
+			analyzer = new StandardAnalyzer(Version.LUCENE_43);
 			File indexDirectory = new File(file);
 
 			if (indexDirectory.exists() && indexDirectory.isDirectory() && indexDirectory.listFiles().length > 0) {
 				directory = new MMapDirectory(indexDirectory);
-				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			} else {
 				indexDirectory.mkdir();
 				directory = new MMapDirectory(indexDirectory);
-				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			}
 
@@ -105,10 +106,10 @@ public class CrawlIndex {
 			log.debug("\tRetrieving documents from index...");
 
 			BooleanQuery bq = new BooleanQuery();
-			TokenStream stream = analyzer.tokenStream(FIELD_NAME_HTML, new StringReader(queryString));
+			TokenStream stream = analyzer.tokenStream(FIELD_NAME_CONTENT, new StringReader(queryString));
 			stream.reset();
 			while (stream.incrementToken()) {
-				TermQuery tq = new TermQuery(new Term(FIELD_NAME_HTML, stream.getAttribute(CharTermAttribute.class).toString()));
+				TermQuery tq = new TermQuery(new Term(FIELD_NAME_CONTENT, stream.getAttribute(CharTermAttribute.class).toString()));
 				bq.add(tq, BooleanClause.Occur.MUST);
 			}
 
@@ -178,6 +179,12 @@ public class CrawlIndex {
 		Document doc = new Document();
 		doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
 		doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
+		try{
+			doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
+		} catch (Exception e){
+			doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
+		}
+		
 		try {
 			iwriter.addDocument(doc);
 		} catch (IOException e) {

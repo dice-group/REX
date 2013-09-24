@@ -19,7 +19,7 @@ public class URLCrawlerController {
 	public static void main(String[] args) throws Exception {
 		URLCrawlerController crawlControl = new URLCrawlerController("crawl");
 		System.out.println("Now adding Seeds.");
-		crawlControl.addSeed("http://espn.go.com/");
+		crawlControl.addSeed("http://imdb.com/");
 		System.out.println("Seeds have been added. Crawler will be started.");
 		crawlControl.startCrawler();
 		System.out.println("Crawler finished.");
@@ -39,6 +39,7 @@ public class URLCrawlerController {
 		config.setMaxPagesToFetch(maxPagesToFetch);
 		config.setIncludeBinaryContentInCrawling(false);
 		config.setUserAgentString(userAgentName);
+		config.setResumableCrawling(true);
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
@@ -48,7 +49,7 @@ public class URLCrawlerController {
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-		String idxDirectory = "espn-index/";
+		String idxDirectory = "imdb-name-index/";
 		index = new CrawlIndex(idxDirectory);
 		this.controller.setCustomData(index);
 	}
