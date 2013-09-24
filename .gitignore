@@ -20,3 +20,6 @@ htmlIndex/*
 crawl/*
 espnfcIndex/
 imdbIndex/
+DBpedia_top10instances.txt
+cache/
+htmlindex/

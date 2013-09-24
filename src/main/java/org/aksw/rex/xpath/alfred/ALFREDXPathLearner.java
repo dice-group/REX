@@ -30,7 +30,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 	private static CrawlIndex index;
 
 	public ALFREDXPathLearner() {
-		index = new CrawlIndex("htmlindex/");
+		index = new CrawlIndex("imdbIndex/");
 	}
 
 	@Override

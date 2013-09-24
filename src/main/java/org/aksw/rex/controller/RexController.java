@@ -20,6 +20,7 @@ import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.XPathLearner;
+import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import rules.xpath.XPathRule;
@@ -65,8 +66,8 @@ public class RexController {
 		URL domain = null;
 		if (d == null) {
 			domain = di.getDomain(property, posExamples, negExamples, false);
-		}else{
-			domain =d;
+		} else {
+			domain = d;
 		}
 		System.out.println("Domain: " + domain);
 
@@ -78,12 +79,16 @@ public class RexController {
 	}
 
 	public static void main(String[] args) throws Exception {
+		URL domainURL = new URL("http://www.imdb.com");
 		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
 		exampleGenerator.setEndpoint(endpoint);
 		exampleGenerator.setPredicate(property);
-		new RexController(property, exampleGenerator, new GoogleDomainIdentifier(), null, new ConsistencyCheckerImpl(), endpoint).run(null);
+		Set<Triple> triples = new RexController(property, exampleGenerator, new GoogleDomainIdentifier(), new ALFREDXPathLearner(), new ConsistencyCheckerImpl(), endpoint).run(domainURL);
+		for (Triple t : triples) {
+			System.out.println(triples);
+		}
 	}
 
 	public static void main2(String[] args) throws Exception {
