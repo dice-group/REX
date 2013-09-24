@@ -48,8 +48,8 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 	private SparqlEndpoint endpoint;
 	private SPARQLReasoner reasoner;
 	private Property property;
-	private int maxNrOfPositiveExamples = 10;
-	private int maxNrOfNegativeExamples = 10;
+	private int maxNrOfPositiveExamples = 1000;
+	private int maxNrOfNegativeExamples = 1000;
 	
 	private QueryExecutionFactory qef;
 	private String cacheDirectory = "cache/sparql";
