@@ -35,10 +35,10 @@ public class URLCrawlerController {
 		numberOfCrawlers = 10;
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
-//		int maxPagesToFetch = 10000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
 		int maxPagesToFetch = 100000;
+//		int maxPagesToFetch = 200000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);

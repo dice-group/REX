@@ -48,7 +48,12 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
-		if(url.startsWith("http://www.imdb.com/title")){
+		if (url.startsWith("http://www.imdb.com/name")) {
+			CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
+			index.addDocumentToIndex(url, content);
+			log.debug("\tAdded document: " + url);
+		}
+		if (url.startsWith("http://www.imdb.com/title")) {
 			CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
 			index.addDocumentToIndex(url, content);
 			log.debug("\tAdded document: " + url);
@@ -75,30 +80,36 @@ public class URLCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		String href = url.getURL().toLowerCase();
-		// if (href.startsWith("http://www.imdb.com/title"))
+		if (href.startsWith("http://www.imdb.com/title"))
+			return true;
+		if (href.startsWith("http://www.imdb.com/name"))
+			return true;
+		if (href.equals("http://www.imdb.com/"))
+			return true;
+		return false;
+		// return !FILTERS.matcher(href).matches();
+		// return (href.startsWith("http://www.allmusic.com/") &&
+		// !FILTERS.matcher(href).matches());
+		// return (href.startsWith("http://espn.go.com/") &&
+		// !FILTERS.matcher(href).matches());
+		// return (href.contains("espn") && !href.contains("blog") &&
+		// !FILTERS.matcher(href).matches());
+		// return (href.startsWith("http://www.imdb.com/name") &&
+		// !FILTERS.matcher(href).matches());
+		// return (href.startsWith("http://www.imdb.com/name") &&
+		// !FILTERS.matcher(href).matches()); DOES NOT WORK
+		// return (href.startsWith("http://www.imdb.com/title") &&
+		// !FILTERS.matcher(href).matches()); DOES NOT WORK
+		// if (href.equals("http://espnfc.com/"))
 		// return true;
-		// if (href.startsWith("http://www.imdb.com/name"))
+		// if (href.startsWith("http://espnfc.com/team/"))
 		// return true;
-		// return false;
-//		if (href.startsWith("http://www.imdb.com/"))
-//			return true;
-//		return !FILTERS.matcher(href).matches();
-//		return (href.startsWith("http://www.allmusic.com/") && !FILTERS.matcher(href).matches());
-//		return (href.startsWith("http://espn.go.com/") && !FILTERS.matcher(href).matches());
-//		return (href.contains("espn") && !href.contains("blog") && !FILTERS.matcher(href).matches());
-		return (href.startsWith("http://www.imdb.com/") && !FILTERS.matcher(href).matches());
-//		return (href.startsWith("http://www.imdb.com/name") && !FILTERS.matcher(href).matches()); DOES NOT WORK
-//		return (href.startsWith("http://www.imdb.com/title") && !FILTERS.matcher(href).matches()); DOES NOT WORK
-//		if (href.equals("http://espnfc.com/"))
-//			return true;
-//		if (href.startsWith("http://espnfc.com/team/"))
-//			return true;
-//		if (href.startsWith("http://espnfc.com/player/"))
-//			return true;
-//		if (href.startsWith("http://www.allmusic.com/artist/"))
-//			return true;
-//		if (href.startsWith("http://www.allmusic.com/album"))
-//			return true;
-//		return !FILTERS.matcher(href).matches();
+		// if (href.startsWith("http://espnfc.com/player/"))
+		// return true;
+		// if (href.startsWith("http://www.allmusic.com/artist/"))
+		// return true;
+		// if (href.startsWith("http://www.allmusic.com/album"))
+		// return true;
+		// return !FILTERS.matcher(href).matches();
 	}
 }
