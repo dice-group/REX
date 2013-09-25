@@ -42,7 +42,8 @@ public class XPathLearnerImpl implements XPathLearner{
 	private org.slf4j.Logger log = LoggerFactory.getLogger(XPathLearnerImpl.class);
 	
 	private XPathExtractor xPathExtractor;
-
+	private SurfaceFormGenerator surfaceFormGenerator;
+	
 	private XPath xpath;
 
 	private SparqlEndpoint endpoint;
@@ -54,6 +55,8 @@ public class XPathLearnerImpl implements XPathLearner{
 		
 		XPathFactory factory = XPathFactory.newInstance();
 		xpath = factory.newXPath();
+		
+		surfaceFormGenerator = new SurfaceFormGenerator(endpoint, "sparql-cache");
 	}
 
 	/* (non-Javadoc)
@@ -69,8 +72,8 @@ public class XPathLearnerImpl implements XPathLearner{
 			Resource subject = pair.getLeft();
 			Resource object = pair.getRight();
 			//get the surface forms
-			Set<String> subjectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, subject.getURI());
-			Set<String> objectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, object.getURI());
+			Set<String> subjectSurfaceForms = surfaceFormGenerator.getSurfaceForms(endpoint, subject.getURI());
+			Set<String> objectSurfaceForms = surfaceFormGenerator.getSurfaceForms(endpoint, object.getURI());
 			
 			for (String sub : subjectSurfaceForms) {
 				for (String obj : objectSurfaceForms) {

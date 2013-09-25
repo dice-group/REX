@@ -109,6 +109,8 @@ public class XPathGeneralizerTest {
 		ResultSet rs = qef.createQueryExecution(query).execSelect();
 		QuerySolution qs;
 		
+		SurfaceFormGenerator surfaceFormGenerator = new SurfaceFormGenerator(endpoint, "sparql-cache");
+		
 		//Extract pairs of XPath expressions
 		List<Pair<XPathRule, XPathRule>> extractionRules = Lists.newArrayList();
 		while(rs.hasNext()){
@@ -116,8 +118,8 @@ public class XPathGeneralizerTest {
 			Resource subject = qs.getResource("s");
 			Resource object = qs.getResource("o");
 			//get the surface forms
-			Set<String> subjectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, subject.getURI());
-			Set<String> objectSurfaceForms = SurfaceFormGenerator.getSurfaceForms(endpoint, object.getURI());
+			Set<String> subjectSurfaceForms = surfaceFormGenerator.getSurfaceForms(endpoint, subject.getURI());
+			Set<String> objectSurfaceForms = surfaceFormGenerator.getSurfaceForms(endpoint, object.getURI());
 			
 			for (String sub : subjectSurfaceForms) {
 				if(sub.contains("(")){

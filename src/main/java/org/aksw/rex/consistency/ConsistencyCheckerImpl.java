@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -22,11 +23,12 @@ import com.hp.hpl.jena.graph.Triple;
  */
 public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	
-	private double accuracyThreshold = 0.6; 
+	private double accuracyThreshold = 0.6;
+	private SparqlEndpoint endpoint; 
+	private SPARQLReasoner reasoner;
 	
-	
-	public ConsistencyCheckerImpl() {
-		
+	public ConsistencyCheckerImpl(SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
 	}
 
 	/* (non-Javadoc)
@@ -34,6 +36,20 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	 */
 	@Override
 	public Set<Triple> getConsistentTriples(Set<Triple> triples, Set<Axiom> axioms) {
+		
+		Individual subject;
+		Individual object;
+		for (Triple triple : triples) {
+			subject = new Individual(triple.getSubject().getURI());
+			object = new Individual(triple.getObject().getURI());
+			
+			//get the types of the subject
+			Set<NamedClass> subjectTypes = reasoner.getTypes(subject);
+			//get the types of the object
+			Set<NamedClass> objectTypes = reasoner.getTypes(object);
+			
+			
+		}
 		return null;
 	}
 

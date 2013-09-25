@@ -17,9 +17,9 @@ public class URLCrawlerController {
 	private CrawlIndex index;
 
 	public static void main(String[] args) throws Exception {
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdbIndex");
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdb-title-index");
 //		URLCrawlerController crawlControl = new URLCrawlerController("crawlAllMusic", "allmusicIndex");
-		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
 		System.out.println("Now adding Seeds.");
 		crawlControl.addSeed("http://imdb.com/");
 //		crawlControl.addSeed("http://www.imdb.com/");
@@ -38,7 +38,7 @@ public class URLCrawlerController {
 //		int maxPagesToFetch = 10000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 200000;
+		int maxPagesToFetch = 100000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
@@ -51,6 +51,7 @@ public class URLCrawlerController {
 		 * Instantiate the controller for this crawl.
 		 */
 		PageFetcher pageFetcher = new PageFetcher(config);
+		pageFetcher.getHttpClient().getParams().setParameter("Accept-Language", "en");
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		robotstxtConfig.setUserAgentName(userAgentName);
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);

@@ -110,10 +110,11 @@ public class RexController {
     	
     	DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
     	
-    	CrawlIndex crawlIndex = new CrawlIndex("imdbIndex/");
+    	CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
     	XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
     	
-    	XPathLearner xPathLearner = new ALFREDXPathLearner();
+//    	XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
+    	XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
     	xPathLearner.setUseExactMatch(false);
     	
     	URIGenerator uriGenerator = new URIGeneratorImpl();
@@ -124,7 +125,7 @@ public class RexController {
 				domainIdentifier,
 				xPathLearner,
 				uriGenerator,
-				new ConsistencyCheckerImpl(),
+				new ConsistencyCheckerImpl(endpoint),
 				endpoint).run();
 		
 		for (Triple triple : triples) {
@@ -161,7 +162,7 @@ public class RexController {
 					domainIdentifier,
 					xPathLearner,
 					uriGenerator,
-					new ConsistencyCheckerImpl(),
+					new ConsistencyCheckerImpl(endpoint),
 					endpoint).run();
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.junit.AfterClass;
@@ -26,7 +27,7 @@ public class ALFREDXPathLearnerTest {
 
 	@Before
 	public void init() {
-		this.learner = new ALFREDXPathLearner();
+		this.learner = new ALFREDXPathLearner(new CrawlIndex("imdb-title-index"));
 
 		posExamples = new HashSet<Pair<Resource, Resource>>();
 		Resource r1 = ResourceFactory.createResource("http://dbpedia.org/resource/Tom_Cruise");

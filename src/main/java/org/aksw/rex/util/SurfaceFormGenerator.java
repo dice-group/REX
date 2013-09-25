@@ -5,9 +5,16 @@ package org.aksw.rex.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -24,12 +31,28 @@ import com.hp.hpl.jena.query.ResultSet;
 public class SurfaceFormGenerator {
 
 	private static IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
+	private static QueryExecutionFactory qef;
 	
-	public static Set<String> getSurfaceForms(SparqlEndpoint endpoint, String uri){
+	public SurfaceFormGenerator(SparqlEndpoint endpoint, String cacheDirectory) {
+		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		if(cacheDirectory != null){
+			try {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public Set<String> getSurfaceForms(SparqlEndpoint endpoint, String uri){
 		Set<String> surfaceforms = new HashSet<String>();
 		
 		String query = "SELECT ?l WHERE {<" + uri + "> rdfs:label ?l. FILTER(LANGMATCHES(LANG(?l),'en'))}";
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		ResultSet rs = qef.createQueryExecution(query).execSelect();
 		while(rs.hasNext()){
 			surfaceforms.add(cleanUp(rs.next().getLiteral("l").getLexicalForm()));
@@ -51,7 +74,7 @@ public class SurfaceFormGenerator {
 	 * Remove content like (something)
 	 * @param s
 	 */
-	private static String cleanUp(String s){
+	private String cleanUp(String s){
 		if(s.contains("(")){
 			return s.substring(0, s.indexOf('(')).trim();
 		}

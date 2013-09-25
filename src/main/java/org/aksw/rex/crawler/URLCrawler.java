@@ -48,7 +48,7 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
-		if(url.startsWith("http://www.imdb.com/name")){
+		if(url.startsWith("http://www.imdb.com/title")){
 			CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
 			index.addDocumentToIndex(url, content);
 			log.debug("\tAdded document: " + url);

@@ -3,6 +3,8 @@
  */
 package org.aksw.rex.crawler;
 
+import java.net.URL;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
