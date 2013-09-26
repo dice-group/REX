@@ -62,6 +62,7 @@ public class URLCrawler extends WebCrawler {
 					log.debug("\tAdded document: " + url);
 				}
 			}
+
 		}
 	}
 

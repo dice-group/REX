@@ -184,11 +184,11 @@ public class CrawlIndex {
 		Document doc = new Document();
 		doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
 		doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
-//		try{
-//			doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
-//		} catch (Exception e){
+		try{
+			doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
+		} catch (Exception e){
 			doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
-//		}
+		}
 		
 		try {
 			iwriter.addDocument(doc);
