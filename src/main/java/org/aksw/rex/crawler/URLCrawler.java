@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.codec.DecoderException;
@@ -48,10 +51,17 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
-		if(url.startsWith("http://www.imdb.com/name")){
-			CrawlIndex index = (CrawlIndex) super.getMyController().getCustomData();
-			index.addDocumentToIndex(url, content);
-			log.debug("\tAdded document: " + url);
+		CrawlerConfig config = (CrawlerConfig) getMyController().getCustomData();
+		Map<CrawlIndex, Set<String>> index2URLs = config.getIndex2URLs();
+		
+		for (Entry<CrawlIndex, Set<String>> entry : index2URLs.entrySet()) {
+			CrawlIndex index = entry.getKey();
+			for (String urlPattern : entry.getValue()) {
+				if(url.matches(urlPattern)){
+					index.addDocumentToIndex(url, content);
+					log.debug("\tAdded document: " + url);
+				}
+			}
 		}
 	}
 
@@ -75,30 +85,7 @@ public class URLCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		String href = url.getURL().toLowerCase();
-		// if (href.startsWith("http://www.imdb.com/title"))
-		// return true;
-		// if (href.startsWith("http://www.imdb.com/name"))
-		// return true;
-		// return false;
-//		if (href.startsWith("http://www.imdb.com/"))
-//			return true;
-//		return !FILTERS.matcher(href).matches();
-//		return (href.startsWith("http://www.allmusic.com/") && !FILTERS.matcher(href).matches());
-//		return (href.startsWith("http://espn.go.com/") && !FILTERS.matcher(href).matches());
-//		return (href.contains("espn") && !href.contains("blog") && !FILTERS.matcher(href).matches());
-		return (href.startsWith("http://www.imdb.com/") && !FILTERS.matcher(href).matches());
-//		return (href.startsWith("http://www.imdb.com/name") && !FILTERS.matcher(href).matches()); DOES NOT WORK
-//		return (href.startsWith("http://www.imdb.com/title") && !FILTERS.matcher(href).matches()); DOES NOT WORK
-//		if (href.equals("http://espnfc.com/"))
-//			return true;
-//		if (href.startsWith("http://espnfc.com/team/"))
-//			return true;
-//		if (href.startsWith("http://espnfc.com/player/"))
-//			return true;
-//		if (href.startsWith("http://www.allmusic.com/artist/"))
-//			return true;
-//		if (href.startsWith("http://www.allmusic.com/album"))
-//			return true;
-//		return !FILTERS.matcher(href).matches();
+		String allowedURL = ((CrawlerConfig) getMyController().getCustomData()).getTopLevelDomain();
+		return !FILTERS.matcher(href).matches() && href.startsWith(allowedURL);
 	}
 }

@@ -1,7 +1,13 @@
 package org.aksw.rex.crawler;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -17,11 +23,14 @@ public class URLCrawlerController {
 	private CrawlIndex index;
 
 	public static void main(String[] args) throws Exception {
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", "imdbIndex");
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlAllMusic", "allmusicIndex");
-		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
+		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
+		index2URLs.put(new CrawlIndex("imdb-title-index"), Sets.newHashSet("http://www.imdb.com/title/tt([0-9])*/$"));
+		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
+		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
 		System.out.println("Now adding Seeds.");
-		crawlControl.addSeed("http://imdb.com/");
+		crawlControl.addSeed("http://www.imdb.com/");
 //		crawlControl.addSeed("http://www.imdb.com/");
 //		crawlControl.addSeed("http://www.allmusic.com/artist/jack-johnson-mn0000120010");
 //		crawlControl.addSeed("http://espnfc.com/");
@@ -31,14 +40,14 @@ public class URLCrawlerController {
 		System.out.println("Crawler finished.");
 	}
 
-	public URLCrawlerController(String crawlStorageFolder, String idxDirectory) throws Exception {
+	public URLCrawlerController(String crawlStorageFolder, CrawlerConfig crawlIndexConfig) throws Exception {
 		numberOfCrawlers = 10;
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
-//		int maxPagesToFetch = 10000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 200000;
+		int maxPagesToFetch = 5000;
+//		int maxPagesToFetch = 200000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
@@ -46,18 +55,18 @@ public class URLCrawlerController {
 		config.setMaxPagesToFetch(maxPagesToFetch);
 		config.setIncludeBinaryContentInCrawling(false);
 		config.setUserAgentString(userAgentName);
-		config.setResumableCrawling(true);
+//		config.setResumableCrawling(true);
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
 		PageFetcher pageFetcher = new PageFetcher(config);
+		pageFetcher.getHttpClient().getParams().setParameter("Accept-Language", "en");
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		robotstxtConfig.setUserAgentName(userAgentName);
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-		index = new CrawlIndex(idxDirectory);
-		this.controller.setCustomData(index);
+		this.controller.setCustomData(crawlIndexConfig);
 	}
 
 	public void startCrawler() {

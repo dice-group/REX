@@ -32,11 +32,11 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 public class ALFREDXPathLearner implements XPathLearner {
 
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ALFREDXPathLearner.class);
-	private static CrawlIndex index;
+	private CrawlIndex index;
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 
-	public ALFREDXPathLearner() {
-		index = new CrawlIndex("imdbIndex/");
+	public ALFREDXPathLearner(CrawlIndex index) {
+		this.index = index;
 	}
 
 	@Override
@@ -52,10 +52,11 @@ public class ALFREDXPathLearner implements XPathLearner {
 		Map<String, String> page2valueRight = new HashMap<String, String>();
 		
 		examples.set(0, new Pair<Resource, Resource>(
-				ResourceFactory.createResource("http://dbpedia.org/resource/Abraham_Lincoln:_Vampire_Hunter"),
-				ResourceFactory.createResource("http://dbpedia.org/resource/Brad_Furman")));
+				ResourceFactory.createResource("http://dbpedia.org/resource/Chef_Aid"),
+				ResourceFactory.createResource("http://dbpedia.org/resource/Trey_Parker")));
 
 		List<Page> pages = this.getPages(examples, page2valueLeft, page2valueRight);
+		System.out.println(pages.size());
 		
 		List<Page> pagesForFirstExample = getPages(examples.get(0));
 
@@ -130,8 +131,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 		log.debug("Looking for resources " + sfp.getShortForm(IRI.create(resources.getLeft().getURI())) + " - "
 				+ sfp.getShortForm(IRI.create(resources.getRight().getURI())));
 		return index.searchHTML(
-				"'" + sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ") + "' AND '"
-						+ sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ") + "'");
+				"\"" + sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ") + "\" AND \""
+						+ sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ") + "\"");
 	}
 
 	public CrawlIndex getIndex() {

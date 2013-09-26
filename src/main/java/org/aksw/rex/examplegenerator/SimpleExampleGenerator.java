@@ -128,8 +128,13 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 	
 	private Set<Pair<Resource, Resource>> getMostProminentPositiveExamples(){
 		Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource,Resource>>();
-		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "
-				+ "GROUP BY ?s ?o ORDER BY DESC(COUNT(?s_in)+COUNT(?o_in)) LIMIT " + maxNrOfPositiveExamples;
+//		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "
+//				+ "GROUP BY ?s ?o ORDER BY DESC(COUNT(?s_in)+COUNT(?o_in)) LIMIT " + maxNrOfPositiveExamples;
+		String query = 
+				  "SELECT ?s ?o WHERE {"
+				+ "?s <" + property + "> ?o. }"
+				+ "ORDER BY DESC ( <LONG::IRI_RANK> (?o) + <LONG::IRI_RANK> (?s)) "
+				+ "LIMIT " + maxNrOfPositiveExamples;
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Resource subject;
@@ -338,7 +343,9 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 	}
 	
 	private ResultSet executeSelectQuery(String query){
-		return executeSelectQuery(QueryFactory.create(query, Syntax.syntaxARQ));
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
+		return rs;
 	}
 	
 	public static void main(String[] args) throws Exception {
