@@ -51,13 +51,14 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
+		
 		CrawlerConfig config = (CrawlerConfig) getMyController().getCustomData();
 		Map<CrawlIndex, Set<String>> index2URLs = config.getIndex2URLs();
 		
 		for (Entry<CrawlIndex, Set<String>> entry : index2URLs.entrySet()) {
 			CrawlIndex index = entry.getKey();
 			for (String urlPattern : entry.getValue()) {
-				if(url.matches(urlPattern)){
+				if(url.startsWith(urlPattern)){
 					index.addDocumentToIndex(url, content);
 					log.debug("\tAdded document: " + url);
 				}

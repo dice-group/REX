@@ -23,21 +23,27 @@ public class URLCrawlerController {
 	private CrawlIndex index;
 
 	public static void main(String[] args) throws Exception {
-		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
-		index2URLs.put(new CrawlIndex("imdb-title-index"), Sets.newHashSet("http://www.imdb.com/title/tt([0-9])*/$"));
-		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
-		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
-		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
-		System.out.println("Now adding Seeds.");
-		crawlControl.addSeed("http://www.imdb.com/");
+//		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
+//		index2URLs.put(new CrawlIndex("imdb-title-index"), Sets.newHashSet("http://www.imdb.com/title/tt([0-9])*/$"));
+//		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
+//		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
 //		crawlControl.addSeed("http://www.imdb.com/");
-//		crawlControl.addSeed("http://www.allmusic.com/artist/jack-johnson-mn0000120010");
+//		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
+//		index2URLs.put(new CrawlIndex("espnfc-player-index"), Sets.newHashSet("http://espnfc.com/player"));
+//		index2URLs.put(new CrawlIndex("espnfc-team-index"), Sets.newHashSet("http://espnfc.com/team"));
+//		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://espnfc.com/", index2URLs);
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", crawlIndexConfig);
 //		crawlControl.addSeed("http://espnfc.com/");
-//		crawlControl.addSeed("http://espnfc.com/tables/_/league/uefa.champions/uefa-champions-league?cc=5739");
-		System.out.println("Seeds have been added. Crawler will be started.");
+		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
+		index2URLs.put(new CrawlIndex("musicbrainz-artist-index"), Sets.newHashSet("http://musicbrainz.org/artist/"));
+		index2URLs.put(new CrawlIndex("musicbrainz-release-index"), Sets.newHashSet("http://musicbrainz.org/release/"));
+		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://musicbrainz.org/", index2URLs);
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlMusicbrainz", crawlIndexConfig);
+		crawlControl.addSeed("http://musicbrainz.org");
+		
+		
 		crawlControl.startCrawler();
-		System.out.println("Crawler finished.");
 	}
 
 	public URLCrawlerController(String crawlStorageFolder, CrawlerConfig crawlIndexConfig) throws Exception {
@@ -46,8 +52,7 @@ public class URLCrawlerController {
 		int maxOutgoingLinksToFollow = 1000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 5000;
-//		int maxPagesToFetch = 200000;
+		int maxPagesToFetch = 100000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
