@@ -23,3 +23,8 @@ imdbIndex/
 DBpedia_top10instances.txt
 cache/
 htmlindex/
+REX.log
+crawlIMDB/
+imdb-name-index/
+imdb-title-index/
+

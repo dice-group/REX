@@ -58,7 +58,7 @@ public class URLCrawler extends WebCrawler {
 		for (Entry<CrawlIndex, Set<String>> entry : index2URLs.entrySet()) {
 			CrawlIndex index = entry.getKey();
 			for (String urlPattern : entry.getValue()) {
-				if(url.startsWith(urlPattern)){
+				if(url.matches(urlPattern)){
 					index.addDocumentToIndex(url, content);
 					log.debug("\tAdded document: " + url);
 				}
