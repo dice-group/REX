@@ -30,6 +30,7 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Version;
+import org.jsoup.Jsoup;
 import org.slf4j.LoggerFactory;
 
 public class CrawlIndex {
@@ -182,21 +183,25 @@ public class CrawlIndex {
 
 	public void addDocumentToIndex(String url, String html) {
 		Document doc = new Document();
-		doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
-		doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
-		try{
-			doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
-		} catch (Exception e){
-			doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
-		}
-		
-		try {
-			iwriter.addDocument(doc);
-		} catch (IOException e) {
-			log.error(e.getLocalizedMessage());
-			log.error("\tURL:" + url);
-			log.error("\tHTML:" + html);
-		}
+        org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
+        htmlDoc.select("script, jscript").remove();
+        html = htmlDoc.html();
+
+        doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
+        doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
+        try{
+                doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
+        } catch (Exception e){
+                doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
+        }
+        
+        try {
+                iwriter.addDocument(doc);
+        } catch (IOException e) {
+                log.error(e.getLocalizedMessage());
+                log.error("\tURL:" + url);
+                log.error("\tHTML:" + html);
+        }
 	}
 
 	public void close() {

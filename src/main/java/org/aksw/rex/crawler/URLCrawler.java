@@ -51,6 +51,7 @@ public class URLCrawler extends WebCrawler {
 	}
 
 	public void writeToIndex(String url, String content) {
+		
 		CrawlerConfig config = (CrawlerConfig) getMyController().getCustomData();
 		Map<CrawlIndex, Set<String>> index2URLs = config.getIndex2URLs();
 		

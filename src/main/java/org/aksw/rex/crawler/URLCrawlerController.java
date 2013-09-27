@@ -16,11 +16,10 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class URLCrawlerController {
-
 	private int numberOfCrawlers;
 	private CrawlController controller;
-	private Logger log = LoggerFactory.getLogger(URLCrawlerController.class);
-	private CrawlIndex index;
+	private static Logger log = LoggerFactory.getLogger(URLCrawlerController.class);
+	private CrawlerConfig crawlIndexConfig;
 
 	public static void main(String[] args) throws Exception {
 		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
@@ -28,26 +27,78 @@ public class URLCrawlerController {
 		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
 		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
 		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
-//		URLCrawlerController crawlControl = new URLCrawlerController("crawlESPNFC", "espnfcIndex");
-		System.out.println("Now adding Seeds.");
-		crawlControl.addSeed("http://www.imdb.com/");
-//		crawlControl.addSeed("http://www.imdb.com/");
-//		crawlControl.addSeed("http://www.allmusic.com/artist/jack-johnson-mn0000120010");
-//		crawlControl.addSeed("http://espnfc.com/");
-//		crawlControl.addSeed("http://espnfc.com/tables/_/league/uefa.champions/uefa-champions-league?cc=5739");
-		System.out.println("Seeds have been added. Crawler will be started.");
-		crawlControl.startCrawler();
-		System.out.println("Crawler finished.");
+		try {
+			crawlControl.addSeed("http://www.imdb.com/");
+
+			crawlControl.startCrawler();
+
+			// Wait for 30 seconds
+			Thread.sleep(30 * 1000);
+
+			crawlControl.shutdown();
+			crawlControl.waitUntilFinish();
+		} catch (Exception e) {
+			log.error("IMDB warf einen Fehler");
+		}
+		try {
+			index2URLs = new HashMap<CrawlIndex, Set<String>>();
+			index2URLs.put(new CrawlIndex("espnfc-player-index"), Sets.newHashSet("^http://espnfc.com/player(.)*"));
+			index2URLs.put(new CrawlIndex("espnfc-team-index"), Sets.newHashSet("^http://espnfc.com/team(.)*"));
+			crawlIndexConfig = new CrawlerConfig("http://espnfc.com/", index2URLs);
+			crawlControl = new URLCrawlerController("crawlESPNFC", crawlIndexConfig);
+			crawlControl.addSeed("http://espnfc.com/");
+
+			crawlControl.startCrawler();
+
+			// Wait for 30 seconds
+			Thread.sleep(30 * 1000);
+			// Send the shutdown request and then wait for finishing
+			crawlControl.shutdown();
+			crawlControl.waitUntilFinish();
+		} catch (Exception e) {
+			log.error("ESPNF warf einen Fehler");
+		}
+		try {
+			index2URLs = new HashMap<CrawlIndex, Set<String>>();
+			index2URLs.put(new CrawlIndex("meps-index"), Sets.newHashSet("http://www.europarl.europa.eu/meps/en/([0-9])*/([a-zA-Z_\\+])*(home.html)$"));
+			crawlIndexConfig = new CrawlerConfig("http://www.europarl.europa.eu/meps/en", index2URLs);
+			crawlControl = new URLCrawlerController("crawlMEP", crawlIndexConfig);
+			crawlControl.addSeed("http://www.europarl.europa.eu/meps/en/full-list.html");
+
+			crawlControl.startCrawler();
+
+			// Wait for 30 seconds
+			Thread.sleep(30 * 1000);
+
+			// Send the shutdown request and then wait for finishing
+			crawlControl.shutdown();
+			crawlControl.waitUntilFinish();
+
+		} catch (Exception e) {
+			log.error("MEP warf einen Fehler");
+		}
+		log.info("CRAWL finished");
+	}
+
+	private void waitUntilFinish() {
+
+	}
+
+	private void shutdown() {
+		for (CrawlIndex i : crawlIndexConfig.getIndex2URLs().keySet()) {
+			i.close();
+		}
+
 	}
 
 	public URLCrawlerController(String crawlStorageFolder, CrawlerConfig crawlIndexConfig) throws Exception {
+		this.crawlIndexConfig = crawlIndexConfig;
 		numberOfCrawlers = 10;
 		int maxDepth = 3;
 		int maxOutgoingLinksToFollow = 1000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 500000;
-//		int maxPagesToFetch = 200000;
+		int maxPagesToFetch = 100000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(maxDepth);
@@ -55,7 +106,9 @@ public class URLCrawlerController {
 		config.setMaxPagesToFetch(maxPagesToFetch);
 		config.setIncludeBinaryContentInCrawling(false);
 		config.setUserAgentString(userAgentName);
-		config.setResumableCrawling(true);
+		config.setFollowRedirects(true);
+		// config.setPolitenessDelay(5000);
+		// config.setResumableCrawling(true);
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
@@ -78,7 +131,6 @@ public class URLCrawlerController {
 		log.debug("Crawler started");
 		controller.start(URLCrawler.class, numberOfCrawlers);
 		log.debug("Crawler stopped. Write Index.");
-		index.close();
 		log.debug("Index written");
 	}
 
