@@ -46,7 +46,7 @@ public class URLCrawlerController {
 		int maxOutgoingLinksToFollow = 1000;
 		String userAgentName = "googlebot";
 		userAgentName = "crawler4j";
-		int maxPagesToFetch = 5000;
+		int maxPagesToFetch = 500000;
 //		int maxPagesToFetch = 200000;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
@@ -55,7 +55,7 @@ public class URLCrawlerController {
 		config.setMaxPagesToFetch(maxPagesToFetch);
 		config.setIncludeBinaryContentInCrawling(false);
 		config.setUserAgentString(userAgentName);
-//		config.setResumableCrawling(true);
+		config.setResumableCrawling(true);
 		/*
 		 * Instantiate the controller for this crawl.
 		 */
