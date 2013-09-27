@@ -23,12 +23,12 @@ public class URLCrawlerController {
 
 	public static void main(String[] args) throws Exception {
 		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
-		index2URLs.put(new CrawlIndex("imdb-title-index"), Sets.newHashSet("http://www.imdb.com/title/tt([0-9])*/$"));
-		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
-		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
-		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
+		index2URLs.put(new CrawlIndex("goodreads-book-index"), Sets.newHashSet("http://www.goodreads.com/book/show/([0-9])*([a-zA-Z_\\.])*"));
+		index2URLs.put(new CrawlIndex("goodreads-author-index"), Sets.newHashSet("http://www.goodreads.com/author/show/([0-9])*([a-zA-Z_\\.])*"));
+		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.goodreads.com/", index2URLs);
+		URLCrawlerController crawlControl = new URLCrawlerController("crawlGoodRead", crawlIndexConfig);
 		try {
-			crawlControl.addSeed("http://www.imdb.com/");
+			crawlControl.addSeed("http://www.goodreads.com/");
 
 			crawlControl.startCrawler();
 
@@ -38,46 +38,64 @@ public class URLCrawlerController {
 			crawlControl.shutdown();
 			crawlControl.waitUntilFinish();
 		} catch (Exception e) {
-			log.error("IMDB warf einen Fehler");
+			log.error("goodreads warf einen Fehler");
 		}
-		try {
-			index2URLs = new HashMap<CrawlIndex, Set<String>>();
-			index2URLs.put(new CrawlIndex("espnfc-player-index"), Sets.newHashSet("^http://espnfc.com/player(.)*"));
-			index2URLs.put(new CrawlIndex("espnfc-team-index"), Sets.newHashSet("^http://espnfc.com/team(.)*"));
-			crawlIndexConfig = new CrawlerConfig("http://espnfc.com/", index2URLs);
-			crawlControl = new URLCrawlerController("crawlESPNFC", crawlIndexConfig);
-			crawlControl.addSeed("http://espnfc.com/");
-
-			crawlControl.startCrawler();
-
-			// Wait for 30 seconds
-			Thread.sleep(30 * 1000);
-			// Send the shutdown request and then wait for finishing
-			crawlControl.shutdown();
-			crawlControl.waitUntilFinish();
-		} catch (Exception e) {
-			log.error("ESPNF warf einen Fehler");
-		}
-		try {
-			index2URLs = new HashMap<CrawlIndex, Set<String>>();
-			index2URLs.put(new CrawlIndex("meps-index"), Sets.newHashSet("http://www.europarl.europa.eu/meps/en/([0-9])*/([a-zA-Z_\\+])*(home.html)$"));
-			crawlIndexConfig = new CrawlerConfig("http://www.europarl.europa.eu/meps/en", index2URLs);
-			crawlControl = new URLCrawlerController("crawlMEP", crawlIndexConfig);
-			crawlControl.addSeed("http://www.europarl.europa.eu/meps/en/full-list.html");
-
-			crawlControl.startCrawler();
-
-			// Wait for 30 seconds
-			Thread.sleep(30 * 1000);
-
-			// Send the shutdown request and then wait for finishing
-			crawlControl.shutdown();
-			crawlControl.waitUntilFinish();
-
-		} catch (Exception e) {
-			log.error("MEP warf einen Fehler");
-		}
-		log.info("CRAWL finished");
+//		Map<CrawlIndex, Set<String>> index2URLs = new HashMap<CrawlIndex, Set<String>>();
+//		index2URLs.put(new CrawlIndex("imdb-title-index"), Sets.newHashSet("http://www.imdb.com/title/tt([0-9])*/$"));
+//		index2URLs.put(new CrawlIndex("imdb-name-index"), Sets.newHashSet("http://www.imdb.com/name/nm([0-9])*/$"));
+//		CrawlerConfig crawlIndexConfig = new CrawlerConfig("http://www.imdb.com/", index2URLs);
+//		URLCrawlerController crawlControl = new URLCrawlerController("crawlIMDB", crawlIndexConfig);
+//		try {
+//			crawlControl.addSeed("http://www.imdb.com/");
+//
+//			crawlControl.startCrawler();
+//
+//			// Wait for 30 seconds
+//			Thread.sleep(30 * 1000);
+//
+//			crawlControl.shutdown();
+//			crawlControl.waitUntilFinish();
+//		} catch (Exception e) {
+//			log.error("IMDB warf einen Fehler");
+//		}
+//		try {
+//			index2URLs = new HashMap<CrawlIndex, Set<String>>();
+//			index2URLs.put(new CrawlIndex("espnfc-player-index"), Sets.newHashSet("^http://espnfc.com/player(.)*"));
+//			index2URLs.put(new CrawlIndex("espnfc-team-index"), Sets.newHashSet("^http://espnfc.com/team(.)*"));
+//			crawlIndexConfig = new CrawlerConfig("http://espnfc.com/", index2URLs);
+//			crawlControl = new URLCrawlerController("crawlESPNFC", crawlIndexConfig);
+//			crawlControl.addSeed("http://espnfc.com/");
+//
+//			crawlControl.startCrawler();
+//
+//			// Wait for 30 seconds
+//			Thread.sleep(30 * 1000);
+//			// Send the shutdown request and then wait for finishing
+//			crawlControl.shutdown();
+//			crawlControl.waitUntilFinish();
+//		} catch (Exception e) {
+//			log.error("ESPNF warf einen Fehler");
+//		}
+//		try {
+//			index2URLs = new HashMap<CrawlIndex, Set<String>>();
+//			index2URLs.put(new CrawlIndex("meps-index"), Sets.newHashSet("http://www.europarl.europa.eu/meps/en/([0-9])*/([a-zA-Z_\\+])*(home.html)$"));
+//			crawlIndexConfig = new CrawlerConfig("http://www.europarl.europa.eu/meps/en", index2URLs);
+//			crawlControl = new URLCrawlerController("crawlMEP", crawlIndexConfig);
+//			crawlControl.addSeed("http://www.europarl.europa.eu/meps/en/full-list.html");
+//
+//			crawlControl.startCrawler();
+//
+//			// Wait for 30 seconds
+//			Thread.sleep(30 * 1000);
+//
+//			// Send the shutdown request and then wait for finishing
+//			crawlControl.shutdown();
+//			crawlControl.waitUntilFinish();
+//
+//		} catch (Exception e) {
+//			log.error("MEP warf einen Fehler");
+//		}
+//		log.info("CRAWL finished");
 	}
 
 	private void waitUntilFinish() {
