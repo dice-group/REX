@@ -27,4 +27,12 @@ REX.log
 crawlIMDB/
 imdb-name-index/
 imdb-title-index/
-
+.DS_Store
+crawlESPNFC/
+crawlGoodRead/
+crawlMEP/
+espnfc-player-index/
+espnfc-team-index/
+goodreads-author-index/
+goodreads-book-index/
+meps-index/
