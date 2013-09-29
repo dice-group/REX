@@ -104,134 +104,28 @@ this.training), null, false);
 		log.debug("Learned XPath L: " + ruleL);
 		log.debug("Learned XPath R: " + ruleR);
 
-		Map<String, String> testPage2valueLeft = new HashMap<String, String>();
-		Map<String, String> testPage2valueRight = new HashMap<String, String>();
+		Map<String, String> page2valueLeft = new HashMap<String, String>();
+		Map<String, String> page2valueRight = new HashMap<String, String>();
 
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(learner.getIndex());
-		List<Page> pagineTest = pageRetr.getPages(this.testing, testPage2valueLeft,
-				testPage2valueRight, domain);
+		List<Page> testPages = pageRetr.getPages(this.testing, page2valueLeft,
+				page2valueRight, domain);
+		List<Page> trainingPages = pageRetr.getPages(this.training, page2valueLeft,
+				page2valueRight, domain);
+		
 		learner.getIndex().close();
 
 		log.debug("Test on learning pages");
 
-		QualityEvaluator left = testResultRule(ruleL, this.goldenRuleL, pagineTest);
-		QualityEvaluator right =testResultRule(ruleR, this.goldenRuleR, pagineTest);
+		QualityEvaluator left = testResultRule(ruleL, this.goldenRuleL, testPages);
+		QualityEvaluator right =testResultRule(ruleR, this.goldenRuleR, testPages);
 
+		log.info("I: "+trainingPages.size() + " U-I: "+testPages.size());
 		log.info("Left: rule "+ruleL);
 		log.info("Left: (P) "+left.getPrecision()+" (R) "+left.getRecall()+" (F) "+left.getF());
 		log.info("Right: rule "+ruleR);
 		log.info("Right: (P) "+right.getPrecision()+" (R) "+right.getRecall()+" (F) "+right.getF());
-
-//		Map<String, String> page2valueLeft = new HashMap<String, String>();
-//		Map<String, String> page2valueRight = new HashMap<String, String>();
-		
-//		List<Page> pagineLearn = pageRetr.getPages(this.training, page2valueLeft, page2valueRight,
-//				domain);
-//		testTwoRules(pagineLearn, regolaL, regolaR, goldenRuleL, goldenRuleR, page2valueLeft,
-//				page2valueRight);
-//		
-		
-//		ALFREDSampler samplerL = learner.getSamplerLeft();
-//		samplerL.find(pagineTest);
-//		
-//		log.debug("LEFT RULE:");
-//		log.debug("Test on " + samplerL.getRepresentedPages().size()+" represented pages");
-//		
-//		testRule(samplerL.getRepresentedPages(), regolaL, goldenRuleL, testPage2valueLeft);
-//		testRule(samplerL.getNonRepresentedPages(), regolaL, goldenRuleL, testPage2valueLeft);
-//
-//		log.debug("Test on " + samplerL.getNonRepresentedPages().size()
-//				+ " non represented pages - (representative: "
-//				+ samplerL.getRepresentativePages().size() + ")");
-//
-//		ALFREDSampler samplerR = learner.getSamplerRight();
-//		samplerR.find(pagineTest);
-//		log.debug("RIGHT RULE:");
-//		log.debug("Test on " + samplerR.getRepresentedPages().size()
-//				+ " represented pages");
-//	
-//		testRule(samplerR.getRepresentedPages(), regolaR, goldenRuleR, testPage2valueRight);
-//		testRule(samplerR.getNonRepresentedPages(), regolaR, goldenRuleR, testPage2valueRight);
-//	
-//		log.debug("Test on " + samplerR.getNonRepresentedPages().size()
-//				+ " non represented pages - (representative: "
-//				+ samplerR.getRepresentativePages().size() + ")");
 	}
-
-//	private static void testRule(List<Page> pagine, Rule regola, Rule goldRegola,
-//			Map<String, String> page2value) {
-//		int numPageTest = pagine.size();
-//		int giuste = 0, goldGiuste = 0, RvsG = 0;
-//		Iterator<Page> iterPageTest = pagine.iterator();
-//		while (iterPageTest.hasNext()) {
-//			Page pagina = iterPageTest.next();
-//			String valore = regola.applyOn(pagina).getTextContent();
-//			if (valore.equals(page2value.get(pagina.getTitle())))
-//				giuste++;
-//			String goldValore = goldRegola.applyOn(pagina).getTextContent();
-//			if (goldValore.equals(page2value.get(pagina.getTitle())))
-//				goldGiuste++;
-//			if (valore.equals(goldValore))
-//				RvsG++;
-//			iterPageTest.remove();
-//		}
-//		System.out.print("Extracted Rule: " + giuste + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) giuste / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Golden Rule: " + goldGiuste + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) goldGiuste / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Extracted Rule vs Golden Rule: " + RvsG + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) RvsG / numPageTest) * 100);
-//		System.out.println("%");
-//	}
-//
-//	private static void testTwoRules(List<Page> pagine, Rule regolaL, Rule regolaR,
-//			Rule goldRegolaL, Rule goldRegolaR, Map<String, String> page2valueLeft,
-//			Map<String, String> page2valueRight) {
-//		int numPageTest = pagine.size();
-//		int giusteL = 0, giusteR = 0, goldGiusteL = 0, goldGiusteR = 0, RvsGleft = 0, RvsGright = 0;
-//		Iterator<Page> iterPageTest = pagine.iterator();
-//		while (iterPageTest.hasNext()) {
-//			Page pagina = iterPageTest.next();
-//			String valoreL = regolaL.applyOn(pagina).getTextContent();
-//			if (valoreL.equals(page2valueLeft.get(pagina.getTitle())))
-//				giusteL++;
-//			String valoreR = regolaR.applyOn(pagina).getTextContent();
-//			if (valoreR.equals(page2valueRight.get(pagina.getTitle())))
-//				giusteR++;
-//			String goldValoreL = goldRegolaL.applyOn(pagina).getTextContent();
-//			if (goldValoreL.equals(page2valueLeft.get(pagina.getTitle())))
-//				goldGiusteL++;
-//			if (valoreL.equals(goldValoreL))
-//				RvsGleft++;
-//			String goldValoreR = goldRegolaR.applyOn(pagina).getTextContent();
-//			if (goldValoreR.equals(page2valueRight.get(pagina.getTitle())))
-//				goldGiusteR++;
-//			if (valoreR.equals(goldValoreR))
-//				RvsGright++;
-//		}
-//
-//		
-//		System.out.print("Left rule: " + giusteL + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) giusteL / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Right rule: " + giusteR + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) giusteR / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Left Golden Rule: " + goldGiusteL + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) goldGiusteL / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Right Golden Rule: " + goldGiusteR + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) goldGiusteR / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Left rule vs Golden Rule: " + RvsGleft + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) RvsGleft / numPageTest) * 100);
-//		System.out.println("%");
-//		System.out.print("Right rule vs Golden Rule: " + RvsGright + " su " + numPageTest + " - ");
-//		System.out.printf("%.0f", ((double) RvsGright / numPageTest) * 100);
-//		System.out.println("%");
-//	}
 
 	private static QualityEvaluator testResultRule(Rule result, Rule golden, List<Page> pages) {
 		QualityEvaluator ev = new QualityEvaluator(result, golden, pages);
@@ -240,7 +134,7 @@ this.training), null, false);
 	}
 	
 	public static void main(String[] args) throws MalformedURLException {
-		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 500, 10000, 100);
+		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 500, 39000, 100);
 		exp.run();
 	}
 }

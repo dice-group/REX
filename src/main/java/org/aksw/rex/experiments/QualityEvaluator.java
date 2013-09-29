@@ -61,7 +61,6 @@ public class QualityEvaluator {
 
 		this.setPrecision(tp / (tp + tpWrong + fp));
 		this.setRecall(tp / (tp + tpWrong + fn + dKnow));
-		this.setF((tp + tn) / (tp + tn + fp + fn + tpWrong + dKnow));
 	}
 
 	public double getPrecision() {
@@ -81,10 +80,6 @@ public class QualityEvaluator {
 	}
 
 	public double getF() {
-		return accuracy;
-	}
-
-	public void setF(double accuracy) {
-		this.accuracy = accuracy;
+		return 2*(this.precision*this.recall)/(this.precision+this.recall);
 	}
 }
