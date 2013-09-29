@@ -40,13 +40,13 @@ public class QualityEvaluator {
 					// both null
 					tn++;
 				else if (resultValue.trim().equals("")){
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be" + goldenValue +" in page: "+p.getTitle());
+					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue +" in page: "+p.getTitle());
 					// golden not null
 					fn++;
 				}
 				else{
 					// only golden null
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be" + goldenValue+" in page: "+p.getTitle());
+					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
 					fp++;
 				}
 			} else {
@@ -54,14 +54,14 @@ public class QualityEvaluator {
 					tp++;
 				} else {
 					tpWrong++;
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be" + goldenValue+" in page: "+p.getTitle());
+					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
 				}
 			}
 		}
 
 		this.setPrecision(tp / (tp + tpWrong + fp));
 		this.setRecall(tp / (tp + tpWrong + fn + dKnow));
-		this.setAccuracy((tp + tn) / (tp + tn + fp + fn + tpWrong + dKnow));
+		this.setF((tp + tn) / (tp + tn + fp + fn + tpWrong + dKnow));
 	}
 
 	public double getPrecision() {
@@ -80,11 +80,11 @@ public class QualityEvaluator {
 		this.recall = recall;
 	}
 
-	public double getAccuracy() {
+	public double getF() {
 		return accuracy;
 	}
 
-	public void setAccuracy(double accuracy) {
+	public void setF(double accuracy) {
 		this.accuracy = accuracy;
 	}
 }

@@ -83,7 +83,7 @@ public class ALFREDPageRetrieval {
 						TextElementFinder TEfinderR = new TextElementFinder(page, resources.getRight().getLocalName().replace("_", " "));
 						if (TEfinderR.getNodeWithTextContent() != null) {
 							res.add(page);
-							log.debug("Retrieved page: " + pair.getLeft());
+							//log.debug("Retrieved page: " + pair.getLeft());
 						}
 					}
 				}
@@ -94,8 +94,8 @@ public class ALFREDPageRetrieval {
 	}
 
 	private List<Pair<String, String>> getPairs(Pair<Resource, Resource> resources) {
-		log.debug("Looking for resources " + sfp.getShortForm(IRI.create(resources.getLeft().getURI())) + " - "
-				+ sfp.getShortForm(IRI.create(resources.getRight().getURI())));
+//		log.debug("Looking for resources " + sfp.getShortForm(IRI.create(resources.getLeft().getURI())) + " - "
+//				+ sfp.getShortForm(IRI.create(resources.getRight().getURI())));
 		return index.searchHTML(
 				"\"" + sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ") + "\" AND \""
 						+ sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ") + "\"");

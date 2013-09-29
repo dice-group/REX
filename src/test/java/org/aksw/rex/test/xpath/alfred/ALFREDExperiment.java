@@ -60,6 +60,8 @@ public class ALFREDExperiment {
     	exampleGenerator.setEndpoint(endpoint);
     	exampleGenerator.setPredicate(property);
 		
+    	System.out.println("number of pairs: "+exampleGenerator.getPositiveExamples().size());
+    	
 		Set<Pair<Resource, Resource>> posExamples = new HashSet<Pair<Resource, Resource>>();
 		Set<Pair<Resource, Resource>> testExamples = new HashSet<Pair<Resource, Resource>>();
 		Set<Pair<Resource, Resource>> examples = exampleGenerator.getPositiveExamples();

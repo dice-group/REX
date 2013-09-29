@@ -206,6 +206,12 @@
 			<version>4.3.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>edu.stanford.protege</groupId>
+			<artifactId>org.semanticweb.owl.owlapi</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+
 		<!-- ALFRED dependency -->
 		<dependency>
 			<groupId>it.uniroma3.dia.db</groupId>
