@@ -24,14 +24,18 @@ import org.w3c.dom.NodeList;
 public class GoldstandardCreator {
 	static Logger log = LoggerFactory.getLogger(GoldstandardCreator.class);
 
-	public static void main(String args[]) throws XPathExpressionException, DOMException, IOException {
+	public static void main1(String args[]) throws XPathExpressionException, DOMException, IOException {
 		ArrayList<PropertyXPathSupplier> ps = new ArrayList<PropertyXPathSupplier>();
-		ps.add(new PropertyXPathSupplierAlfred());
+//		ps.add(new PropertyXPathSupplierAlfred());
 		ps.add(new PropertyXPathSupplierAKSW());
 		// TODO iterate indizes
 		ArrayList<CrawlIndex> indizes = new ArrayList<CrawlIndex>();
-		indizes.add(new CrawlIndex("imdbIndex/"));
-		indizes.add(new CrawlIndex("espnfcIndex/"));
+		indizes.add(new CrawlIndex("goodreads-author-index/"));
+		indizes.add(new CrawlIndex("goodreads-book-index/"));
+		indizes.add(new CrawlIndex("imdb-name-index/"));
+		indizes.add(new CrawlIndex("imdb-title-index/"));
+		indizes.add(new CrawlIndex("espnfc-player-index/"));
+		indizes.add(new CrawlIndex("espnfc-team-index/"));
 //		indizes.add(new CrawlIndex("allmusicIndex/"));
 		for (CrawlIndex index : indizes) {
 			// TODO change URL generation style
@@ -68,6 +72,21 @@ public class GoldstandardCreator {
 				}
 				bw.close();
 			}
+			index.close();
+		}
+	}
+	public static void main(String args[]) throws XPathExpressionException, DOMException, IOException {
+		// TODO iterate indizes
+		ArrayList<CrawlIndex> indizes = new ArrayList<CrawlIndex>();
+		indizes.add(new CrawlIndex("goodreads-author-index/"));
+		indizes.add(new CrawlIndex("goodreads-book-index/"));
+		indizes.add(new CrawlIndex("imdb-name-index/"));
+		indizes.add(new CrawlIndex("imdb-title-index/"));
+		indizes.add(new CrawlIndex("espnfc-player-index/"));
+		indizes.add(new CrawlIndex("espnfc-team-index/"));
+//		indizes.add(new CrawlIndex("allmusicIndex/"));
+		for (CrawlIndex index : indizes) {
+			System.out.println(index.getName() +" -> "+ index.size());
 			index.close();
 		}
 	}

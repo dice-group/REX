@@ -27,7 +27,7 @@ public class ALFREDXPathLearnerTest {
 
 	@Before
 	public void init() {
-		this.learner = new ALFREDXPathLearner(new CrawlIndex("imdb-title-index"));
+		learner = new ALFREDXPathLearner(new CrawlIndex("htmlindex"));
 
 		posExamples = new HashSet<Pair<Resource, Resource>>();
 		Resource r1 = ResourceFactory.createResource("http://dbpedia.org/resource/Tom_Cruise");
@@ -45,7 +45,7 @@ public class ALFREDXPathLearnerTest {
 
 	@Test
 	public void testGetXPathExpressions() {
-		List<Pair<XPathRule, XPathRule>> xpaths = this.learner.getXPathExpressions(posExamples, null, null);
+		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(posExamples, null, null);
 		Assert.assertEquals(1, xpaths.size());
 		log.debug(xpaths.get(0).getLeft().toString());
 		log.debug(xpaths.get(0).getRight().toString());
