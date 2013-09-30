@@ -67,7 +67,7 @@ public class ExperimentRunner implements Runnable {
 		if(positiveExamples.size() < maxPages)
 			throw new RuntimeException("Number of training pairs should be: "+ maxPages + " but number of pairs was " +positiveExamples.size());
 		
-		List<Pair<Resource, Resource>> examples = new LinkedList<>(positiveExamples);
+		List<Pair<Resource, Resource>> examples = new LinkedList<Pair<Resource, Resource>>(positiveExamples);
 		
 		this.testing = new HashSet<Pair<Resource, Resource>>(examples.subList(maxPages, examples.size()));
 		this.training = new HashSet<Pair<Resource, Resource>>(examples.subList(0, maxPages));

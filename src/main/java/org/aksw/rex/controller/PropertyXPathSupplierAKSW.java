@@ -77,6 +77,15 @@ public class PropertyXPathSupplierAKSW implements PropertyXPathSupplier {
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='content']/div[3]/div[1]/div[1]/div[2]/div/div/div[2]/ul/li[6]", "http://dbpedia.org/ontology/Person/height", "http://espnfc.com/player"));
 		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id='content']/div[3]/div[1]/div[1]/div[2]/div/div/div[2]/ul/li[7]", "http://dbpedia.org/ontology/Person/weight", "http://espnfc.com/player"));
 
+		// ======================= Goodreads.com Author
+		// TODO correct
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div[1]/div[2]/div[1]/div[1]/div[3]/div[2]/div[1]/div[1]/div/div[1]/h1/span", "http://www.w3.org/2000/01/rdf-schema#label", "http://goodreads.com/author.."));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("[@id=\"freeText2477967133066826269\"]", "influences", "http://goodreads.com/author.."));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("/html/body/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[9]/div[2]/div/div/div/div/a", "friends", "http://goodreads.com/author.."));
+		// ======================= Goodreads.com Book
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id=\"bookTitle\"]", "http://www.w3.org/2000/01/rdf-schema#label", "http://goodreads.com/author.."));
+		propertiesToCheck.add(new RexPropertiesWithGoldstandard("//*[@id=\"bookAuthors\"]/span[2]/a/span", "author", "http://goodreads.com/author.."));
+
 	}
 
 	@Override

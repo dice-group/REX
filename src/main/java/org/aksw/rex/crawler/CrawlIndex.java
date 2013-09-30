@@ -50,17 +50,18 @@ public class CrawlIndex {
 		this.name = file;
 		log.info("Building CrawlIndex!");
 		try {
-			analyzer = new StandardAnalyzer(Version.LUCENE_43);
+			Version luceneVersion = Version.LUCENE_43;
+			analyzer = new StandardAnalyzer(luceneVersion);
 			File indexDirectory = new File(file);
 
 			if (indexDirectory.exists() && indexDirectory.isDirectory() && indexDirectory.listFiles().length > 0) {
 				directory = new MMapDirectory(indexDirectory);
-				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+				IndexWriterConfig config = new IndexWriterConfig(luceneVersion, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			} else {
 				indexDirectory.mkdir();
 				directory = new MMapDirectory(indexDirectory);
-				IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+				IndexWriterConfig config = new IndexWriterConfig(luceneVersion, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			}
 
@@ -90,7 +91,6 @@ public class CrawlIndex {
 				Document hitDoc = isearcher.doc(hits[i].doc);
 				sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 			}
-			log.debug("\tFinished asking index...");
 		} catch (IOException e) {
 			log.error("COULD NOT SEARCH INDEX");
 		} catch (Exception e) {
@@ -135,8 +135,8 @@ public class CrawlIndex {
 		}
 		return sites;
 	}
-	
-	public List<Pair<String, String>> getDocumentsWithDomain(String domainURL){
+
+	public List<Pair<String, String>> getDocumentsWithDomain(String domainURL) {
 		List<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
 		try {
 			if (ireader == null) {
@@ -152,7 +152,6 @@ public class CrawlIndex {
 				Document hitDoc = isearcher.doc(hits[i].doc);
 				sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 			}
-			log.debug("\tFinished asking index...");
 		} catch (IOException e) {
 			log.error("COULD NOT SEARCH INDEX");
 		} catch (Exception e) {
@@ -183,25 +182,25 @@ public class CrawlIndex {
 
 	public void addDocumentToIndex(String url, String html) {
 		Document doc = new Document();
-        org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
-        htmlDoc.select("script, jscript").remove();
-        html = htmlDoc.html();
+		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
+		htmlDoc.select("script, jscript").remove();
+		html = htmlDoc.html();
 
-        doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
-        doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
-        try{
-                doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
-        } catch (Exception e){
-                doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
-        }
-        
-        try {
-                iwriter.addDocument(doc);
-        } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-                log.error("\tURL:" + url);
-                log.error("\tHTML:" + html);
-        }
+		doc.add(new StringField(FIELD_NAME_URL, url, Store.YES));
+		doc.add(new TextField(FIELD_NAME_HTML, html, Store.YES));
+		try {
+			doc.add(new TextField(FIELD_NAME_CONTENT, HTMLExtractor.getHTMLContent(html), Store.NO));
+		} catch (Exception e) {
+			doc.add(new TextField(FIELD_NAME_CONTENT, html, Store.NO));
+		}
+
+		try {
+			iwriter.addDocument(doc);
+		} catch (IOException e) {
+			log.error(e.getLocalizedMessage());
+			log.error("\tURL:" + url);
+			log.error("\tHTML:" + html);
+		}
 	}
 
 	public void close() {
