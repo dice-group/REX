@@ -251,4 +251,21 @@ public class CrawlIndex {
 		}
 		return pages;
 	}
+	
+	public Set<Page> getPages(int pageNumber) {
+		Set<Page> pages = new HashSet<Page>();
+		int maxPages = ireader.maxDoc() > pageNumber ? ireader.maxDoc() : pageNumber; 
+		
+		for (int i = 0; i < maxPages; i++) {
+			try {
+				Document doc = ireader.document(i);
+				String url = doc.get(FIELD_NAME_URL);
+				String html = doc.get(FIELD_NAME_HTML);
+				pages.add(new Page(html, null, url));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return pages;
+	}
 }

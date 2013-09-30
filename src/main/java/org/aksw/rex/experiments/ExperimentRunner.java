@@ -37,18 +37,22 @@ public class ExperimentRunner implements Runnable {
 	private XPathRule goldenRuleR;
 	private Property property;
 	private URL domain;
-	private Set<Pair<Resource, Resource>> testing;
+	private List<Page> testing;
 	private Set<Pair<Resource, Resource>> training;
 
 	private CrawlIndex index;
 
+	private ALFREDPageRetrieval pageRetriever;
+
 	public ExperimentRunner(String index, int minPages, int maxPages, int testPages,
 			int intervalPages) throws MalformedURLException {
-
+		this.index = new CrawlIndex("htmlindex");
+		this.pageRetriever = new ALFREDPageRetrieval(this.index);
+		
 		// N pairs for learning
 		int numLearnPairs = maxPages;
 		// N pairs for testing
-		int numTestPairs = testPages;
+		int numTestPages = testPages;
 
 		// TODO to move as provided input
 		String propertyS = "http://dbpedia.org/ontology/director";
@@ -61,7 +65,7 @@ public class ExperimentRunner implements Runnable {
 
 		this.property = ResourceFactory.createProperty(propertyS);
 		
-		ExampleGenerator exampleGenerator = getExampleGenerator(this.property, numLearnPairs, numTestPairs);
+		ExampleGenerator exampleGenerator = getExampleGenerator(this.property, numLearnPairs);
 		Set<Pair<Resource, Resource>> positiveExamples = exampleGenerator.getPositiveExamples();
 		
 		if(positiveExamples.size() < maxPages)
@@ -69,7 +73,7 @@ public class ExperimentRunner implements Runnable {
 		
 		List<Pair<Resource, Resource>> examples = new LinkedList<Pair<Resource, Resource>>(positiveExamples);
 		
-		this.testing = new HashSet<Pair<Resource, Resource>>(examples.subList(maxPages, examples.size()));
+		this.testing = this.pageRetriever.getPages(numTestPages);
 		this.training = new HashSet<Pair<Resource, Resource>>(examples.subList(0, maxPages));
 		
 		 
@@ -77,16 +81,16 @@ public class ExperimentRunner implements Runnable {
 this.training), null, false);
 		
 		log.debug("Learn pairs: " + this.training.size());
-		log.debug("Test pairs: " + this.testing.size());
+		log.debug("Test pages: " + this.testing.size());
 
-		this.index = new CrawlIndex("htmlindex");
+		
 	}
 
-	private ExampleGenerator getExampleGenerator(Property property, int numLearnPairs, int numTestPairs) {
+	private ExampleGenerator getExampleGenerator(Property property, int numLearnPairs) {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
-		exampleGenerator.setMaxNrOfPositiveExamples(numLearnPairs + numTestPairs);
+		exampleGenerator.setMaxNrOfPositiveExamples(numLearnPairs);
 		exampleGenerator.setEndpoint(endpoint);
 		exampleGenerator.setPredicate(property);
 		return exampleGenerator;
@@ -108,8 +112,7 @@ this.training), null, false);
 		Map<String, String> page2valueRight = new HashMap<String, String>();
 
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(learner.getIndex());
-		List<Page> testPages = pageRetr.getPages(this.testing, page2valueLeft,
-				page2valueRight, domain);
+
 		List<Page> trainingPages = pageRetr.getPages(this.training, page2valueLeft,
 				page2valueRight, domain);
 		
@@ -117,10 +120,10 @@ this.training), null, false);
 
 		log.debug("Test on learning pages");
 
-		QualityEvaluator left = testResultRule(ruleL, this.goldenRuleL, testPages);
-		QualityEvaluator right =testResultRule(ruleR, this.goldenRuleR, testPages);
+		QualityEvaluator left = testResultRule(ruleL, this.goldenRuleL, this.testing);
+		QualityEvaluator right =testResultRule(ruleR, this.goldenRuleR, this.testing);
 
-		log.info("I: "+trainingPages.size() + " U-I: "+testPages.size());
+		log.info("I: "+trainingPages.size() + " U-I: "+this.testing.size());
 		log.info("Left: rule "+ruleL);
 		log.info("Left: (P) "+left.getPrecision()+" (R) "+left.getRecall()+" (F) "+left.getF());
 		log.info("Right: rule "+ruleR);
@@ -134,7 +137,7 @@ this.training), null, false);
 	}
 	
 	public static void main(String[] args) throws MalformedURLException {
-		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 500, 39000, 100);
+		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 500, 1000, 100);
 		exp.run();
 	}
 }

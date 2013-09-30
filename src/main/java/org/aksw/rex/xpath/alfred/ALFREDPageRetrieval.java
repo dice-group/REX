@@ -32,6 +32,12 @@ public class ALFREDPageRetrieval {
 		this.index = index;
 		this.sfp = new SimpleIRIShortFormProvider();
 	}
+	
+	public List<Page> getPages(int number){
+		List<Page> pages = new LinkedList<Page>(this.index.getPages(number));
+		log.debug("Retrieving: "+pages.size()+" of "+number);
+		return pages;
+	}
 
 	/**
 	 * Return list of pages from a given list of pairs
