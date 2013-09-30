@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import model.Page;
 
 import org.aksw.rex.util.Pair;
 import org.apache.lucene.analysis.Analyzer;
@@ -71,6 +75,15 @@ public class CrawlIndex {
 			log.error("ERROR while building index");
 		}
 		log.info("Finished building CrawlIndex!");
+		
+		try {
+			if (ireader == null) {
+				ireader = DirectoryReader.open(directory);
+				isearcher = new IndexSearcher(ireader);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public ArrayList<Pair<String, String>> searchURL(String queryString) {
@@ -222,5 +235,20 @@ public class CrawlIndex {
 
 	public String getName() {
 		return name;
+	}
+	
+	public Set<Page> getAllPages() {
+		Set<Page> pages = new HashSet<Page>();
+		for (int i = 0; i < ireader.maxDoc(); i++) {
+			try {
+				Document doc = ireader.document(i);
+				String url = doc.get(FIELD_NAME_URL);
+				String html = doc.get(FIELD_NAME_HTML);
+				pages.add(new Page(html, null, url));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return pages;
 	}
 }
