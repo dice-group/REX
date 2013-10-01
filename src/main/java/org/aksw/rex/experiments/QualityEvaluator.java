@@ -15,7 +15,6 @@ public class QualityEvaluator {
 	private List<Page> pages;
 	private double precision;
 	private double recall;
-	private double accuracy;
 
 	public QualityEvaluator(Rule result, Rule golden, List<Page> pages) {
 		this.result = result;
@@ -28,7 +27,6 @@ public class QualityEvaluator {
 		double tpWrong = 0;
 		double fp = 0;
 		double fn = 0;
-		double tn = 0;
 		double dKnow = 0;
 
 		for (Page p : pages) {
@@ -38,7 +36,7 @@ public class QualityEvaluator {
 			if (resultValue.trim().equals("") || goldenValue.trim().equals("")) {
 				if (resultValue.trim().equals("") && goldenValue.trim().equals(""))
 					// both null
-					tn++;
+					log.debug("Both rules null values in page: "+p.getTitle());
 				else if (resultValue.trim().equals("")){
 					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue +" in page: "+p.getTitle());
 					// golden not null

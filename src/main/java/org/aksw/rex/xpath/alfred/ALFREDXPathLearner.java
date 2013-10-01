@@ -34,9 +34,15 @@ public class ALFREDXPathLearner implements XPathLearner {
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	private ALFREDSampler samplerLeft;
 	private ALFREDSampler samplerRight;
+	private int numberTrainingPages;
 
-	public ALFREDXPathLearner(CrawlIndex index) {
+	public ALFREDXPathLearner(CrawlIndex index, int trainingPages) {
 		this.index = index;
+		this.numberTrainingPages = trainingPages; 
+	}
+
+	public ALFREDXPathLearner(CrawlIndex crawlIndex) {
+		this(crawlIndex, Integer.MAX_VALUE);
 	}
 
 	@Override
@@ -48,8 +54,10 @@ public class ALFREDXPathLearner implements XPathLearner {
 		Map<String, String> page2valueLeft = new HashMap<String, String>();
 		Map<String, String> page2valueRight = new HashMap<String, String>();
 
+		// TODO to optimize and not retrieving used pages
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(this.index);
 		List<Page> pages = pageRetr.getPages(posExamples, page2valueLeft, page2valueRight, Domain);
+		pages = pages.size() > this.numberTrainingPages? pages.subList(0, this.numberTrainingPages): pages;
 		log.debug("N found pages: "+pages.size());
 		
 		if(!pages.isEmpty()) {

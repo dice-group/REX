@@ -16,11 +16,9 @@ import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.domainidentifier.DomainIdentifier;
 import org.aksw.rex.domainidentifier.ManualDomainIdentifier;
 import org.aksw.rex.examplegenerator.ExampleGenerator;
-import org.aksw.rex.examplegenerator.SimpleExampleGenerator;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.alfred.ALFREDPageRetrieval;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.LoggerFactory;
 
 import rules.xpath.XPathRule;
@@ -44,15 +42,18 @@ public class ExperimentRunner implements Runnable {
 
 	private ALFREDPageRetrieval pageRetriever;
 
+	private int trainingPages;
+	private int numTestPages;
+
 	public ExperimentRunner(String index, int minPages, int maxPages, int testPages,
 			int intervalPages) throws MalformedURLException {
-		this.index = new CrawlIndex("htmlindex");
+		this.index = new CrawlIndex(index);
 		this.pageRetriever = new ALFREDPageRetrieval(this.index);
 		
 		// N pairs for learning
-		int numLearnPairs = maxPages;
+		this.trainingPages = maxPages;
 		// N pairs for testing
-		int numTestPages = testPages;
+		this.numTestPages = testPages;
 
 		// TODO to move as provided input
 		String propertyS = "http://dbpedia.org/ontology/director";
@@ -65,7 +66,7 @@ public class ExperimentRunner implements Runnable {
 
 		this.property = ResourceFactory.createProperty(propertyS);
 		
-		ExampleGenerator exampleGenerator = getExampleGenerator(this.property, numLearnPairs);
+		ExampleGenerator exampleGenerator = ExampleGeneratorFactory.getInstance().getExampleGenerator(this.property, trainingPages*100);
 		Set<Pair<Resource, Resource>> positiveExamples = exampleGenerator.getPositiveExamples();
 		
 		if(positiveExamples.size() < maxPages)
@@ -86,20 +87,10 @@ this.training), null, false);
 		
 	}
 
-	private ExampleGenerator getExampleGenerator(Property property, int numLearnPairs) {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-
-		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
-		exampleGenerator.setMaxNrOfPositiveExamples(numLearnPairs);
-		exampleGenerator.setEndpoint(endpoint);
-		exampleGenerator.setPredicate(property);
-		return exampleGenerator;
-	}
-
 	@Override
 	public void run() {
 
-		ALFREDXPathLearner learner = new ALFREDXPathLearner(this.index);
+		ALFREDXPathLearner learner = new ALFREDXPathLearner(this.index, this.trainingPages);
 		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(this.training, null,
 				domain);
 		Rule ruleL = xpaths.get(0).getLeft();
@@ -137,7 +128,7 @@ this.training), null, false);
 	}
 	
 	public static void main(String[] args) throws MalformedURLException {
-		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 500, 1000, 100);
+		ExperimentRunner exp = new ExperimentRunner("imdb-title-index", 100, 400, 1000, 100);
 		exp.run();
 	}
 }

@@ -1,7 +1,9 @@
 package org.aksw.rex.xpath.alfred;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,6 +14,9 @@ import java.util.Set;
 import model.Page;
 
 import org.aksw.rex.crawler.CrawlIndex;
+import org.aksw.rex.domainidentifier.ManualDomainIdentifier;
+import org.aksw.rex.examplegenerator.ExampleGenerator;
+import org.aksw.rex.experiments.ExampleGeneratorFactory;
 import org.aksw.rex.util.Pair;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
@@ -20,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import rules.dom.TextElementFinder;
 
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ALFREDPageRetrieval {
@@ -39,6 +45,32 @@ public class ALFREDPageRetrieval {
 		return pages;
 	}
 
+	public List<Page> getPages(Property property, int numPages, String domainS) {
+		// retrieve a big number of pairs
+		ExampleGenerator generator = ExampleGeneratorFactory.getInstance().getExampleGenerator(property, numPages*100);
+
+		Set<Pair<Resource, Resource>> examples = generator.getPositiveExamples();
+		
+		// TODO to remove
+		Map<String, String> page2valueLeft = new HashMap<String, String>();
+		Map<String, String> page2valueRight = new HashMap<String, String>();
+		
+		ManualDomainIdentifier domainIdentifier = null;
+		try {
+			domainIdentifier = new ManualDomainIdentifier(new URL(domainS));
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("URL "+domainS+" not well formatted");
+		}
+		
+		URL domain = domainIdentifier.getDomain(property, examples, null, false);
+		
+		List<Page> trainingPages = this.getPages(generator.getPositiveExamples(), page2valueLeft,
+				page2valueRight, domain);
+		
+		List<Page> res = (trainingPages.size() > numPages)? trainingPages.subList(0, numPages): trainingPages;
+		return res;
+	}
+	
 	/**
 	 * Return list of pages from a given list of pairs
 	 * 
@@ -106,5 +138,4 @@ public class ALFREDPageRetrieval {
 				"\"" + sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ") + "\" AND \""
 						+ sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ") + "\"");
 	}
-	
 }
