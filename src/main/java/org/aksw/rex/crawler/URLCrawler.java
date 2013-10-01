@@ -33,7 +33,7 @@ public class URLCrawler extends WebCrawler {
 	 */
 	@Override
 	public void visit(Page page) {
-		log.debug("Pages in Queue: " + super.getMyController().getFrontier().getQueueLength());
+		System.out.println("Pages in Queue: " + super.getMyController().getFrontier().getQueueLength());
 		if (page.getParseData() instanceof HtmlParseData) {
 			byte[] contentData = page.getContentData();
 			Charset charset = Charset.forName("UTF-8");
@@ -86,8 +86,9 @@ public class URLCrawler extends WebCrawler {
 	 */
 	@Override
 	public boolean shouldVisit(WebURL url) {
-		String href = url.getURL().toLowerCase();
-		String allowedURL = ((CrawlerConfig) getMyController().getCustomData()).getTopLevelDomain();
-		return !FILTERS.matcher(href).matches() && href.startsWith(allowedURL);
+		return true;
+//		String href = url.getURL().toLowerCase();
+//		String allowedURL = ((CrawlerConfig) getMyController().getCustomData()).getTopLevelDomain();
+//		return !FILTERS.matcher(href).matches() && href.startsWith(allowedURL);
 	}
 }
