@@ -54,7 +54,7 @@ public class CrawlIndex {
 		this.name = file;
 		log.info("Building CrawlIndex!");
 		try {
-			Version luceneVersion = Version.LUCENE_43;
+			Version luceneVersion = Version.LUCENE_44;
 			analyzer = new StandardAnalyzer(luceneVersion);
 			File indexDirectory = new File(file);
 
@@ -68,14 +68,14 @@ public class CrawlIndex {
 				IndexWriterConfig config = new IndexWriterConfig(luceneVersion, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			}
-
+			iwriter.commit();
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error(e.getLocalizedMessage());
 			log.error("ERROR while building index");
 		}
 		log.info("Finished building CrawlIndex!");
-		
+
 		try {
 			if (ireader == null) {
 				ireader = DirectoryReader.open(directory);
@@ -236,7 +236,7 @@ public class CrawlIndex {
 	public String getName() {
 		return name;
 	}
-	
+
 	public Set<Page> getAllPages() {
 		Set<Page> pages = new HashSet<Page>();
 		for (int i = 0; i < ireader.maxDoc(); i++) {
@@ -251,11 +251,11 @@ public class CrawlIndex {
 		}
 		return pages;
 	}
-	
+
 	public Set<Page> getPages(int pageNumber) {
 		Set<Page> pages = new HashSet<Page>();
-		int maxPages = ireader.maxDoc() > pageNumber ? ireader.maxDoc() : pageNumber; 
-		
+		int maxPages = ireader.maxDoc() > pageNumber ? ireader.maxDoc() : pageNumber;
+
 		for (int i = 0; i < maxPages; i++) {
 			try {
 				Document doc = ireader.document(i);
