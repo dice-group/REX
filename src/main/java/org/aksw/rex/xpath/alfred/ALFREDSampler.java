@@ -15,29 +15,30 @@ import model.Rule;
 import org.slf4j.LoggerFactory;
 
 public class ALFREDSampler {
+
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ALFREDSampler.class);
-	
+
 	private List<List<Rule>> originalRulesSets;
 	private List<List<Rule>> currentRulesSets;
-	private List<Rule> allRules;	
+	private List<Rule> allRules;
 	private Map<List<Rule>, Integer> rulesSets2numPages;
 	private Map<List<Rule>, List<Page>> rulesSets2representativePages;
 	private Map<Rule, List<Rule>> rule2originalRulesSet;
-	private Map<Rule, Integer> rule2numNull;
+	// private Map<Rule, Integer> rule2numNull;
 	private List<Page> representativePages;
 	private List<Page> nonRepresentedPages;
 	private List<Page> representedPages;
-	
+
 	public ALFREDSampler(List<List<Rule>> rulesSets) {
-		
+
 		this.originalRulesSets = rulesSets;
 		this.currentRulesSets = new LinkedList<List<Rule>>();
 		this.rulesSets2numPages = new HashMap<List<Rule>, Integer>();
 		this.allRules = new LinkedList<Rule>();
 		this.rule2originalRulesSet = new HashMap<Rule, List<Rule>>();
 		this.rulesSets2representativePages = new HashMap<List<Rule>, List<Page>>();
-		this.rule2numNull = new HashMap<Rule, Integer>();
-		
+		// this.rule2numNull = new HashMap<Rule, Integer>();
+
 		for (List<Rule> rulesSet : rulesSets) {
 			List<Rule> nuovoRulesSet = new LinkedList<Rule>();
 			nuovoRulesSet.addAll(rulesSet);
@@ -46,36 +47,37 @@ public class ALFREDSampler {
 			this.allRules.addAll(rulesSet);
 			for (Rule regola : rulesSet) {
 				this.rule2originalRulesSet.put(regola, rulesSet);
-				this.rule2numNull.put(regola, new Integer(0));
+				// this.rule2numNull.put(regola, new Integer(0));
 			}
 			this.rulesSets2representativePages.put(rulesSet, new LinkedList<Page>());
 		}
-		
+
 		this.representativePages = new LinkedList<Page>();
 		this.nonRepresentedPages = new LinkedList<Page>();
-		this.representedPages = new LinkedList<Page>();		
+		this.representedPages = new LinkedList<Page>();
 	}
-	
-	public void find(List<Page> pageSet){
+
+	public void addPages(List<Page> pageSet) {
 		int numPages = pageSet.size();
 		int i = 0;
-		int d = (int)((double)numPages/10);
-		log.debug("Sampling on "+numPages+" pages: ");
-		
+		int d = (int) ((double) numPages / 10);
+		log.debug("Sampling on " + numPages + " pages: ");
+
 		Iterator<Page> iterPages = pageSet.iterator();
 		while (iterPages.hasNext()) {
 			Page pagina = iterPages.next();
 			addPage(pagina);
 			i++;
-			if (d!=0 && i%d == 0) log.debug(i+" ");
-		}		
+			if (d != 0 && i % d == 0)
+				log.debug(i + " ");
+		}
 		log.debug(" done!");
 	}
-	
+
 	public List<List<Rule>> getCurrentRulesSets() {
 		return currentRulesSets;
 	}
-	
+
 	public Map<List<Rule>, Integer> getRulesSets2NumberNotRepresentedPages() {
 		return rulesSets2numPages;
 	}
@@ -97,10 +99,11 @@ public class ALFREDSampler {
 			}
 		}
 		for (Rule regola : this.rule2originalRulesSet.keySet()) {
-			Set<List<Rule>> oldSet = originalRS2currentRS.get(this.rule2originalRulesSet.get(regola));
+			Set<List<Rule>> oldSet = originalRS2currentRS.get(this.rule2originalRulesSet
+					.get(regola));
 			oldSet.add(rule2currentRulesSet.get(regola));
 		}
-		
+
 		return originalRS2currentRS;
 	}
 
@@ -112,16 +115,18 @@ public class ALFREDSampler {
 	public Map<List<Rule>, List<Page>> getRulesSets2RepresentativePages() {
 		return rulesSets2representativePages;
 	}
-	
-	public Map<Rule, Double> getRule2NullRate() {
-		Map<Rule, Double> rule2nullRate = new HashMap<Rule, Double>();
-		int numPage = this.nonRepresentedPages.size()+this.representedPages.size();
-		for (Rule regola : this.rule2numNull.keySet()) {
-			rule2nullRate.put(regola, ((double)this.rule2numNull.get(regola))/numPage);
-		}
-		
-		return rule2nullRate;
-	}
+
+	// public Map<Rule, Double> getRule2NullRate() {
+	// Map<Rule, Double> rule2nullRate = new HashMap<Rule, Double>();
+	// int numPage =
+	// this.nonRepresentedPages.size()+this.representedPages.size();
+	// // for (Rule regola : this.rule2numNull.keySet()) {
+	// // rule2nullRate.put(regola,
+	// ((double)this.rule2numNull.get(regola))/numPage);
+	// // }
+	//
+	// return rule2nullRate;
+	// }
 
 	public List<Page> getRepresentativePages() {
 		return representativePages;
@@ -135,53 +140,54 @@ public class ALFREDSampler {
 		return representedPages;
 	}
 
-	public void addPage(Page pagina){
-		
+	public void addPage(Page pagina) {
+		if (!this.nonRepresentedPages.contains(pagina) && !this.representedPages.contains(pagina)) {
 			Map<Rule, String> rule2value = new HashMap<Rule, String>();
-			
+
 			for (Rule regola : this.allRules) {
 				String estratto = regola.applyOn(pagina).getTextContent();
 				rule2value.put(regola, estratto);
-				if (estratto == "") {
-					int numNull = this.rule2numNull.get(regola);
-					numNull++;
-					this.rule2numNull.put(regola, numNull);
-				}
+				// if (estratto == "") {
+				// int numNull = this.rule2numNull.get(regola);
+				// numNull++;
+				// this.rule2numNull.put(regola, numNull);
+				// }
 			}
-			
-			if (notRapresented(rule2value, pagina)) {
-				if (isRapresentative(rule2value, pagina)) {
-					this.representativePages.add(pagina);
-				}
+
+			// if (notRapresented(rule2value, pagina)) {
+			if (isRapresentative(rule2value, pagina)) {
+				this.representativePages.add(pagina);
+			} else
 				this.nonRepresentedPages.add(pagina);
-			} else {
-				this.representedPages.add(pagina);
-			}
-	}
-	
-	private boolean notRapresented(Map<Rule, String> rule2value, Page pagina) {
-
-		boolean notSameValues = false;
-
-		for (List<Rule> rulesSet : this.originalRulesSets) {
-			List<String> values = new ArrayList<String>();
-
-			for (Rule regola : rulesSet) {
-				values.add(rule2value.get(regola));
-			}
-
-			if (!sameValues(values)) {
-				notSameValues = true;
-				int numPages = this.rulesSets2numPages.get(rulesSet);
-				numPages++;
-				this.rulesSets2numPages.put(rulesSet, new Integer(numPages));
-			}
-
+			// } else {
+			// this.representedPages.add(pagina);
+			// }
 		}
-		
-		return notSameValues;
 	}
-	
+
+//	private boolean notRapresented(Map<Rule, String> rule2value, Page pagina) {
+//
+//		boolean notSameValues = false;
+//
+//		for (List<Rule> rulesSet : this.originalRulesSets) {
+//			List<String> values = new ArrayList<String>();
+//
+//			for (Rule regola : rulesSet) {
+//				values.add(rule2value.get(regola));
+//			}
+//
+//			if (!sameValues(values)) {
+//				notSameValues = true;
+//				int numPages = this.rulesSets2numPages.get(rulesSet);
+//				numPages++;
+//				this.rulesSets2numPages.put(rulesSet, new Integer(numPages));
+//			}
+//
+//		}
+//
+//		return notSameValues;
+//	}
+
 	private boolean isRapresentative(Map<Rule, String> rule2value, Page pagina) {
 		boolean notSameValues = false;
 
@@ -207,7 +213,7 @@ public class ALFREDSampler {
 		}
 
 		this.currentRulesSets = newRulesSets;
-		
+
 		return notSameValues;
 	}
 
@@ -221,9 +227,9 @@ public class ALFREDSampler {
 			}
 		}
 		return same;
-	}    
-    
-    private List<List<Rule>> groupForExtractedValues(List<String> values, List<Rule> rules) {
+	}
+
+	private List<List<Rule>> groupForExtractedValues(List<String> values, List<Rule> rules) {
 		Map<String, List<Rule>> val2rules = new HashMap<String, List<Rule>>();
 		List<List<Rule>> result = new LinkedList<List<Rule>>();
 		int i = 0;
@@ -244,5 +250,4 @@ public class ALFREDSampler {
 		return result;
 	}
 
-	
 }

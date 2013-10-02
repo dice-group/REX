@@ -18,6 +18,7 @@ import org.aksw.rex.domainidentifier.ManualDomainIdentifier;
 import org.aksw.rex.examplegenerator.ExampleGenerator;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.alfred.ALFREDPageRetrieval;
+import org.aksw.rex.xpath.alfred.ALFREDSampler;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class ExperimentRunner implements Runnable {
 	public ExperimentRunner(String index, int minPages, int maxPages, int testPages,
 			int intervalPages) throws MalformedURLException {
 		this.index = new CrawlIndex(index);
-		this.pageRetriever = new ALFREDPageRetrieval(this.index);
+		this.pageRetriever = new ALFREDPageRetrieval(new CrawlIndex("imdb-title-index"));
 		
 		// N pairs for learning
 		this.trainingPages = maxPages;
@@ -74,6 +75,8 @@ public class ExperimentRunner implements Runnable {
 		
 		List<Pair<Resource, Resource>> examples = new LinkedList<Pair<Resource, Resource>>(positiveExamples);
 		
+		log.debug("Number of pairs: "+examples.size());
+		
 		this.testing = this.pageRetriever.getPages(numTestPages);
 		this.training = new HashSet<Pair<Resource, Resource>>(examples.subList(0, maxPages));
 		
@@ -83,8 +86,6 @@ this.training), null, false);
 		
 		log.debug("Learn pairs: " + this.training.size());
 		log.debug("Test pages: " + this.testing.size());
-
-		
 	}
 
 	@Override
@@ -109,16 +110,33 @@ this.training), null, false);
 		
 		learner.getIndex().close();
 
+		ALFREDSampler samplerL = learner.getSamplerLeft();
+		ALFREDSampler samplerR = learner.getSamplerRight();
+		
+		samplerL.addPages(this.testing);
+		samplerR.addPages(this.testing);
+		
+		List<Page> representedPagesL = samplerL.getRepresentativePages();
+		List<Page> representedPagesR = samplerR.getRepresentativePages();
+		List<Page> notRepresentedPagesL = samplerL.getNonRepresentedPages();
+		List<Page> notRepresentedPagesR = samplerR.getNonRepresentedPages();
+		
 		log.debug("Test on learning pages");
 
-		QualityEvaluator left = testResultRule(ruleL, this.goldenRuleL, this.testing);
-		QualityEvaluator right =testResultRule(ruleR, this.goldenRuleR, this.testing);
+		QualityEvaluator representedL = testResultRule(ruleL, this.goldenRuleL, representedPagesL);
+		QualityEvaluator representedR =testResultRule(ruleR, this.goldenRuleR, representedPagesR);
+		QualityEvaluator notRepresentedL = testResultRule(ruleL, this.goldenRuleL, notRepresentedPagesL);
+		QualityEvaluator notRepresentedR =testResultRule(ruleR, this.goldenRuleR, notRepresentedPagesR);
 
-		log.info("I: "+trainingPages.size() + " U-I: "+this.testing.size());
+		log.info("I: "+trainingPages.size() + " U: "+this.testing.size());
 		log.info("Left: rule "+ruleL);
-		log.info("Left: (P) "+left.getPrecision()+" (R) "+left.getRecall()+" (F) "+left.getF());
+		log.info("U': "+representedPagesL.size() + " U-U': "+notRepresentedPagesL.size());
+		log.info("Left U': (P) "+representedL.getPrecision()+" (R) "+representedL.getRecall()+" (F) "+representedL.getF());
+		log.info("Left U-U': (P) "+notRepresentedL.getPrecision()+" (R) "+notRepresentedL.getRecall()+" (F) "+notRepresentedL.getF());
 		log.info("Right: rule "+ruleR);
-		log.info("Right: (P) "+right.getPrecision()+" (R) "+right.getRecall()+" (F) "+right.getF());
+		log.info("U': "+representedPagesR.size() + " U-U': "+notRepresentedPagesR.size());
+		log.info("Right U': (P) "+representedR.getPrecision()+" (R) "+representedR.getRecall()+" (F) "+representedR.getF());
+		log.info("Right U-U': (P) "+notRepresentedR.getPrecision()+" (R) "+notRepresentedR.getRecall()+" (F) "+notRepresentedR.getF());
 	}
 
 	private static QualityEvaluator testResultRule(Rule result, Rule golden, List<Page> pages) {
@@ -128,7 +146,7 @@ this.training), null, false);
 	}
 	
 	public static void main(String[] args) throws MalformedURLException {
-		ExperimentRunner exp = new ExperimentRunner("imdb-title-index", 100, 400, 1000, 100);
+		ExperimentRunner exp = new ExperimentRunner("htmlindex", 100, 400, 1000, 100);
 		exp.run();
 	}
 }

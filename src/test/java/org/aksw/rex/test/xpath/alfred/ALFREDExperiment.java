@@ -103,7 +103,7 @@ public class ALFREDExperiment {
 		testTwoRules(pagineLearn, regolaL, regolaR, goldenRuleL, goldenRuleR, page2valueLeft, page2valueRight);		
 		
 		ALFREDSampler samplerL = learner.getSamplerLeft();
-		samplerL.find(pagineTest);
+		samplerL.addPages(pagineTest);
 		System.out.println("LEFT RULE:");
 		System.out.println("Test on "+samplerL.getRepresentedPages().size()+" represented pages");
 		testRule(samplerL.getRepresentedPages(), regolaL, goldenRuleL, testPage2valueLeft);
@@ -112,7 +112,7 @@ public class ALFREDExperiment {
 		testRule(samplerL.getNonRepresentedPages(), regolaL, goldenRuleL, testPage2valueLeft);
 		
 		ALFREDSampler samplerR = learner.getSamplerRight();
-		samplerR.find(pagineTest);
+		samplerR.addPages(pagineTest);
 		System.out.println("RIGHT RULE:");
 		System.out.println("Test on "+samplerR.getRepresentedPages().size()+" represented pages");
 		testRule(samplerR.getRepresentedPages(), regolaR, goldenRuleR, testPage2valueRight);

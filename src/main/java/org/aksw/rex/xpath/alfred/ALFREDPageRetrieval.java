@@ -110,7 +110,7 @@ public class ALFREDPageRetrieval {
 		if (!leftValue.equals("") && !rightValue.equals("")) {
 			List<Pair<String, String>> pairs = getPairs(resources);
 			if(!pairs.isEmpty()){
-				pairs = pairs.subList(0, Math.min(pairs.size(), 3));
+				pairs = pairs.subList(0, Math.min(pairs.size(), 5));
 			}
 			for (Pair<String, String> pair : pairs) {			
 				//results filtering
