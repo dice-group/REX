@@ -5,6 +5,7 @@
 *.ear
 *.class
 target/*
+*.7z
 
 # Eclipse Files #
 .classpath
