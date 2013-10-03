@@ -10,8 +10,7 @@ import java.util.Set;
 import model.MaterializedPageSet;
 import model.Page;
 import model.Rule;
-import model.RulePageMatrix;
-import model.Vector;
+import model.RuleSet;
 
 import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.results.ExtractionResult;
@@ -35,10 +34,12 @@ public class ALFREDXPathLearner implements XPathLearner {
 	private ALFREDSampler samplerLeft;
 	private ALFREDSampler samplerRight;
 	private int numberTrainingPages;
+	private List<Page> trainingPages;
 
 	public ALFREDXPathLearner(CrawlIndex index, int trainingPages) {
 		this.index = index;
 		this.numberTrainingPages = trainingPages; 
+		this.trainingPages = null;
 	}
 
 	public ALFREDXPathLearner(CrawlIndex crawlIndex) {
@@ -51,8 +52,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 			URL Domain) {
 		List<Pair<XPathRule, XPathRule>> res = new LinkedList<Pair<XPathRule, XPathRule>>();
 
-		Map<String, String> page2valueLeft = new HashMap<String, String>();
-		Map<String, String> page2valueRight = new HashMap<String, String>();
+		Map<String, List<String>> page2valueLeft = new HashMap<String, List<String>>();
+		Map<String, List<String>> page2valueRight = new HashMap<String, List<String>>();
 
 		// TODO to optimize and not retrieving used pages
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(this.index);
@@ -65,34 +66,31 @@ public class ALFREDXPathLearner implements XPathLearner {
 			log.debug("First page: "+firstPage.getTitle());
 			
 			this.samplerLeft = null;
-			XPathRule left = this.learnXPath(page2valueLeft, pages, firstPage);
-			XPathRule right = this.learnXPath(page2valueRight, pages, firstPage);
+			XPathRule left = (XPathRule) this.learnXPath(page2valueLeft, pages, firstPage);
+			XPathRule right = (XPathRule) this.learnXPath(page2valueRight, pages, firstPage);
 			
 			res.add(new Pair<XPathRule, XPathRule>(left, right));
 		} else {
 			log.debug("Error: No page found");
 		}
 		
+		this.trainingPages = pages;
 		return res;
 	}
 
-	private XPathRule learnXPath(Map<String, String> page2value, List<Page> pages, Page firstPage) {
+	private Rule learnXPath(Map<String, List<String>> page2value, List<Page> pages, Page firstPage) {
 		AlfCoreFacade facade = AlfCoreFactory.getSystemFromConfiguration(false, 10, 10, 1, 1,
 				10000, "Entropy", 0.6);
 		facade.setUp("DBPedia", new MaterializedPageSet(pages));
 		
-		log.debug("First page value: "+page2value.get(firstPage.getTitle()));
-		facade.firstSample(firstPage.getTitle(), page2value.get(firstPage.getTitle()), 1);
+		RuleSet rules = facade.firstSamples(page2value);
 
-		for (Page page : pages) {
-			facade.nextSample(page.getTitle(), page2value.get(page.getTitle()), 1, "+");
-		}
-		XPathRule res = new XPathRule(facade.getMostCorrectVector().getRule().encode());
+		Rule res = rules.getAllRules().get(0);
 		
 		if (this.samplerLeft == null) {
-			this.samplerLeft = generateSampler(facade);
+			this.samplerLeft = generateSampler(rules);
 		} else {
-			this.samplerRight = generateSampler(facade);
+			this.samplerRight = generateSampler(rules);
 		}
 
 		//TODO apply sampler on all sub-domain pages
@@ -100,7 +98,6 @@ public class ALFREDXPathLearner implements XPathLearner {
 //		this.log.info("N represented pages: "+sampler.getRepresentedPages().size());
 //		this.log.info("N non represented pages: "+sampler.getNonRepresentedPages().size()+" (representative: "+
 //				sampler.getRepresentativePages().size()+")");
-		
 		return res;
 	}
 
@@ -122,26 +119,12 @@ public class ALFREDXPathLearner implements XPathLearner {
 		return this.samplerRight;
 	}
 
-	private ALFREDSampler generateSampler(AlfCoreFacade facade) {
-		//build rulesSets - TODO move into AlfCoreFacade
+	private ALFREDSampler generateSampler(RuleSet rules) {
+		List<List<Rule>> rulesList = new LinkedList<List<Rule>>();
+		//build rulesSets - TODO is it always together?
+		rulesList.add(rules.getAllRules());
 		
-		List<Vector> vectors = facade.getVectors();
-		RulePageMatrix matrix = facade.getRulePageMatrix();
-		List<List<Rule>> rulesSets = new LinkedList<List<Rule>>();
-		double prob = 0;
-		for (Vector vettore : vectors) {
-			prob += matrix.getProbability(vettore);
-		}
-		double probThreshold = prob/vectors.size();
-		for (Vector vettore : vectors) {
-			if(matrix.getProbability(vettore) >= probThreshold) {
-				List<Rule> rulesSet = new LinkedList<Rule>();
-				rulesSet.addAll(vettore.getRules());
-				rulesSets.add(rulesSet);
-			}
-		}
-		
-		ALFREDSampler sampler = new ALFREDSampler(rulesSets);
+		ALFREDSampler sampler = new ALFREDSampler(rulesList);
 		
 		return sampler;
 	}
@@ -162,5 +145,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 	@Override
 	public void setUseExactMatch(boolean useExactMatch) {
 		
+	}
+
+	public List<Page> getTrainingPages() {
+		return this.trainingPages;
 	}
 }

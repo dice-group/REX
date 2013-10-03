@@ -6,9 +6,23 @@
 	<artifactId>REX</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
+
 	<build>
 		<finalName>REX</finalName>
 		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.aksw.rex.experiments.ExperimentRunner</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -216,7 +230,7 @@
 		<dependency>
 			<groupId>it.uniroma3.dia.db</groupId>
 			<artifactId>alf-core</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

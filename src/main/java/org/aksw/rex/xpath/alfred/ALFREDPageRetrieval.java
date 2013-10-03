@@ -52,8 +52,8 @@ public class ALFREDPageRetrieval {
 		Set<Pair<Resource, Resource>> examples = generator.getPositiveExamples();
 		
 		// TODO to remove
-		Map<String, String> page2valueLeft = new HashMap<String, String>();
-		Map<String, String> page2valueRight = new HashMap<String, String>();
+		Map<String, List<String>> page2valueLeft = new HashMap<String, List<String>>();
+		Map<String, List<String>> page2valueRight = new HashMap<String, List<String>>();
 		
 		ManualDomainIdentifier domainIdentifier = null;
 		try {
@@ -81,7 +81,7 @@ public class ALFREDPageRetrieval {
 	 * @return
 	 */
 	public List<Page> getPages(Collection<Pair<Resource, Resource>> resources,
-			Map<String, String> page2valueLeft, Map<String, String> page2valueRight, URL domain) {
+			Map<String, List<String>> page2valueLeft, Map<String, List<String>> page2valueRight, URL domain) {
 		Set<Page> pages = new HashSet<Page>();
 		
 		Iterator<Pair<Resource, Resource>> iterResources = resources.iterator();
@@ -89,16 +89,26 @@ public class ALFREDPageRetrieval {
 			Pair<Resource, Resource> pair = iterResources.next();
 			if (pair.getLeft() != null && pair.getRight() != null) {
 				List<Page> tempPages = getPages(pair, domain);
-				pages.addAll(tempPages);
+				pages.addAll(tempPages); 
 	
 				for (Page p : tempPages) {
-					page2valueLeft.put(p.getTitle(), sfp.getShortForm(IRI.create(pair.getLeft().getURI())).replace("_", " "));
-					page2valueRight.put(p.getTitle(), sfp.getShortForm(IRI.create(pair.getRight().getURI())).replace("_", " "));
+					this.addToMap(p.getTitle(), sfp.getShortForm(IRI.create(pair.getLeft().getURI())).replace("_", " "), page2valueLeft);
+					this.addToMap(p.getTitle(), sfp.getShortForm(IRI.create(pair.getRight().getURI())).replace("_", " "),page2valueRight);
 				}
 			}
 		}
 
 		return new LinkedList<Page>(pages);
+	}
+	
+	private void addToMap(String key, String value, Map<String, List<String>> map){
+		if (map.containsKey(key)){
+			map.get(key).add(value);
+		} else {
+			List<String> values = new LinkedList<String>();
+			values.add(value);
+			map.put(key, values);
+		}
 	}
 
 	private List<Page> getPages(Pair<Resource, Resource> resources, URL domain) {
@@ -110,7 +120,7 @@ public class ALFREDPageRetrieval {
 		if (!leftValue.equals("") && !rightValue.equals("")) {
 			List<Pair<String, String>> pairs = getPairs(resources);
 			if(!pairs.isEmpty()){
-				pairs = pairs.subList(0, Math.min(pairs.size(), 5));
+				pairs = pairs.subList(0, Math.min(pairs.size(), 1));
 			}
 			for (Pair<String, String> pair : pairs) {			
 				//results filtering

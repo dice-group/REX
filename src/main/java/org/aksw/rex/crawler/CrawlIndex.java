@@ -68,6 +68,7 @@ public class CrawlIndex {
 				IndexWriterConfig config = new IndexWriterConfig(luceneVersion, analyzer);
 				iwriter = new IndexWriter(directory, config);
 			}
+			iwriter.commit();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -209,6 +210,7 @@ public class CrawlIndex {
 
 		try {
 			iwriter.addDocument(doc);
+			iwriter.commit();
 		} catch (IOException e) {
 			log.error(e.getLocalizedMessage());
 			log.error("\tURL:" + url);
@@ -254,7 +256,7 @@ public class CrawlIndex {
 	
 	public Set<Page> getPages(int pageNumber) {
 		Set<Page> pages = new HashSet<Page>();
-		int maxPages = ireader.maxDoc() > pageNumber ? ireader.maxDoc() : pageNumber; 
+		int maxPages = ireader.maxDoc() > pageNumber ? pageNumber : ireader.maxDoc(); 
 		
 		for (int i = 0; i < maxPages; i++) {
 			try {
