@@ -6,7 +6,6 @@ package org.aksw.rex.controller;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.aksw.rex.consistency.ConsistencyChecker;
