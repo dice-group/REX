@@ -135,9 +135,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 		Random r = new Random();
 		for (int i = 0; i < 100; i++) {
 			try {
-				ArrayList<Pair<String, String>> doc = index.getDocument(r.nextInt(index.size()));
+				ArrayList<Pair<String, String>> doc = index.getDocument(i);
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
-
 				if (d.getTitle().startsWith(domain.toExternalForm())) {
 					for (Pair<XPathRule, XPathRule> p : expressions) {
 						XPathRule left = p.getLeft();

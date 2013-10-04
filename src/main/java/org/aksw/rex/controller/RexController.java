@@ -81,8 +81,8 @@ public class RexController {
 		Set<Triple> triples = Sets.newHashSet();
 
 		// example generation
-		Set<Pair<Resource, Resource>> posExamples = exampleGenerator.getPositiveExamples();
-		Set<Pair<Resource, Resource>> negExamples = exampleGenerator.getNegativeExamples();
+		Set<Pair<Resource, Resource>> posExamples = null;
+		Set<Pair<Resource, Resource>> negExamples = null;
 
 		// domain identification
 		URL domain = di.getDomain(property, posExamples, negExamples, false);
@@ -154,16 +154,19 @@ public class RexController {
 	public static void main(String[] args) throws Exception {
 
 		ArrayList<ControllerData> d = new ArrayList<>();
-		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]", "//SPAN[@itemprop='name'][1]/text()[1]"));
+		// d.add(new ControllerData("imdb-title-index/",
+		// "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/",
+		// "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
+		// "//SPAN[@itemprop='name'][1]/text()[1]"));
 		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
 				"//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
 		d.add(new ControllerData("imdb-name-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/name/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"Hide \")]/../../DIV[2]/DIV[1]/B[1]/A[1]/TEXT()[1]"));
 		d.add(new ControllerData("espnfc-player-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/player/_/id/",
 				"//*[contains(text(),\"EUROPE\")]/../../../../../../DIV[2]/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[2]/H1[1]/TEXT()[1]", "//OPTION[@value='?'][1]/text()[1]"));
-		d.add(new ControllerData("espnfc-team-index/", "http://dbpedia.org/ontology/team", "espnfc.com/team", "//*[contains(text(),\"M\")]/../../../../../../DIV[2]/DIV[2]/DIV[2]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/A[1]/TEXT()[1]",
+		d.add(new ControllerData("espnfc-team-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/team", "//*[contains(text(),\"M\")]/../../../../../../DIV[2]/DIV[2]/DIV[2]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/A[1]/TEXT()[1]",
 				"//*[contains(text(),\"VIDEO\")]/../../../../../../../../DIV[1]/DIV[4]/H1[1]/A[1]/TEXT()[1]"));
-		d.add(new ControllerData("goodreads-author-index/", "http://www.goodreads.com/author/", "http://www.imdb.com/title/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"by\")]/../SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
-		d.add(new ControllerData("goodreads-book-index/", "http://www.goodreads.com/book/", "http://www.imdb.com/title/", "//*[contains(text(),\"...more\")]/../../SPAN[2]/A[1]/TEXT()[1]",
+		d.add(new ControllerData("goodreads-author-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/author/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"by\")]/../SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
+		d.add(new ControllerData("goodreads-book-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/book/", "//*[contains(text(),\"...more\")]/../../SPAN[2]/A[1]/TEXT()[1]",
 				"//*[contains(text(),\"api\")]/../../../../../../DIV[2]/DIV[1]/DIV[2]/DIV[3]/DIV[1]/DIV[2]/DIV[1]/SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
 		for (ControllerData ds : d) {
 			try {
@@ -190,7 +193,7 @@ public class RexController {
 				URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
 				Set<Triple> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run(ds.subjectRule, ds.objectRule);
-				BufferedWriter bw = new BufferedWriter(new FileWriter(ds.index + ".txt"));
+				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/"+ds.index.replace("/", "") + ".txt"));
 				for (Triple triple : triples) {
 					bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
 				}
