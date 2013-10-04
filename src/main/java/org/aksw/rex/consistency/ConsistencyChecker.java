@@ -9,6 +9,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import com.hp.hpl.jena.graph.Triple;
 
 public interface ConsistencyChecker {
+	Set<Triple> getConsistentTriples(Set<Triple> triples);
 	/**
 	 * In order to be able to check the consistency of each triple <i>t</i>, the set of axioms should contain:
 	 * <ul>
