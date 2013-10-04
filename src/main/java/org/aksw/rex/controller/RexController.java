@@ -113,6 +113,51 @@ public class RexController {
 
 		return triples;
 	}
+	
+	/**
+	 * Runs the extraction pipeline
+	 * 
+	 * @param subjectRule
+	 * @param objectRule
+	 * 
+	 * @return A set of triples
+	 * @throws Exception
+	 *             If URI generation does not work
+	 */
+	public Set<Triple> run() throws Exception
+
+	{
+		Set<Triple> triples = Sets.newHashSet();
+
+		// example generation
+		Set<Pair<Resource, Resource>> posExamples = null;
+		Set<Pair<Resource, Resource>> negExamples = null;
+
+		// domain identification
+		URL domain = di.getDomain(property, posExamples, negExamples, false);
+
+		// XPath expression generation
+		 List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
+
+		if (!extractionRules.isEmpty()) {
+			// currently, we assume that the best rule is the first one in the
+			// list, thus we
+			extractionRules = extractionRules.subList(0, 1);
+			System.out.println("Top rule:\n" + extractionRules);
+
+			// extract results from the corpus
+			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
+
+			// triple generation
+			triples = uriGenerator.getTriples(results, property);
+
+			// triple filtering
+			// triples = consistency.getConsistentTriples(triples,
+			// consistency.generateAxioms(endpoint));
+		}
+
+		return triples;
+	}
 
 	// public static void main(String[] args) throws Exception {
 	// Property property =

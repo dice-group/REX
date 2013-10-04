@@ -44,18 +44,26 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	private static final NamedClass OWL_THING = new NamedClass("http://www.w3.org/2002/07/owl#Thing");
 	
 	private double accuracyThreshold = 0.6;
+	
 	private SparqlEndpoint endpoint; 
 	private SparqlEndpointKS ks;
-	private SPARQLReasoner reasoner;
-	private DisjointClassesLearner disjointnessLearner;
 	private String namespace;
+	
+	private SPARQLReasoner reasoner;
+	
+	private DisjointClassesLearner disjointnessLearner;
+	private ObjectPropertyDomainAxiomLearner domainLearner;
+	private ObjectPropertyRangeAxiomLearner rangeLearner;
+	
 	
 	LoadingCache<Individual, Set<NamedClass>> typesCache = CacheBuilder.newBuilder()
 		       .maximumSize(10000)
 		       .build(
 		           new CacheLoader<Individual, Set<NamedClass>>() {
 		             public Set<NamedClass> load(Individual individual)  {
-		               return reasoner.getTypes(individual, namespace);
+		            	 Set<NamedClass> types = reasoner.getTypes(individual);
+		            	 filterByNamespace(types);
+		               return types;
 		             }
 		           });
 	
@@ -82,8 +90,15 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		this.namespace = namespace;
 		ks = new SparqlEndpointKS(endpoint);
 		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), "sparql-cache");
+		
 		disjointnessLearner = new DisjointClassesLearner(ks);
 		disjointnessLearner.setReasoner(reasoner);
+		
+		domainLearner = new ObjectPropertyDomainAxiomLearner(ks);
+		domainLearner.setReasoner(reasoner);
+		
+		rangeLearner = new ObjectPropertyRangeAxiomLearner(ks);
+		rangeLearner.setReasoner(reasoner);
 	}
 	
 	public ConsistencyCheckerImpl(SparqlEndpoint endpoint) {
@@ -239,8 +254,6 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	 * @return
 	 */
 	private Set<NamedClass> getDomain(SparqlEndpointKS ks, ObjectProperty property){
-		ObjectPropertyDomainAxiomLearner domainLearner = new ObjectPropertyDomainAxiomLearner(ks);
-		domainLearner.setReasoner(reasoner);
 		//get domains of the property
 		SortedSet<NamedClass> domains = reasoner.getDomains(property);
 		//if domain is not available in the knowledge base, we try to learn an appropriate one
@@ -268,9 +281,6 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	 * @return
 	 */
 	private Set<NamedClass> getRange(SparqlEndpointKS ks, ObjectProperty property){
-		ObjectPropertyRangeAxiomLearner rangeLearner = new ObjectPropertyRangeAxiomLearner(ks);
-		rangeLearner.setReasoner(reasoner);
-		
 		//get ranges of the property
 		SortedSet<NamedClass> ranges = reasoner.getRanges(property);
 		//if range is not available in the knowledge base, we try to learn an appropriate one
@@ -370,5 +380,6 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 			}
 		}
 	}
+	
 	
 }
