@@ -40,9 +40,9 @@ public class ALFREDSampler {
 			addPage(pagina);
 			i++;
 			if (d != 0 && i % d == 0)
-				log.debug(i + " ");
+				log.info(i + " ");
 		}
-		log.debug(" done!");
+		log.info(" done!");
 	}
 
 	public List<Page> getNonRepresentedPages() {

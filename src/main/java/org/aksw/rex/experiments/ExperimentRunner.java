@@ -124,12 +124,12 @@ public class ExperimentRunner implements Runnable {
 			}
 		}
 		if(domain.equals("http://www.goodreads.com/book/show/")){
-			this.goldenRuleL = new XPathRule("");
-			this.goldenRuleR = new XPathRule("");
+			this.goldenRuleL = new XPathRule("//*[@id='bookTitle']/text()");
+			this.goldenRuleR = new XPathRule("//*[@id='bookAuthors']/SPAN[2]/A/SPAN/text()");
 		}
 		if(domain.equals("http://www.goodreads.com/author/show/")){
-			this.goldenRuleL = new XPathRule("");
-			this.goldenRuleR = new XPathRule("");
+			this.goldenRuleL = new XPathRule("//*[@class='bookTitle']/SPAN/text()");
+			this.goldenRuleR = new XPathRule("/HTML/BODY/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[3]/DIV[2]/DIV[1]/DIV[1]/DIV/DIV[1]/H1/SPAN");
 		}
 		if(domain.equals("http://espnfc.com/team")){
 			this.goldenRuleL = new XPathRule("//*[@id='G']/TABLE/TBODY/TR[2]/TD[3]/A/text()");
