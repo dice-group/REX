@@ -18,6 +18,7 @@ import org.aksw.rex.examplegenerator.ExampleGenerator;
 import org.aksw.rex.examplegenerator.SimpleExampleGenerator;
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.uris.URIGenerator;
+import org.aksw.rex.uris.URIGeneratorAGDISTIS;
 import org.aksw.rex.uris.URIGeneratorImpl;
 import org.aksw.rex.util.Pair;
 import org.aksw.rex.xpath.XPathExtractor;
@@ -129,7 +130,7 @@ public class RexController {
 		// endpoint);
 		xPathLearner.setUseExactMatch(false);
 
-		URIGenerator uriGenerator = new URIGeneratorImpl();
+		URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
 		Set<Triple> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run();
 
