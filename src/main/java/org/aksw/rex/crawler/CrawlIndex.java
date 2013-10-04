@@ -74,8 +74,6 @@ public class CrawlIndex {
 			log.error(e.getLocalizedMessage());
 			log.error("ERROR while building index");
 		}
-		log.info("Finished building CrawlIndex!");
-
 		try {
 			if (ireader == null) {
 				ireader = DirectoryReader.open(directory);
@@ -183,7 +181,6 @@ public class CrawlIndex {
 //			ireader.document(i);
 			Document hitDoc = ireader.document(i);
 			sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
-			log.debug("\t finished asking index...");
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error("COULD NOT SEARCH INDEX");

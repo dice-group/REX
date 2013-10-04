@@ -108,14 +108,14 @@ public class ALFREDExperiment {
 		System.out.println("LEFT RULE:");
 		System.out.println("Test on "+samplerL.getRepresentedPages().size()+" represented pages");
 		System.out.println("Test on "+samplerL.getNonRepresentedPages().size()+" non represented pages - (representative: "+
-				samplerL.getRepresentativePages().size()+")");
+				samplerL.getRepresentedPages().size()+")");
 
 		ALFREDSampler samplerR = learner.getSamplerRight();
 		samplerR.addPages(pagineTest);
 		System.out.println("RIGHT RULE:");
 		System.out.println("Test on "+samplerR.getRepresentedPages().size()+" represented pages");
 		System.out.println("Test on "+samplerR.getNonRepresentedPages().size()+" non represented pages - (representative: "+
-				samplerR.getRepresentativePages().size()+")");
+				samplerR.getRepresentedPages().size()+")");
 	}
 	
 //	private static void testRule(List<Page> pagine, Rule regola, Rule goldRegola, Map<String, String> page2value) {

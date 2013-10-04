@@ -120,12 +120,12 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private ALFREDSampler generateSampler(RuleSet rules) {
+		
 		List<List<Rule>> rulesList = new LinkedList<List<Rule>>();
 		// build rulesSets - TODO is it always together?
 		rulesList.add(rules.getAllRules());
 
-		ALFREDSampler sampler = new ALFREDSampler(rulesList);
-
+		ALFREDSampler sampler = new ALFREDSampler(rules.getAllRules());
 		return sampler;
 	}
 
@@ -135,9 +135,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 		Random r = new Random();
 		for (int i = 0; i < 100; i++) {
 			try {
-				ArrayList<Pair<String, String>> doc = index.getDocument(r.nextInt(index.size()));
+				ArrayList<Pair<String, String>> doc = index.getDocument(i);
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
-
 				if (d.getTitle().startsWith(domain.toExternalForm())) {
 					for (Pair<XPathRule, XPathRule> p : expressions) {
 						XPathRule left = p.getLeft();
@@ -171,4 +170,4 @@ public class ALFREDXPathLearner implements XPathLearner {
 	public List<Page> getTrainingPages() {
 		return this.trainingPages;
 	}
-}
+} 
