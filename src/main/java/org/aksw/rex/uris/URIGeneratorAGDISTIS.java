@@ -1,7 +1,5 @@
 package org.aksw.rex.uris;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +22,7 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 
 	public URIGeneratorAGDISTIS() {
 		// String modelDirectory = "/Users/ricardousbeck/dbpedia_en";
-		String modelDirectory = "/data/r.usbeck";
+		String modelDirectory = ".";
 		this.agdistis = new AGDISTIS(modelDirectory);
 	}
 
@@ -56,19 +54,17 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		for (NamedEntityInText namedEntity : results.keySet()) {
 			String disambiguatedURL = results.get(namedEntity);
 			if (namedEntity.getLabel() == subjectString) {
-				if (disambiguatedURL != null) {
-					s = Node.createURI(disambiguatedURL);
-				} else {
-					s = Node.createURI("http://aksw.org/resource/" + URLEncoder.encode(namedEntity.getLabel(), "UTF8"));
-				}
+				s = Node.createURI(disambiguatedURL);
 			}
 			if (namedEntity.getLabel() == objectString) {
-				if (disambiguatedURL != null) {
-					o = Node.createURI(disambiguatedURL);
-				} else {
-					o = Node.createURI("http://aksw.org/resource/" + URLEncoder.encode(namedEntity.getLabel(), "UTF8"));
-				}
+				o = Node.createURI(disambiguatedURL);
 			}
+		}
+		if (s == null) {
+			s = Node.createURI("http://aksw.org/resource/" + URLEncoder.encode(subjectString, "UTF8"));
+		}
+		if (o == null) {
+			o = Node.createURI("http://aksw.org/resource/" + URLEncoder.encode(objectString, "UTF8"));
 		}
 		Triple t = new Triple(s, p.asNode(), o);
 		return t;

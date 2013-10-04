@@ -132,10 +132,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 	@Override
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
-		Random r = new Random();
-		for (int i = 0; i < 100; i++) {
-			try {
-				ArrayList<Pair<String, String>> doc = index.getDocument(r.nextInt(index.size()));
+		try {
+			for (int i = 0; i < index.size(); i++) {
+				ArrayList<Pair<String, String>> doc = index.getDocument(i);
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
 
 				if (d.getTitle().startsWith(domain.toExternalForm())) {
@@ -147,9 +146,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent()));
 					}
 				}
-			} catch (Exception e) {
-				log.error(e.getLocalizedMessage());
 			}
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
 		}
 		return ex;
 	}
