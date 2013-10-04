@@ -46,8 +46,14 @@ public class ExperimentRunner implements Runnable {
 
 	private boolean checkQuality;
 
+	private String indexName;
+	private String propertyName;
+
 	public ExperimentRunner(String index, String prop, String domain, int maxPairs, int testPages, boolean quality) throws MalformedURLException {
 		this.checkQuality = quality;
+		this.indexName = index;
+		this.propertyName = prop;
+		
 		this.index = new CrawlIndex(index);
 		this.pageRetriever = new ALFREDPageRetrieval(this.index);
 
@@ -59,9 +65,11 @@ public class ExperimentRunner implements Runnable {
 		// TODO to move as provided input
 		String propertyS = "http://dbpedia.org/ontology/"+prop;
 		String domainS = domain;
-
-		this.goldenRuleL = new XPathRule("//*[@id='overview-top']/H1/SPAN[1]/text()");
-		this.goldenRuleR = new XPathRule("//*[contains(text(),\"Director:\") or contains(text(),\"Directors:\")]/../A[1]/SPAN[1]/TEXT()[1]");
+		
+		this.goldenRuleL = null;
+		this.goldenRuleR = null;
+		
+		setGoldenRules(prop, domain);
 
 		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL(domainS));
 
@@ -93,6 +101,46 @@ public class ExperimentRunner implements Runnable {
 		}
 	}
 
+	private void setGoldenRules(String prop, String domain) {
+		
+		if(domain.equals("http://www.imdb.com/title/")){
+			if (prop.equals("director")){
+				this.goldenRuleL = new XPathRule("//*[@id='overview-top']/H1/SPAN[1]/text()");
+				this.goldenRuleR = new XPathRule("//*[contains(text(),\"Director:\") or contains(text(),\"Directors:\")]/../A[1]/SPAN[1]/TEXT()[1]");
+			}
+			if (prop.equals("starring")){
+				this.goldenRuleL = new XPathRule("//*[@id='overview-top']/H1/SPAN[1]/text()");
+				this.goldenRuleR = new XPathRule("//*[@id='titleCast']/TABLE/TBODY/TR/TD/A/SPAN/text()");
+			}
+		}
+		if(domain.equals("http://www.imdb.com/name/")){
+			if (prop.equals("director")){
+				this.goldenRuleL = new XPathRule("//*[@id='filmography']/DIV[6]/DIV[1]/B/A/text()");
+				this.goldenRuleR = new XPathRule("//*[@id='overview-top']/H1/SPAN/text()");
+			}
+			if (prop.equals("starring")){
+				this.goldenRuleL = new XPathRule("//*[@id='filmography']/DIV[2]/DIV[1]/B/A/text()");
+				this.goldenRuleR = new XPathRule("//*[@id='overview-top']/H1/SPAN/text()");
+			}
+		}
+		if(domain.equals("http://www.goodreads.com/book/show/")){
+			this.goldenRuleL = new XPathRule("");
+			this.goldenRuleR = new XPathRule("");
+		}
+		if(domain.equals("http://www.goodreads.com/author/show/")){
+			this.goldenRuleL = new XPathRule("");
+			this.goldenRuleR = new XPathRule("");
+		}
+		if(domain.equals("http://espnfc.com/team")){
+			this.goldenRuleL = new XPathRule("//*[@id='G']/TABLE/TBODY/TR[2]/TD[3]/A/text()");
+			this.goldenRuleR = new XPathRule("//*[@id='header']/DIV[4]/H1/A/text()");
+		}
+		if(domain.equals("http://espnfc.com/player")){
+			this.goldenRuleL = new XPathRule("//*[@id='content']/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV/DIV/DIV[2]/H1/text()");
+			this.goldenRuleR = new XPathRule("//*[@id='content']/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV/DIV/DIV[2]/DIV[2]/DIV/UL/LI[1]/A/text()");
+		}
+	}
+
 	@Override
 	public void run() {
 
@@ -114,8 +162,8 @@ public class ExperimentRunner implements Runnable {
 			samplerL.addPages(this.testing);
 			samplerR.addPages(this.testing);
 			
-			List<Page> representedPagesL = samplerL.getRepresentativePages();
-			List<Page> representedPagesR = samplerR.getRepresentativePages();
+			List<Page> representedPagesL = samplerL.getRepresentedPages();
+			List<Page> representedPagesR = samplerR.getRepresentedPages();
 			List<Page> notRepresentedPagesL = samplerL.getNonRepresentedPages();
 			List<Page> notRepresentedPagesR = samplerR.getNonRepresentedPages();
 			
@@ -128,20 +176,22 @@ public class ExperimentRunner implements Runnable {
 			QualityEvaluator notRepresentedR = testResultRule(ruleR, this.goldenRuleR,
 					notRepresentedPagesR);
 			
-			log.info("I: " + trainingPages.size() + " U: " + this.testing.size());
-			log.info("Left: rule " + ruleL);
-			log.info("U': " + representedPagesL.size() + " U-U': " + notRepresentedPagesL.size());
-			log.info("Left U': (P) " + representedL.getPrecision() + " (R) " + representedL.getRecall()
-					+ " (F) " + representedL.getF());
-			log.info("Left U-U': (P) " + notRepresentedL.getPrecision() + " (R) "
-					+ notRepresentedL.getRecall() + " (F) " + notRepresentedL.getF());
-			log.info("Right: rule " + ruleR);
-			log.info("U': " + representedPagesR.size() + " U-U': " + notRepresentedPagesR.size());
-			log.info("Right U': (P) " + representedR.getPrecision() + " (R) "
-					+ representedR.getRecall() + " (F) " + representedR.getF());
-			log.info("Right U-U': (P) " + notRepresentedR.getPrecision() + " (R) "
-					+ notRepresentedR.getRecall() + " (F) " + notRepresentedR.getF());
+			log.info(this.print(this.indexName, this.propertyName,"Left",trainingPages.size()+"",representedPagesL.size()+"", 
+					this.testing.size()+"",representedL.getPrecision()+"",representedL.getRecall()+"", representedL.getF()+"",
+					notRepresentedL.getPrecision()+"",notRepresentedL.getRecall()+"", notRepresentedL.getF()+""));
+			
+			log.info(this.print(this.indexName, this.propertyName,"Right",trainingPages.size()+"",representedPagesR.size()+"", 
+					this.testing.size()+"",representedR.getPrecision()+"",representedR.getRecall()+"", representedR.getF()+"",
+					notRepresentedR.getPrecision()+"",notRepresentedR.getRecall()+"", notRepresentedR.getF()+""));
 		}
+	}
+	
+	private String print(String... values){
+		StringBuilder b = new StringBuilder();
+		for (String s: values){
+			b.append(s+"\t");
+		}
+		return b.toString();
 	}
 
 	private static QualityEvaluator testResultRule(Rule result, Rule golden, List<Page> pages) {
