@@ -180,7 +180,7 @@ public class CrawlIndex {
 				ireader = DirectoryReader.open(directory);
 				isearcher = new IndexSearcher(ireader);
 			}
-			ireader.document(i);
+//			ireader.document(i);
 			Document hitDoc = ireader.document(i);
 			sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 			log.debug("\t finished asking index...");

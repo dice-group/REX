@@ -120,9 +120,19 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private ALFREDSampler generateSampler(RuleSet rules) {
-		// build rulesSets - TODO is it always together?
+<<<<<<< HEAD
+		//build rulesSets - TODO is it always together?
+		
 		ALFREDSampler sampler = new ALFREDSampler(rules.getAllRules());
+		
+=======
+		List<List<Rule>> rulesList = new LinkedList<List<Rule>>();
+		// build rulesSets - TODO is it always together?
+		rulesList.add(rules.getAllRules());
 
+		ALFREDSampler sampler = new ALFREDSampler(rulesList);
+
+>>>>>>> 3005009caf9abe337f0cd7f64caf02f4eaa7cbc9
 		return sampler;
 	}
 
