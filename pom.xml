@@ -232,5 +232,14 @@
 			<artifactId>alf-core</artifactId>
 			<version>0.0.9-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.aksw</groupId>
+			<artifactId>AGDISTIS</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/AGDISTIS.jar</systemPath>
+		</dependency>
+	
 	</dependencies>
 </project>
