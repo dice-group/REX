@@ -120,18 +120,22 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private ALFREDSampler generateSampler(RuleSet rules) {
+		
+		List<List<Rule>> rulesList = new LinkedList<List<Rule>>();
 		// build rulesSets - TODO is it always together?
-		ALFREDSampler sampler = new ALFREDSampler(rules.getAllRules());
+		rulesList.add(rules.getAllRules());
 
+		ALFREDSampler sampler = new ALFREDSampler(rules.getAllRules());
 		return sampler;
 	}
 
 	@Override
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
-		try {
-			for (int i = 0; i < index.size(); i++) {
-				ArrayList<Pair<String, String>> doc = index.getDocument(i);
+		Random r = new Random();
+		for (int i = 0; i < 100; i++) {
+			try {
+				ArrayList<Pair<String, String>> doc = index.getDocument(r.nextInt(index.size()));
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
 
 				if (d.getTitle().startsWith(domain.toExternalForm())) {
@@ -143,9 +147,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent()));
 					}
 				}
+			} catch (Exception e) {
+				log.error(e.getLocalizedMessage());
 			}
-		} catch (Exception e) {
-			log.error(e.getLocalizedMessage());
 		}
 		return ex;
 	}
@@ -167,4 +171,4 @@ public class ALFREDXPathLearner implements XPathLearner {
 	public List<Page> getTrainingPages() {
 		return this.trainingPages;
 	}
-}
+} 

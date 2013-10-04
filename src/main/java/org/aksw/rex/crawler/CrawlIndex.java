@@ -74,8 +74,6 @@ public class CrawlIndex {
 			log.error(e.getLocalizedMessage());
 			log.error("ERROR while building index");
 		}
-		log.info("Finished building CrawlIndex!");
-
 		try {
 			if (ireader == null) {
 				ireader = DirectoryReader.open(directory);
