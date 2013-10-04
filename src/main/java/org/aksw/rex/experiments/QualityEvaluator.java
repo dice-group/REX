@@ -36,15 +36,15 @@ public class QualityEvaluator {
 			if (resultValue.trim().equals("") || goldenValue.trim().equals("")) {
 				if (resultValue.trim().equals("") && goldenValue.trim().equals(""))
 					// both null
-					log.debug("Both rules null values in page: "+p.getTitle());
+					log.info("Both rules null values in page: "+p.getTitle());
 				else if (resultValue.trim().equals("")){
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue +" in page: "+p.getTitle());
+					log.info("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue +" in page: "+p.getTitle());
 					// golden not null
 					fn++;
 				}
 				else{
 					// only golden null
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
+					log.info("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
 					fp++;
 				}
 			} else {
@@ -52,7 +52,7 @@ public class QualityEvaluator {
 					tp++;
 				} else {
 					tpWrong++;
-					log.debug("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
+					log.info("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
 				}
 			}
 		}

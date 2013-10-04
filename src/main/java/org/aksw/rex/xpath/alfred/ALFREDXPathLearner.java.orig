@@ -120,18 +120,29 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private ALFREDSampler generateSampler(RuleSet rules) {
-		// build rulesSets - TODO is it always together?
+<<<<<<< HEAD
+		//build rulesSets - TODO is it always together?
+		
 		ALFREDSampler sampler = new ALFREDSampler(rules.getAllRules());
+		
+=======
+		List<List<Rule>> rulesList = new LinkedList<List<Rule>>();
+		// build rulesSets - TODO is it always together?
+		rulesList.add(rules.getAllRules());
 
+		ALFREDSampler sampler = new ALFREDSampler(rulesList);
+
+>>>>>>> 3005009caf9abe337f0cd7f64caf02f4eaa7cbc9
 		return sampler;
 	}
 
 	@Override
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
-		try {
-			for (int i = 0; i < index.size(); i++) {
-				ArrayList<Pair<String, String>> doc = index.getDocument(i);
+		Random r = new Random();
+		for (int i = 0; i < 100; i++) {
+			try {
+				ArrayList<Pair<String, String>> doc = index.getDocument(r.nextInt(index.size()));
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
 
 				if (d.getTitle().startsWith(domain.toExternalForm())) {
@@ -143,9 +154,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent()));
 					}
 				}
+			} catch (Exception e) {
+				log.error(e.getLocalizedMessage());
 			}
-		} catch (Exception e) {
-			log.error(e.getLocalizedMessage());
 		}
 		return ex;
 	}
