@@ -147,7 +147,7 @@ public class XPathLearnerImpl implements XPathLearner{
 					//add extraction results for each subject-object pair
 					for (String sub : subjects) {
 						for (String obj : objects) {
-							extractionResults.add(new ExtractionResultImpl(sub, obj));
+							extractionResults.add(new ExtractionResultImpl(sub, obj,""));
 						}
 					}
 				}

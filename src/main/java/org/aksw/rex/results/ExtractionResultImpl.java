@@ -4,6 +4,7 @@ public class ExtractionResultImpl implements ExtractionResult {
 
     private String subject;
     private String object;
+    private String pageURL;
 
     @Override
 	public String getSubject() {
@@ -25,10 +26,19 @@ public class ExtractionResultImpl implements ExtractionResult {
         object = o;
     }
     
-    public ExtractionResultImpl(String s, String o)
+    public ExtractionResultImpl(String s, String o, String p)
     {
         subject = s;
         object = o;
+        pageURL = p;
     }
+    @Override
+	public String getPageURL() {
+		return pageURL;
+	}
+    @Override
+	public void setPageURL(String pageURL) {
+		this.pageURL = pageURL;
+	}
     
 }

@@ -21,9 +21,12 @@ import org.aksw.rex.xpath.XPathLearnerImpl;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+
+import edu.stanford.nlp.util.Quadruple;
 
 /**
  * @author Lorenz Buehmann
@@ -52,7 +55,7 @@ public class Evaluation {
     	
     	URIGenerator uriGenerator = new URIGeneratorImpl();
     	
-		Set<Triple> triples = new RexController(
+		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
 				exampleGenerator, 
 				domainIdentifier,
@@ -61,7 +64,7 @@ public class Evaluation {
 				new ConsistencyCheckerImpl(endpoint),
 				endpoint).run();
 		
-		for (Triple triple : triples) {
+		for (Quadruple<Node, Node, Node, String> triple : triples) {
 			System.out.println(triple);
 		}
 	}
@@ -84,7 +87,7 @@ public class Evaluation {
     	
     	URIGenerator uriGenerator = new URIGeneratorImpl();
     	
-		Set<Triple> triples = new RexController(
+		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
 				exampleGenerator, 
 				domainIdentifier,
@@ -93,7 +96,7 @@ public class Evaluation {
 				new ConsistencyCheckerImpl(endpoint),
 				endpoint).run();
 		
-		for (Triple triple : triples) {
+		for (Quadruple<Node, Node, Node, String> triple : triples) {
 			System.out.println(triple);
 		}
 	}
@@ -117,7 +120,7 @@ public class Evaluation {
     	
     	URIGenerator uriGenerator = new URIGeneratorImpl();
     	
-		Set<Triple> triples = new RexController(
+		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
 				exampleGenerator, 
 				domainIdentifier,
@@ -126,7 +129,7 @@ public class Evaluation {
 				new ConsistencyCheckerImpl(endpoint),
 				endpoint).run();
 		
-		for (Triple triple : triples) {
+		for (Quadruple<Node, Node, Node, String> triple : triples) {
 			System.out.println(triple);
 		}
 	}
@@ -149,7 +152,7 @@ public class Evaluation {
     	
     	URIGenerator uriGenerator = new URIGeneratorImpl();
     	
-		Set<Triple> triples = new RexController(
+		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
 				exampleGenerator, 
 				domainIdentifier,
@@ -158,7 +161,7 @@ public class Evaluation {
 				new ConsistencyCheckerImpl(endpoint),
 				endpoint).run();
 		
-		for (Triple triple : triples) {
+		for (Quadruple<Node, Node, Node, String> triple : triples) {
 			System.out.println(triple);
 		}
 	}

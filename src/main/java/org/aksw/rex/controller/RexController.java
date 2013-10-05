@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,10 +32,13 @@ import org.slf4j.LoggerFactory;
 import rules.xpath.XPathRule;
 
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+
+import edu.stanford.nlp.util.Quadruple;
 
 /**
  * 
@@ -50,6 +54,7 @@ public class RexController {
 	ConsistencyChecker consistency;
 	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	int topNRules = 1;
+	private  static URL domain;
 
 	public RexController(Property p, ExampleGenerator e, DomainIdentifier d, XPathLearner l, URIGenerator uriGenerator, ConsistencyChecker c, SparqlEndpoint s) {
 		property = p;
@@ -71,17 +76,17 @@ public class RexController {
 	 * @throws Exception
 	 *             If URI generation does not work
 	 */
-	public Set<Triple> run(String subjectRule, String objectRule) throws Exception
+	public Set<Quadruple<Node, Node, Node, String>> run(String subjectRule, String objectRule) throws Exception
 
 	{
-		Set<Triple> triples = Sets.newHashSet();
+		Set<Quadruple<Node, Node, Node, String>> quads = Sets.newHashSet();
 
 		// example generation
 		Set<Pair<Resource, Resource>> posExamples = null;
 		Set<Pair<Resource, Resource>> negExamples = null;
 
 		// domain identification
-		URL domain = di.getDomain(property, posExamples, negExamples, false);
+		  domain = di.getDomain(property, posExamples, negExamples, false);
 
 		// XPath expression generation
 		// List<Pair<XPathRule, XPathRule>> extractionRules =
@@ -100,22 +105,27 @@ public class RexController {
 			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
 			log.error("XpathResults extracted: " + results.size());
 			// triple generation
-			triples = uriGenerator.getTriples(results, property);
-			BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles_Axel/consistent" + property.toString().replace("/", "") + ".txt"));
-			for (Triple triple : triples) {
-				bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
+			quads = uriGenerator.getTriples(results, property);
+			BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/withOutConsistency" + domain.toExternalForm().replaceAll("//", "").replaceAll("/", "") + ".txt"));
+			for (Quadruple<Node, Node, Node, String> q : quads) {
+				bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth()+ ">.\n");
 			}
+			bw.flush();
 			bw.close();
-			log.error("Uris generated extracted: " + triples.size());
+			log.error("Quadrupels generated extracted: " + quads.size());
 
 			// triple filtering
+			Set<Triple> triples = quadsToTriples(quads);
 			triples = consistency.getConsistentTriples(triples);
-//			triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
-			log.error("Consistency checked: " + triples.size());
+			quads = triplesToQuads(triples, quads);
+
+			// triples = consistency.getConsistentTriples(triples,
+			// consistency.generateAxioms(endpoint));
+			log.error("Consistency checked: " + quads.size());
 
 		}
 
-		return triples;
+		return quads;
 	}
 
 	/**
@@ -128,10 +138,10 @@ public class RexController {
 	 * @throws Exception
 	 *             If URI generation does not work
 	 */
-	public Set<Triple> run() throws Exception
+	public Set<Quadruple<Node, Node, Node, String>> run() throws Exception
 
 	{
-		Set<Triple> triples = Sets.newHashSet();
+		Set<Quadruple<Node, Node, Node, String>> quads = Sets.newHashSet();
 
 		// example generation
 		Set<Pair<Resource, Resource>> posExamples = null;
@@ -153,14 +163,41 @@ public class RexController {
 			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
 
 			// triple generation
-			triples = uriGenerator.getTriples(results, property);
+			quads = uriGenerator.getTriples(results, property);
 
 			// triple filtering
-//			triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
+			// triples = consistency.getConsistentTriples(triples,
+			// consistency.generateAxioms(endpoint));
+			Set<Triple> triples = quadsToTriples(quads);
 			triples = consistency.getConsistentTriples(triples);
+			quads = triplesToQuads(triples, quads);
 		}
 
-		return triples;
+		return quads;
+	}
+
+	private Set<Quadruple<Node, Node, Node, String>> triplesToQuads(Set<Triple> triples, Set<Quadruple<Node, Node, Node, String>> quads) {
+		HashSet<Quadruple<Node, Node, Node, String>> set = Sets.newHashSet();
+		for (Triple t : triples) {
+			for (Quadruple<Node, Node, Node, String> q : quads) {
+				if (t.getSubject().getURI().equals(q.first.getURI())) {
+					if (t.getPredicate().getURI().equals(q.second.getURI())) {
+						if (t.getObject().getURI().equals(q.third.getURI())) {
+							set.add(q);
+						}
+					}
+				}
+			}
+		}
+		return set;
+	}
+
+	private Set<Triple> quadsToTriples(Set<Quadruple<Node, Node, Node, String>> quads) {
+		HashSet<Triple> set = Sets.newHashSet();
+		for (Quadruple<Node, Node, Node, String> q : quads) {
+			set.add(new Triple(q.first, q.second, q.third));
+		}
+		return set;
 	}
 
 	// public static void main(String[] args) throws Exception {
@@ -203,11 +240,12 @@ public class RexController {
 	public static void main(String[] args) throws Exception {
 
 		ArrayList<ControllerData> d = new ArrayList<ControllerData>();
-		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]", "//SPAN[@itemprop='name'][1]/text()[1]"));
 		// d.add(new ControllerData("imdb-title-index/",
-		// "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/",
+		// "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/",
 		// "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
-		// "//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
+		// "//SPAN[@itemprop='name'][1]/text()[1]"));
+		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
+				"//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
 		d.add(new ControllerData("imdb-name-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/name/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"Hide \")]/../../DIV[2]/DIV[1]/B[1]/A[1]/TEXT()[1]"));
 		d.add(new ControllerData("espnfc-player-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/player/_/id/",
 				"//*[contains(text(),\"EUROPE\")]/../../../../../../DIV[2]/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[2]/H1[1]/TEXT()[1]", "//OPTION[@value='?'][1]/text()[1]"));
@@ -240,16 +278,19 @@ public class RexController {
 
 				URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
-//				ConsistencyCheckerImpl c = new ConsistencyCheckerImpl(endpoint);
-//				SparqlEndpoint end = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
+				// ConsistencyCheckerImpl c = new
+				// ConsistencyCheckerImpl(endpoint);
+				// SparqlEndpoint end =
+				// SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
 				String namespace = "http://dbpedia.org/ontology/";
 				ConsistencyChecker c = new ConsistencyCheckerImpl(endpoint, namespace);
-				
-				Set<Triple> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, c, endpoint).run(ds.subjectRule, ds.objectRule);
-				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles_Axel/" + ds.index.replace("/", "") + ".txt"));
-				for (Triple triple : triples) {
-					bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
+
+				Set<Quadruple<Node, Node, Node, String>> quads = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, c, endpoint).run(ds.subjectRule, ds.objectRule);
+				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/" + domain.toExternalForm().replaceAll("//", "").replaceAll("/", "") + ".txt"));
+				for (Quadruple<Node, Node, Node, String> q : quads) {
+					bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth()+ ">.\n");
 				}
+				bw.flush();
 				bw.close();
 			} catch (Exception e) {
 				e.printStackTrace();

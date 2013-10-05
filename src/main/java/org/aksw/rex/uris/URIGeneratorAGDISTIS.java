@@ -14,6 +14,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 
 import datatypeshelper.utils.doc.ner.NamedEntityInText;
+import edu.stanford.nlp.util.Quadruple;
 
 public class URIGeneratorAGDISTIS implements URIGenerator {
 	private org.slf4j.Logger log = LoggerFactory.getLogger(URIGeneratorAGDISTIS.class);
@@ -28,8 +29,8 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 	}
 
 	@Override
-	public Set<Triple> getTriples(Set<ExtractionResult> pairs, Property p) throws Exception {
-		Set<Triple> set = new HashSet<Triple>();
+	public Set<Quadruple<Node, Node, Node, String>> getTriples(Set<ExtractionResult> pairs, Property p) throws Exception {
+		Set<Quadruple<Node, Node, Node, String>> set = new HashSet<Quadruple<Node, Node, Node, String>>();
 		// for each pos and neg example
 		if (pairs == null) {
 			return set;
@@ -37,14 +38,14 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		for (ExtractionResult res : pairs) {
 			// process left
 			log.info("Disambiguating:" + res.getSubject() +", "+ res.getObject());
-			Triple process = process(res, p);
+			Quadruple<Node, Node, Node, String> process = process(res, p);
 			if (process != null)
 				set.add(process);
 		}
 		return set;
 	}
 
-	private Triple process(ExtractionResult res, Property p) throws Exception {
+	private Quadruple<Node, Node, Node, String> process(ExtractionResult res, Property p) throws Exception {
 		String subjectString = res.getSubject();
 		String objectString = res.getObject();
 
@@ -72,7 +73,7 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		if (o == null) {
 			o = Node.createURI("http://aksw.org/resource/" + URLEncoder.encode(objectString, "UTF8"));
 		}
-		Triple t = new Triple(s, p.asNode(), o);
+		Quadruple<Node, Node, Node, String> t = new Quadruple<Node, Node, Node, String>(s, p.asNode(), o,res.getPageURL());
 		return t;
 	}
 

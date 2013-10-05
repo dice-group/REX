@@ -143,7 +143,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 						XPathRule right = p.getRight();
 						ExtractedValue s = left.applyOn(d);
 						ExtractedValue o = right.applyOn(d);
-						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent()));
+						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent(),d.getTitle()));
 					}
 				}
 			} catch (Exception e) {
