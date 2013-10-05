@@ -46,6 +46,10 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		String subjectString = res.getSubject();
 		String objectString = res.getObject();
 
+		if(subjectString==null||subjectString.equals(""))
+			return null;
+		if(objectString==null||objectString.equals(""))
+			return null;
 		Node s = null;
 		Node o = null;
 		String preAnnotatedText = "<entity>" + subjectString + "</entity><entity>" + objectString + "</entity>";
