@@ -35,6 +35,7 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		}
 		for (ExtractionResult res : pairs) {
 			// process left
+			log.info("Disambiguating:" + res.getSubject() +", "+ res.getObject());
 			Triple process = process(res, p);
 			if (process != null)
 				set.add(process);
