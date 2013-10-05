@@ -48,7 +48,7 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 	private SparqlEndpoint endpoint;
 	private SPARQLReasoner reasoner;
 	private Property property;
-	private int maxNrOfPositiveExamples = 1000;
+	protected int maxNrOfPositiveExamples = 1000;
 	private int maxNrOfNegativeExamples = 1000;
 	
 	private QueryExecutionFactory qef;
@@ -336,13 +336,13 @@ public class SimpleExampleGenerator implements ExampleGenerator{
 		return examples;
 	}
 	
-	private ResultSet executeSelectQuery(Query query){
+	protected ResultSet executeSelectQuery(Query query){
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		return rs;
 	}
 	
-	private ResultSet executeSelectQuery(String query){
+	protected ResultSet executeSelectQuery(String query){
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		return rs;
