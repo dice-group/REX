@@ -24,7 +24,8 @@ import com.hp.hpl.jena.graph.Triple;
  */
 public class ConsistencyCheckerImplTest {
 	
-	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+//	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
 	String namespace = "http://dbpedia.org/ontology/";
 	ConsistencyChecker consistencyChecker = new ConsistencyCheckerImpl(endpoint, namespace);
 	ObjectProperty property = new ObjectProperty("http://dbpedia.org/ontology/director");
