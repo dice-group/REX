@@ -101,6 +101,11 @@ public class RexController {
 			log.error("XpathResults extracted: " + results.size());
 			// triple generation
 			triples = uriGenerator.getTriples(results, property);
+			BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles_Axel/consistent" + property.toString().replace("/", "") + ".txt"));
+			for (Triple triple : triples) {
+				bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
+			}
+			bw.close();
 			log.error("Uris generated extracted: " + triples.size());
 
 			// triple filtering
@@ -241,7 +246,7 @@ public class RexController {
 				ConsistencyChecker c = new ConsistencyCheckerImpl(endpoint, namespace);
 				
 				Set<Triple> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, c, endpoint).run(ds.subjectRule, ds.objectRule);
-				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/" + ds.index.replace("/", "") + ".txt"));
+				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles_Axel/" + ds.index.replace("/", "") + ".txt"));
 				for (Triple triple : triples) {
 					bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
 				}
