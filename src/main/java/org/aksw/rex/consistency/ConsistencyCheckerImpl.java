@@ -43,7 +43,7 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	
 	private static final NamedClass OWL_THING = new NamedClass("http://www.w3.org/2002/07/owl#Thing");
 	
-	private double accuracyThreshold = 0.6;
+	private double accuracyThreshold = 0.7;
 	
 	private SparqlEndpoint endpoint; 
 	private SparqlEndpointKS ks;
@@ -85,6 +85,15 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		             }
 		           });
 	
+	LoadingCache<Set<NamedClass>, EvaluatedAxiom> disjointnessCache = CacheBuilder.newBuilder()
+		       .maximumSize(1000)
+		       .build(
+		           new CacheLoader<Set<NamedClass>, EvaluatedAxiom>() {
+		             public EvaluatedAxiom load(Set<NamedClass> classes)  {
+		               return disjointnessLearner.computeDisjointness(classes).iterator().next();
+		             }
+		           });
+	
 	public ConsistencyCheckerImpl(SparqlEndpoint endpoint, String namespace) {
 		this.endpoint = endpoint;
 		this.namespace = namespace;
@@ -103,6 +112,13 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	
 	public ConsistencyCheckerImpl(SparqlEndpoint endpoint) {
 		this(endpoint, null);
+	}
+	
+	/**
+	 * @param accuracyThreshold the minimum accuracy used to accept an automatically generated schema axiom
+	 */
+	public void setAccuracyThreshold(double accuracyThreshold) {
+		this.accuracyThreshold = accuracyThreshold;
 	}
 
 	/* (non-Javadoc)
@@ -348,9 +364,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		//try to generate disjointness axioms between subject types and property domain
 		for (NamedClass type : subjectTypes) {
 			for (NamedClass domain : domains) {
-				EvaluatedAxiom axiom = disjointnessLearner.computeDisjointess(type, domain);
-				logger.debug(axiom);
+//				EvaluatedAxiom axiom = disjointnessLearner.computeDisjointess(type, domain);
+				EvaluatedAxiom axiom = disjointnessCache.get(Sets.newHashSet(type, domain));
 				if(axiom.getScore().getAccuracy() >= accuracyThreshold){
+					logger.debug("Detected disjointness violation of subject type " + type + " and domain " + domain + 
+							" with a confidence of " + axiom.getScore().getAccuracy());
 					return true;
 				}
 			}
@@ -359,9 +377,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		//try to generate disjointness axioms between object types and property range
 		for (NamedClass type : objectTypes) {
 			for (NamedClass range : ranges) {
-				EvaluatedAxiom axiom = disjointnessLearner.computeDisjointess(type, range);
-				logger.debug(axiom);
+//				EvaluatedAxiom axiom = disjointnessLearner.computeDisjointess(type, range);
+				EvaluatedAxiom axiom = disjointnessCache.get(Sets.newHashSet(type, range));
 				if(axiom.getScore().getAccuracy() >= accuracyThreshold){
+					logger.debug("Detected disjointness violation of object type " + type + " and range " + range + 
+							" with a confidence of " + axiom.getScore().getAccuracy());
 					return true;
 				}
 			}
