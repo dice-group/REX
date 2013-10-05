@@ -63,9 +63,9 @@ public class ALFREDSampler {
 			}
 
 			if (isRapresentative(rule2value)) {
-				this.representedPages.add(pagina);
-			} else
 				this.nonRepresentedPages.add(pagina);
+			} else
+				this.representedPages.add(pagina);
 		}
 	}
 

@@ -62,7 +62,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(this.index);
 		List<Page> pages = pageRetr.getPages(posExamples, page2valueLeft, page2valueRight, Domain);
 		pages = pages.size() > this.numberTrainingPages ? pages.subList(0, this.numberTrainingPages) : pages;
-		log.debug("N found pages: " + pages.size());
+		log.info("N found pages: " + pages.size());
 
 		if (!pages.isEmpty()) {
 			Page firstPage = pages.get(0);
