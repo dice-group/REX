@@ -105,22 +105,22 @@ public class ExperimentRunner implements Runnable {
 		
 		if(domain.equals("http://www.imdb.com/title/")){
 			if (prop.equals("director")){
-				this.goldenRuleL = new XPathRule("//*[@id='overview-top']/H1/SPAN[1]/text()");
+				this.goldenRuleL = new XPathRule("//*[contains(text(),'Take The Quiz!')]/../SPAN[1]/A[1]/TEXT()[1]");
 				this.goldenRuleR = new XPathRule("//*[contains(text(),\"Director:\") or contains(text(),\"Directors:\")]/../A[1]/SPAN[1]/TEXT()[1]");
 			}
 			if (prop.equals("starring")){
-				this.goldenRuleL = new XPathRule("//*[@id='overview-top']/H1/SPAN[1]/text()");
+				this.goldenRuleL = new XPathRule("//*[contains(text(),'Take The Quiz!')]/../SPAN[1]/A[1]/TEXT()[1]");
 				this.goldenRuleR = new XPathRule("//*[@id='titleCast']/TABLE/TBODY/TR/TD/A/SPAN/text()");
 			}
 		}
 		if(domain.equals("http://www.imdb.com/name/")){
 			if (prop.equals("director")){
-				this.goldenRuleL = new XPathRule("//*[@id='filmography']/DIV[6]/DIV[1]/B/A/text()");
-				this.goldenRuleR = new XPathRule("//*[@id='overview-top']/H1/SPAN/text()");
+				this.goldenRuleL = new XPathRule("//*[@id='filmo-head-director']/following-sibling::*[1]/DIV/B/A/text()");
+				this.goldenRuleR = new XPathRule("//*[contains(text(),'Take The Quiz!')]/../SPAN[1]/A[1]/text()[1]");
 			}
 			if (prop.equals("starring")){
-				this.goldenRuleL = new XPathRule("//*[@id='filmography']/DIV[2]/DIV[1]/B/A/text()");
-				this.goldenRuleR = new XPathRule("//*[@id='overview-top']/H1/SPAN/text()");
+				this.goldenRuleL = new XPathRule("//*[@id='filmo-head-actor' or @id='filmo-head-actress']/following-sibling::*[1]/DIV/B/A/text()");
+				this.goldenRuleR = new XPathRule("//*[contains(text(),'Take The Quiz!')]/../SPAN[1]/A[1]/text()[1]");
 			}
 		}
 		if(domain.equals("http://www.goodreads.com/book/show/")){
@@ -129,15 +129,15 @@ public class ExperimentRunner implements Runnable {
 		}
 		if(domain.equals("http://www.goodreads.com/author/show/")){
 			this.goldenRuleL = new XPathRule("//*[@class='bookTitle']/SPAN/text()");
-			this.goldenRuleR = new XPathRule("/HTML/BODY/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[3]/DIV[2]/DIV[1]/DIV[1]/DIV/DIV[1]/H1/SPAN");
+			this.goldenRuleR = new XPathRule("//*[@class='authorName']/SPAN/text()");
 		}
 		if(domain.equals("http://espnfc.com/team")){
-			this.goldenRuleL = new XPathRule("//*[@id='G']/TABLE/TBODY/TR[2]/TD[3]/A/text()");
-			this.goldenRuleR = new XPathRule("//*[@id='header']/DIV[4]/H1/A/text()");
+			this.goldenRuleL = new XPathRule("//*[@id='G']/TABLE/TBODY/TR[2]/TD[3]/A/text()//*[contains(text(),'SQUAD')]/../../DIV/DIV/TABLE/TBODY/TR[@class='evenrow' or @class='oddrow']/TD[3]/A/text()");
+			this.goldenRuleR = new XPathRule("//*[@class='section-title']/text()");
 		}
 		if(domain.equals("http://espnfc.com/player")){
-			this.goldenRuleL = new XPathRule("//*[@id='content']/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV/DIV/DIV[2]/H1/text()");
-			this.goldenRuleR = new XPathRule("//*[@id='content']/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV/DIV/DIV[2]/DIV[2]/DIV/UL/LI[1]/A/text()");
+			this.goldenRuleL = new XPathRule("//*[@class='profile']/h1/text()");
+			this.goldenRuleR = new XPathRule("//*[contains(text(),'Teams')]/../UL/LI/A/text()");
 		}
 	}
 
@@ -152,7 +152,6 @@ public class ExperimentRunner implements Runnable {
 		log.info("Learned XPath L: " + ruleL);
 		log.info("Learned XPath R: " + ruleR);
 
-		learner.getIndex().close();
 		if (this.checkQuality){
 			List<Page> trainingPages = learner.getTrainingPages();
 			

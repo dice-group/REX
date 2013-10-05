@@ -24,10 +24,10 @@ public class QualityEvaluator {
 
 	public void evaluate() {
 		double tp = 0;
-		double tpWrong = 0;
+//		double tpWrong = 0;
 		double fp = 0;
 		double fn = 0;
-		double dKnow = 0;
+//		double dKnow = 0;
 
 		for (Page p : pages) {
 			String goldenValue = this.golden.applyOn(p).getTextContent();
@@ -51,14 +51,14 @@ public class QualityEvaluator {
 				if (resultValue.trim().equals(goldenValue.trim())) {
 					tp++;
 				} else {
-					tpWrong++;
+//					tpWrong++;
 					log.info("Not correct: it was " + resultValue.trim() + " = but it should be " + goldenValue+" in page: "+p.getTitle());
 				}
 			}
 		}
 
-		this.setPrecision(tp / (tp + tpWrong + fp));
-		this.setRecall(tp / (tp + tpWrong + fn + dKnow));
+		this.setPrecision(tp / (tp + fp));
+		this.setRecall(tp / (tp + fn));
 	}
 
 	public double getPrecision() {
