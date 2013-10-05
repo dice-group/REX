@@ -1,0 +1,1 @@
+<http://dbpedia.org/resource/Esteban_Paredes> <http://dbpedia.org/ontology/team> <http://dbpedia.org/resource/Quer?taro> <http://espnfc.com/team/_/id/222>.
