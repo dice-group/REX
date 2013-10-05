@@ -54,7 +54,7 @@ public class RexController {
 	ConsistencyChecker consistency;
 	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	int topNRules = 1;
-	private  static URL domain;
+	private static URL domain;
 
 	public RexController(Property p, ExampleGenerator e, DomainIdentifier d, XPathLearner l, URIGenerator uriGenerator, ConsistencyChecker c, SparqlEndpoint s) {
 		property = p;
@@ -86,7 +86,7 @@ public class RexController {
 		Set<Pair<Resource, Resource>> negExamples = null;
 
 		// domain identification
-		  domain = di.getDomain(property, posExamples, negExamples, false);
+		domain = di.getDomain(property, posExamples, negExamples, false);
 
 		// XPath expression generation
 		// List<Pair<XPathRule, XPathRule>> extractionRules =
@@ -108,7 +108,7 @@ public class RexController {
 			quads = uriGenerator.getTriples(results, property);
 			BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/withOutConsistency" + domain.toExternalForm().replaceAll("//", "").replaceAll("/", "") + ".txt"));
 			for (Quadruple<Node, Node, Node, String> q : quads) {
-				bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth()+ ">.\n");
+				bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth() + ">.\n");
 			}
 			bw.flush();
 			bw.close();
@@ -244,16 +244,16 @@ public class RexController {
 		// "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/",
 		// "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
 		// "//SPAN[@itemprop='name'][1]/text()[1]"));
-		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
-				"//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
+//		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
+//				"//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
 		d.add(new ControllerData("imdb-name-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/name/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"Hide \")]/../../DIV[2]/DIV[1]/B[1]/A[1]/TEXT()[1]"));
-		d.add(new ControllerData("espnfc-player-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/player/_/id/",
-				"//*[contains(text(),\"EUROPE\")]/../../../../../../DIV[2]/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[2]/H1[1]/TEXT()[1]", "//OPTION[@value='?'][1]/text()[1]"));
-		d.add(new ControllerData("espnfc-team-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/team", "//*[contains(text(),\"M\")]/../../../../../../DIV[2]/DIV[2]/DIV[2]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/A[1]/TEXT()[1]",
-				"//*[contains(text(),\"VIDEO\")]/../../../../../../../../DIV[1]/DIV[4]/H1[1]/A[1]/TEXT()[1]"));
-		d.add(new ControllerData("goodreads-author-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/author/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"by\")]/../SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
-		d.add(new ControllerData("goodreads-book-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/book/", "//*[contains(text(),\"...more\")]/../../SPAN[2]/A[1]/TEXT()[1]",
-				"//*[contains(text(),\"api\")]/../../../../../../DIV[2]/DIV[1]/DIV[2]/DIV[3]/DIV[1]/DIV[2]/DIV[1]/SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
+//		d.add(new ControllerData("espnfc-player-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/player/_/id/",
+//				"//*[contains(text(),\"EUROPE\")]/../../../../../../DIV[2]/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[2]/H1[1]/TEXT()[1]", "//OPTION[@value='?'][1]/text()[1]"));
+//		d.add(new ControllerData("espnfc-team-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/team", "//*[contains(text(),\"M\")]/../../../../../../DIV[2]/DIV[2]/DIV[2]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/A[1]/TEXT()[1]",
+//				"//*[contains(text(),\"VIDEO\")]/../../../../../../../../DIV[1]/DIV[4]/H1[1]/A[1]/TEXT()[1]"));
+//		d.add(new ControllerData("goodreads-author-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/author/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"by\")]/../SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
+//		d.add(new ControllerData("goodreads-book-index/", "http://dbpedia.org/ontology/author", "http://www.goodreads.com/book/", "//*[contains(text(),\"...more\")]/../../SPAN[2]/A[1]/TEXT()[1]",
+//				"//*[contains(text(),\"api\")]/../../../../../../DIV[2]/DIV[1]/DIV[2]/DIV[3]/DIV[1]/DIV[2]/DIV[1]/SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
 		for (ControllerData ds : d) {
 			try {
 				Property property = ResourceFactory.createProperty(ds.dbpediaProperty);
@@ -288,7 +288,7 @@ public class RexController {
 				Set<Quadruple<Node, Node, Node, String>> quads = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, c, endpoint).run(ds.subjectRule, ds.objectRule);
 				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/" + domain.toExternalForm().replaceAll("//", "").replaceAll("/", "") + ".txt"));
 				for (Quadruple<Node, Node, Node, String> q : quads) {
-					bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth()+ ">.\n");
+					bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth() + ">.\n");
 				}
 				bw.flush();
 				bw.close();
