@@ -133,7 +133,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
 		Random r = new Random();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 100; i++) {
 			try {
 				ArrayList<Pair<String, String>> doc = index.getDocument(i);
 				Page d = new Page(doc.get(0).getRight(), null, doc.get(0).getLeft());
