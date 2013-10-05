@@ -22,7 +22,8 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 
 	public URIGeneratorAGDISTIS() {
 		// String modelDirectory = "/Users/ricardousbeck/dbpedia_en";
-		String modelDirectory = ".";
+		//TODO error?
+		String modelDirectory = "/Users/ricardousbeck/Dropbox/Dissertation/git-workspace/REX/";
 		this.agdistis = new AGDISTIS(modelDirectory);
 	}
 
@@ -35,6 +36,7 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		}
 		for (ExtractionResult res : pairs) {
 			// process left
+			log.info("Disambiguating:" + res.getSubject() +", "+ res.getObject());
 			Triple process = process(res, p);
 			if (process != null)
 				set.add(process);
@@ -57,10 +59,10 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		HashMap<NamedEntityInText, String> results = agdistis.runDisambiguation(preAnnotatedText);
 		for (NamedEntityInText namedEntity : results.keySet()) {
 			String disambiguatedURL = results.get(namedEntity);
-			if (namedEntity.getLabel() == subjectString) {
+			if (namedEntity.getLabel().equals(subjectString)&&disambiguatedURL!=null) {
 				s = Node.createURI(disambiguatedURL);
 			}
-			if (namedEntity.getLabel() == objectString) {
+			if (namedEntity.getLabel().equals(objectString)&&disambiguatedURL!=null) {
 				o = Node.createURI(disambiguatedURL);
 			}
 		}
