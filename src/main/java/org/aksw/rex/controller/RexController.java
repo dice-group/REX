@@ -107,13 +107,12 @@ public class RexController {
 			triples = uriGenerator.getTriples(results, property);
 
 			// triple filtering
-			// triples = consistency.getConsistentTriples(triples,
-			// consistency.generateAxioms(endpoint));
+			triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
 		}
 
 		return triples;
 	}
-	
+
 	/**
 	 * Runs the extraction pipeline
 	 * 
@@ -137,7 +136,7 @@ public class RexController {
 		URL domain = di.getDomain(property, posExamples, negExamples, false);
 
 		// XPath expression generation
-		 List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
+		List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
 
 		if (!extractionRules.isEmpty()) {
 			// currently, we assume that the best rule is the first one in the
@@ -152,8 +151,7 @@ public class RexController {
 			triples = uriGenerator.getTriples(results, property);
 
 			// triple filtering
-			// triples = consistency.getConsistentTriples(triples,
-			// consistency.generateAxioms(endpoint));
+			triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
 		}
 
 		return triples;
@@ -198,13 +196,12 @@ public class RexController {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		ArrayList<ControllerData> d = new ArrayList<>();
+		ArrayList<ControllerData> d = new ArrayList<ControllerData>();
+		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]", "//SPAN[@itemprop='name'][1]/text()[1]"));
 		// d.add(new ControllerData("imdb-title-index/",
-		// "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/",
+		// "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/",
 		// "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
-		// "//SPAN[@itemprop='name'][1]/text()[1]"));
-		d.add(new ControllerData("imdb-title-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/title/", "//*[contains(text(),\"Take The Quiz!\")]/../SPAN[1]/A[1]/TEXT()[1]",
-				"//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
+		// "//*[contains(text(),\"Stars:\")]/../A[1]/SPAN[1]/TEXT()[1]"));
 		d.add(new ControllerData("imdb-name-index/", "http://dbpedia.org/ontology/starring", "http://www.imdb.com/name/", "//SPAN[@itemprop='name'][1]/text()[1]", "//*[contains(text(),\"Hide \")]/../../DIV[2]/DIV[1]/B[1]/A[1]/TEXT()[1]"));
 		d.add(new ControllerData("espnfc-player-index/", "http://dbpedia.org/ontology/team", "http://espnfc.com/player/_/id/",
 				"//*[contains(text(),\"EUROPE\")]/../../../../../../DIV[2]/DIV[3]/DIV[1]/DIV[1]/DIV[2]/DIV[1]/DIV[1]/DIV[2]/H1[1]/TEXT()[1]", "//OPTION[@value='?'][1]/text()[1]"));
@@ -238,7 +235,7 @@ public class RexController {
 				URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
 				Set<Triple> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run(ds.subjectRule, ds.objectRule);
-				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/"+ds.index.replace("/", "") + ".txt"));
+				BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/" + ds.index.replace("/", "") + ".txt"));
 				for (Triple triple : triples) {
 					bw.write("<" + triple.getSubject() + "> <" + triple.getPredicate() + "> <" + triple.getObject() + ">.\n");
 				}
