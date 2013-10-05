@@ -128,6 +128,7 @@ public class SimpleExampleGenerator implements ExampleGenerator {
     }
 
     private Set<Pair<Resource, Resource>> getMostProminentPositiveExamples() {
+        int offset = 1000;
         Set<Pair<Resource, Resource>> examples = new HashSet<Pair<Resource, Resource>>();
 //		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "
 //				+ "GROUP BY ?s ?o ORDER BY DESC(COUNT(?s_in)+COUNT(?o_in)) LIMIT " + maxNrOfPositiveExamples;
@@ -135,26 +136,37 @@ public class SimpleExampleGenerator implements ExampleGenerator {
                 "SELECT ?s ?o WHERE {"
                 + "?s <" + property + "> ?o. }"
                 + "ORDER BY DESC ( <LONG::IRI_RANK> (?o) + <LONG::IRI_RANK> (?s)) "
-                + "LIMIT " + maxNrOfPositiveExamples;
-        ResultSet rs = executeSelectQuery(query);
+                + "LIMIT "+offset;
+        ResultSet rs;
         QuerySolution qs;
         Resource subject;
         Resource object;
-        while (rs.hasNext()) {
-            qs = rs.next();
-            if (qs.get("s").isURIResource()) {
-                subject = qs.getResource("s");
-            } else {
-                logger.warn("Omitting triple:Subject " + qs.get("s") + " is not a URI resource!");
-                continue;
+        int count = 0;
+        while (examples.size() < maxNrOfPositiveExamples) {
+            rs = executeSelectQuery(query + " OFFSET " + count * offset);
+            //if we have reach the bottom of the result set table
+            if(!rs.hasNext()) return examples;
+            //else
+            while (rs.hasNext()) {
+                qs = rs.next();
+                if (qs.get("s").isURIResource()) {
+                    subject = qs.getResource("s");
+                } else {
+                    logger.warn("Omitting triple:Subject " + qs.get("s") + " is not a URI resource!");
+                    continue;
+                }
+                if (qs.get("o").isURIResource()) {
+                    object = qs.getResource("o");
+                } else {
+                    logger.warn("Omitting triple:Object " + qs.get("o") + " is not a URI resource!");
+                    continue;
+                }
+                examples.add(new Pair<Resource, Resource>(subject, object));
+                if (examples.size() == maxNrOfPositiveExamples) {
+                    break;
+                }                
             }
-            if (qs.get("o").isURIResource()) {
-                object = qs.getResource("o");
-            } else {
-                logger.warn("Omitting triple:Object " + qs.get("o") + " is not a URI resource!");
-                continue;
-            }
-            examples.add(new Pair<Resource, Resource>(subject, object));
+            count++;
         }
         return examples;
     }
@@ -162,23 +174,25 @@ public class SimpleExampleGenerator implements ExampleGenerator {
     public Set<Pair<Resource, Resource>> getAllPositiveExamples() {
         return new HashSet<Pair<Resource, Resource>>(getListOfPositiveExamples());
     }
-    
-    public List<Pair<Resource, Resource>> getListOfPositiveExamples()
-    {    
+
+    public List<Pair<Resource, Resource>> getListOfPositiveExamples() {
+        int offsetSize = 10000;
         List<Pair<Resource, Resource>> examples = new ArrayList<Pair<Resource, Resource>>();
 //		String query = "SELECT ?s ?o WHERE {?s <" + property.getURI() + "> ?o. ?s_in ?p1 ?s. ?o_in ?p2 ?o.} "
 //				+ "GROUP BY ?s ?o ORDER BY DESC(COUNT(?s_in)+COUNT(?o_in)) LIMIT " + maxNrOfPositiveExamples;
         String query =
                 "SELECT ?s ?o WHERE {"
+                + "SELECT ?s ?o WHERE {"
                 + "?s <" + property + "> ?o. }"
                 + "ORDER BY DESC ( <LONG::IRI_RANK> (?o) + <LONG::IRI_RANK> (?s)) "
-                + "LIMIT 1000";
+                + "}"
+                + "LIMIT "+offsetSize;
         QuerySolution qs;
         Resource subject;
         Resource object;
         for (int i = 0; i < 10000; i++) {
             System.out.println(i);
-            ResultSet rs = executeSelectQuery(query + " OFFSET " + (i * 1000));
+            ResultSet rs = executeSelectQuery(query + " OFFSET " + (i * offsetSize));
             if (rs.hasNext()) {
                 while (rs.hasNext()) {
                     qs = rs.next();
@@ -400,10 +414,11 @@ public class SimpleExampleGenerator implements ExampleGenerator {
         ExampleGenerator gen = new SimpleExampleGenerator();
         gen.setEndpoint(endpoint);
         gen.setPredicate(property);
-        
-        Set<Pair<Resource, Resource>> positiveExamples = gen.getPositiveExamples();
+        gen.setMaxNrOfPositiveExamples(50000);
+
+        Set<Pair<Resource, Resource>> positiveExamples = gen.getAllPositiveExamples();
         Set<Pair<Resource, Resource>> negativeExamples = gen.getNegativeExamples();
-        System.out.println(positiveExamples);
+        System.out.println(positiveExamples.size());
         System.out.println(negativeExamples);
     }
 }
