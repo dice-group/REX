@@ -58,12 +58,15 @@ public class ALFREDExperiment {
     	exampleGenerator.setMaxNrOfPositiveExamples(numLearnPairs+numTestPairs);
     	exampleGenerator.setEndpoint(endpoint);
     	exampleGenerator.setPredicate(property);
-		
-    	System.out.println("number of pairs: "+exampleGenerator.getPositiveExamples().size());
+        
+        
+        Set<Pair<Resource, Resource>> examples = exampleGenerator.getPositiveExamples();
+            
+    	System.out.println("number of pairs: "+examples.size());
     	
 		Set<Pair<Resource, Resource>> posExamples = new HashSet<Pair<Resource, Resource>>();
 		Set<Pair<Resource, Resource>> testExamples = new HashSet<Pair<Resource, Resource>>();
-		Set<Pair<Resource, Resource>> examples = exampleGenerator.getPositiveExamples();
+		
 		Iterator<Pair<Resource, Resource>> iterExamples = examples.iterator();
 		for (int i=0;i<numLearnPairs;i++) {
 			posExamples.add(iterExamples.next());
