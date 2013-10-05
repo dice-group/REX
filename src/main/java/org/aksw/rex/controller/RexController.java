@@ -21,14 +21,12 @@ import org.aksw.rex.examplegenerator.SimpleExampleGenerator;
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.uris.URIGeneratorAGDISTIS;
-import org.aksw.rex.uris.URIGeneratorImpl;
 import org.aksw.rex.util.Pair;
-import org.aksw.rex.xpath.XPathExtractor;
 import org.aksw.rex.xpath.XPathLearner;
-import org.aksw.rex.xpath.XPathLearnerImpl;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
-import org.apache.jena.atlas.logging.Log;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import rules.xpath.XPathRule;
 
@@ -38,14 +36,12 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-import edu.northwestern.at.utils.corpuslinguistics.tokenizer.EEBOPostTokenizer;
-
 /**
  * 
  * @author ngonga
  */
 public class RexController {
-
+	Logger log = LoggerFactory.getLogger(RexController.class);
 	ExampleGenerator exampleGenerator;
 	DomainIdentifier di;
 	Property property;
@@ -102,12 +98,15 @@ public class RexController {
 
 			// extract results from the corpus
 			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
-
+			log.error("XpathResults extracted: " + results.size());
 			// triple generation
 			triples = uriGenerator.getTriples(results, property);
+			log.error("Uris generated extracted: " + triples.size());
 
 			// triple filtering
 			triples = consistency.getConsistentTriples(triples, consistency.generateAxioms(endpoint));
+			log.error("Consistency checked: " + triples.size());
+
 		}
 
 		return triples;
