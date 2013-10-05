@@ -31,6 +31,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hp.hpl.jena.graph.Triple;
 
 /**
@@ -333,6 +334,8 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 					iter.remove();
 				}
 			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}catch (UncheckedExecutionException e) {
 				e.printStackTrace();
 			}
 		}
