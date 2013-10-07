@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import model.ExtractedValue;
@@ -40,15 +39,17 @@ public class ALFREDXPathLearner implements XPathLearner {
 	private ALFREDSampler samplerRight;
 	private int numberTrainingPages;
 	private List<Page> trainingPages;
+	private int i;
 
-	public ALFREDXPathLearner(CrawlIndex index, int trainingPages) {
+	public ALFREDXPathLearner(CrawlIndex index, int trainingPages, int i) {
 		this.index = index;
 		this.numberTrainingPages = trainingPages;
 		this.trainingPages = null;
+		this.i = i;
 	}
 
 	public ALFREDXPathLearner(CrawlIndex crawlIndex) {
-		this(crawlIndex, Integer.MAX_VALUE);
+		this(crawlIndex, Integer.MAX_VALUE, 10);
 	}
 
 	@Override
@@ -82,12 +83,16 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private Rule learnXPath(Map<String, List<String>> page2value, List<Page> pages, Page firstPage) {
-		AlfCoreFacade facade = AlfCoreFactory.getSystemFromConfiguration(false, 10, 10, 1, 1, 10000, "Entropy", 0.6);
+		AlfCoreFacade facade = AlfCoreFactory.getSystemFromConfiguration(5, 1, 1, 10000, "Entropy", 0.55, this.i);
+		
 		facade.setUp("DBPedia", new MaterializedPageSet(pages));
-
+		
 		RuleSet rules = facade.firstSamples(page2value);
-
+		
+		
 		Rule res = rules.getAllRules().get(0);
+		log.debug("Rule: "+res+" size:"+rules.getNumberOfRules());
+		log.debug("Rule: "+res+" size:"+rules);
 
 		if (this.samplerLeft == null) {
 			this.samplerLeft = generateSampler(rules);
@@ -132,7 +137,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 	@Override
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
-		Random r = new Random();
+		
 		for (int i = 0; i < 100; i++) {
 			try {
 				ArrayList<Pair<String, String>> doc = index.getDocument(i);
