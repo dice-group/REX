@@ -230,7 +230,7 @@
 		<dependency>
 			<groupId>it.uniroma3.dia.db</groupId>
 			<artifactId>alf-core</artifactId>
-			<version>0.0.13-SNAPSHOT</version>
+			<version>0.0.17-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

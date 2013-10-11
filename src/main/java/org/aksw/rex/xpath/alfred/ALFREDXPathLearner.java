@@ -37,19 +37,17 @@ public class ALFREDXPathLearner implements XPathLearner {
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	private ALFREDSampler samplerLeft;
 	private ALFREDSampler samplerRight;
-	private int numberTrainingPages;
 	private List<Page> trainingPages;
 	private int i;
 
-	public ALFREDXPathLearner(CrawlIndex index, int trainingPages, int i) {
+	public ALFREDXPathLearner(CrawlIndex index, int i) {
 		this.index = index;
-		this.numberTrainingPages = trainingPages;
 		this.trainingPages = null;
 		this.i = i;
 	}
 
 	public ALFREDXPathLearner(CrawlIndex crawlIndex) {
-		this(crawlIndex, Integer.MAX_VALUE, 10);
+		this(crawlIndex, 10);
 	}
 
 	@Override
@@ -62,7 +60,6 @@ public class ALFREDXPathLearner implements XPathLearner {
 		// TODO to optimize and not retrieving used pages
 		ALFREDPageRetrieval pageRetr = new ALFREDPageRetrieval(this.index);
 		List<Page> pages = pageRetr.getPages(posExamples, page2valueLeft, page2valueRight, Domain);
-		pages = pages.size() > this.numberTrainingPages ? pages.subList(0, this.numberTrainingPages) : pages;
 		log.info("N found pages: " + pages.size());
 
 		if (!pages.isEmpty()) {
@@ -83,7 +80,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 	}
 
 	private Rule learnXPath(Map<String, List<String>> page2value, List<Page> pages, Page firstPage) {
-		AlfCoreFacade facade = AlfCoreFactory.getSystemFromConfiguration(5, 1, 1, 10000, "Entropy", 0.55, this.i);
+		AlfCoreFacade facade = AlfCoreFactory.getSystemFromConfiguration(5, 1, 1, 10000, "Random", 0.55, this.i);
 		
 		facade.setUp("DBPedia", new MaterializedPageSet(pages));
 		
@@ -150,7 +147,8 @@ public class ALFREDXPathLearner implements XPathLearner {
 						ExtractedValue o = right.applyOn(d);
 						ex.add(new ExtractionResultImpl(s.getTextContent(), o.getTextContent(),d.getTitle()));
 					}
-				}
+				} else 
+					log.debug("Page removed:" + d.getTitle());
 			} catch (Exception e) {
 				log.error(e.getLocalizedMessage());
 			}

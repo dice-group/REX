@@ -87,8 +87,10 @@ public class ExperimentRunner implements Runnable {
 				.getExampleGenerator(this.property, trainingPairs, this.eqDist);
 
 		Set<Pair<Resource, Resource>> positiveExamples = null;
-		if (trainingPairs == 0)
+		if (trainingPairs == 0){
 			positiveExamples = exampleGenerator.getAllPositiveExamples();
+			this.trainingPairs = positiveExamples.size();
+		}
 		else
 			positiveExamples = exampleGenerator.getPositiveExamples();
 
@@ -166,7 +168,7 @@ public class ExperimentRunner implements Runnable {
 	@Override
 	public void run() {
 
-		ALFREDXPathLearner learner = new ALFREDXPathLearner(this.index, this.trainingPairs, this.i);
+		ALFREDXPathLearner learner = new ALFREDXPathLearner(this.index, this.i);
 
 		long now = System.currentTimeMillis();
 
