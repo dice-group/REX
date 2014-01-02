@@ -3,14 +3,13 @@
  */
 package org.aksw.rex.consistency;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Property;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,8 +23,8 @@ import com.hp.hpl.jena.graph.Triple;
  */
 public class ConsistencyCheckerImplTest {
 	
-//	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
+	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+//	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
 	String namespace = "http://dbpedia.org/ontology/";
 	ConsistencyChecker consistencyChecker = new ConsistencyCheckerImpl(endpoint, namespace);
 	ObjectProperty property = new ObjectProperty("http://dbpedia.org/ontology/director");
@@ -62,7 +61,10 @@ public class ConsistencyCheckerImplTest {
 		
 		Set<Triple> consistentTriples = consistencyChecker.getConsistentTriples(triples);
 		//first triple should be fine
-		//second triple should be omitted
+		//second triple should be omitted because
+		//* dbr:Leipzig is typed as dbo:Place
+		//* the generated domain of dbo:director is dbo:Work
+		//* a disjointness between dbo:Place and dbo:Work is detected based on the instances data
 		//third triple should be fine
 		assertTrue(consistentTriples.size() == 2);
 	}
