@@ -24,7 +24,8 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 	public URIGeneratorAGDISTIS() {
 		// String modelDirectory = "/Users/ricardousbeck/dbpedia_en";
 		//TODO error?
-		String modelDirectory = "/Users/ricardousbeck/Dropbox/Dissertation/git-workspace/REX/";
+//		String modelDirectory = "/Users/ricardousbeck/Dropbox/Dissertation/git-workspace/REX/";
+		String modelDirectory = "/data/r.usbeck/Dropbox/Dissertation/git-workspace/REX/";
 		this.agdistis = new AGDISTIS(modelDirectory);
 	}
 
