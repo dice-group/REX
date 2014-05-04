@@ -54,6 +54,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.QueryExecution;
 
 /**
+ * A heuristically method to check for consistency in the knowledge base. This approach is sound but incomplete.
  * @author Lorenz Buehmann
  *
  */
@@ -485,6 +486,15 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		return triples;
 	}
 	
+	/**
+	 * Checks whether disjointess is violated, i.e. if domain(resp. range) of the given property is disjoint with the type 
+	 * of the subject(resp. object).
+	 * @param subject
+	 * @param object
+	 * @param property
+	 * @return
+	 * @throws ExecutionException
+	 */
 	private boolean violatesDisjointnessRestrictions(Individual subject, Individual object, ObjectProperty property) throws ExecutionException{
 		//get the types of the subject
 		Set<NamedClass> subjectTypes = typesCache.get(subject);
@@ -531,6 +541,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		return false;
 	}
 	
+	/**
+	 * Checks whether the given property is functional.
+	 * @param property The property which has to be checked for functionality
+	 * @return TRUE if the property is functional, otherwise FALSE
+	 */
 	private boolean isFunctional(ObjectProperty property){
 		boolean functional = false;
 		//check if property is already declared to be functional in the KB
@@ -539,6 +554,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		return functional;
 	}
 	
+	/**
+	 * Checks whether the given property is inverse functional.
+	 * @param property The property which has to be checked for inverse functionality
+	 * @return TRUE if the property is inverse functional, otherwise FALSE
+	 */
 	private boolean isInverseFunctional(ObjectProperty property){
 		boolean inverseFunctional = false;
 		//check if property is already declared to be inverse-functional in the KB
@@ -547,6 +567,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		return inverseFunctional;
 	}
 	
+	/**
+	 * Checks whether the given property is asymmetric.
+	 * @param property The property which has to be checked for asymmetry
+	 * @return TRUE if the property is asymmetric, otherwise FALSE
+	 */
 	private boolean isAsymmetric(ObjectProperty property){
 		boolean asymmetric = false;
 		//check if property is already declared to be asymmetric in the KB
@@ -555,6 +580,11 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		return asymmetric;
 	}
 	
+	/**
+	 * Checks whether the given property is irreflexive.
+	 * @param property The property which has to be checked for irreflexivity
+	 * @return TRUE if the property is irreflexive, otherwise FALSE
+	 */
 	private boolean isIrreflexive(ObjectProperty property){
 		boolean irreflexive = false;
 		//check if property is already declared to be irreflexive in the KB

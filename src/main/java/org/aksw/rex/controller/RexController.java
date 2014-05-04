@@ -132,9 +132,6 @@ public class RexController {
 	/**
 	 * Runs the extraction pipeline
 	 * 
-	 * @param subjectRule
-	 * @param objectRule
-	 * 
 	 * @return A set of triples
 	 * @throws Exception
 	 *             If URI generation does not work

@@ -82,6 +82,8 @@ public class CrawlIndex {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		log.info("Done.");
+		log.info("Number of documents: "  + ireader.numDocs());
 	}
 
 	public ArrayList<Pair<String, String>> searchURL(String queryString) {
