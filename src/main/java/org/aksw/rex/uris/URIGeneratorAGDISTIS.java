@@ -5,28 +5,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.aksw.agdistis.webapp.AGDISTIS;
 import org.aksw.rex.results.ExtractionResult;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 
-import datatypeshelper.utils.doc.ner.NamedEntityInText;
 import edu.stanford.nlp.util.Quadruple;
 
 public class URIGeneratorAGDISTIS implements URIGenerator {
 	private org.slf4j.Logger log = LoggerFactory.getLogger(URIGeneratorAGDISTIS.class);
-	private SurfaceFormIndex index;
-	private AGDISTIS agdistis;
+	private AGDISTISPost agdistis;
 
 	public URIGeneratorAGDISTIS() {
-		// String modelDirectory = "/Users/ricardousbeck/dbpedia_en";
-		//TODO error?
-//		String modelDirectory = "/Users/ricardousbeck/Dropbox/Dissertation/git-workspace/REX/";
-		String modelDirectory = "/data/r.usbeck/Dropbox/Dissertation/git-workspace/REX/";
-		this.agdistis = new AGDISTIS(modelDirectory);
+		this.agdistis = new AGDISTISPost();
 	}
 
 	@Override
@@ -58,13 +50,13 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		Node o = null;
 		String preAnnotatedText = "<entity>" + subjectString + "</entity><entity>" + objectString + "</entity>";
 
-		HashMap<NamedEntityInText, String> results = agdistis.runDisambiguation(preAnnotatedText);
-		for (NamedEntityInText namedEntity : results.keySet()) {
+		HashMap<String, String> results = agdistis.runDisambiguation(preAnnotatedText);
+		for (String namedEntity : results.keySet()) {
 			String disambiguatedURL = results.get(namedEntity);
-			if (namedEntity.getLabel().equals(subjectString)&&disambiguatedURL!=null) {
+			if (namedEntity.equals(subjectString)&&disambiguatedURL!=null) {
 				s = Node.createURI(disambiguatedURL);
 			}
-			if (namedEntity.getLabel().equals(objectString)&&disambiguatedURL!=null) {
+			if (namedEntity.equals(objectString)&&disambiguatedURL!=null) {
 				o = Node.createURI(disambiguatedURL);
 			}
 		}

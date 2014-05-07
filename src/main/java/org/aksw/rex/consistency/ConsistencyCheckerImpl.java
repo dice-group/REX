@@ -403,7 +403,7 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 	 * @return
 	 */
 	private Set<Axiom> getPropertyAxioms(Set<ObjectProperty> properties){
-		Set<Axiom> axioms = new HashSet<>();
+		Set<Axiom> axioms = new HashSet<Axiom>();
 		
 		for (ObjectProperty property : properties) {
 			try {
