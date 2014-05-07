@@ -50,76 +50,45 @@ public class RexController {
 	int topNRules = 1;
 	private static URL domain;
 
-	public RexController(Property p, ExampleGenerator e, DomainIdentifier d, XPathLearner l, URIGenerator uriGenerator, ConsistencyChecker c, SparqlEndpoint s) {
+	public RexController(Property p, ExampleGenerator e, DomainIdentifier d, XPathLearner l, URIGenerator u, ConsistencyChecker c, SparqlEndpoint s) {
 		property = p;
 		exampleGenerator = e;
 		di = d;
 		xpath = l;
-		this.uriGenerator = uriGenerator;
+		uriGenerator = u;
 		consistency = c;
 		endpoint = s;
 	}
 
-	/**
-	 * Runs the extraction pipeline
-	 * 
-	 * @param subjectRule
-	 * @param objectRule
-	 * 
-	 * @return A set of triples
-	 * @throws Exception
-	 *             If URI generation does not work
-	 */
-	public Set<Quadruple<Node, Node, Node, String>> run(String subjectRule, String objectRule) throws Exception
+	public static void main(String[] args) throws Exception {
+		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
+//		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/author");
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
-	{
-		Set<Quadruple<Node, Node, Node, String>> quads = Sets.newHashSet();
+		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
+		exampleGenerator.setMaxNrOfPositiveExamples(100);
+		exampleGenerator.setEndpoint(endpoint);
+		exampleGenerator.setPredicate(property);
 
-		// example generation
-		Set<Pair<Resource, Resource>> posExamples = null;
-		Set<Pair<Resource, Resource>> negExamples = null;
+		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
+//		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.goodreads.com/author/"));
+		
+		CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
 
-		// domain identification
-		domain = di.getDomain(property, posExamples, negExamples, false);
+		XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
+		xPathLearner.setUseExactMatch(false);
 
-		// XPath expression generation
-		// List<Pair<XPathRule, XPathRule>> extractionRules =
-		// xpath.getXPathExpressions(posExamples, negExamples, domain);
-		List<Pair<XPathRule, XPathRule>> extractionRules = new ArrayList<Pair<XPathRule, XPathRule>>();
+		// XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
+		// XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor,
+		// endpoint);
 
-		extractionRules.add(new Pair<XPathRule, XPathRule>(new XPathRule(subjectRule), new XPathRule(objectRule)));
+		URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
-		if (!extractionRules.isEmpty()) {
-			// currently, we assume that the best rule is the first one in the
-			// list, thus we
-			extractionRules = extractionRules.subList(0, 1);
-			System.out.println("Top rule:\n" + extractionRules);
+		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run();
 
-			// extract results from the corpus
-			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
-			log.error("XpathResults extracted: " + results.size());
-			// triple generation
-			quads = uriGenerator.getTriples(results, property);
-//			BufferedWriter bw = new BufferedWriter(new FileWriter("ntFiles/withOutConsistency" + domain.toExternalForm().replaceAll("//", "").replaceAll("/", "") + ".txt"));
-//			for (Quadruple<Node, Node, Node, String> q : quads) {
-//				bw.write("<" + q.first.getURI() + "> <" + q.second().getURI() + "> <" + q.third().getURI() + "> <" + q.fourth() + ">.\n");
-//			}
-//			bw.flush();
-//			bw.close();
-			log.error("Quadrupels generated extracted: " + quads.size());
-
-			// triple filtering
-			Set<Triple> triples = quadsToTriples(quads);
-			triples = consistency.getConsistentTriples(triples);
-			quads = triplesToQuads(triples, quads);
-
-			// triples = consistency.getConsistentTriples(triples,
-			// consistency.generateAxioms(endpoint));
-			log.error("Consistency checked: " + quads.size());
-
+		for (Quadruple<Node, Node, Node, String> quadruple : triples) {
+			System.out.println(quadruple);
 		}
-
-		return quads;
 	}
 
 	/**
@@ -137,6 +106,8 @@ public class RexController {
 		// example generation
 		Set<Pair<Resource, Resource>> posExamples = null;
 		Set<Pair<Resource, Resource>> negExamples = null;
+		posExamples = exampleGenerator.getPositiveExamples();
+		negExamples = exampleGenerator.getNegativeExamples();
 
 		// domain identification
 		URL domain = di.getDomain(property, posExamples, negExamples, false);
@@ -191,32 +162,58 @@ public class RexController {
 		return set;
 	}
 
-	public static void main(String[] args) throws Exception {
-		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	/**
+	 * Runs the extraction pipeline, used for gold standard evaluation
+	 * 
+	 * @param subjectRule
+	 * @param objectRule
+	 * 
+	 * @return A set of triples
+	 * @throws Exception
+	 *             If URI generation does not work
+	 */
+	public Set<Quadruple<Node, Node, Node, String>> run(String subjectRule, String objectRule) throws Exception
 
-		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
-		exampleGenerator.setMaxNrOfPositiveExamples(100);
-		exampleGenerator.setEndpoint(endpoint);
-		exampleGenerator.setPredicate(property);
+	{
+		Set<Quadruple<Node, Node, Node, String>> quads = Sets.newHashSet();
 
-		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
+		// example generation
+		Set<Pair<Resource, Resource>> posExamples = null;
+		Set<Pair<Resource, Resource>> negExamples = null;
+		posExamples = exampleGenerator.getPositiveExamples();
+		negExamples = exampleGenerator.getNegativeExamples();
 
-		CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
-		XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
+		// domain identification
+		domain = di.getDomain(property, posExamples, negExamples, false);
 
-		XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
-		// XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor,
-		// endpoint);
-		xPathLearner.setUseExactMatch(false);
+		// XPath expression generation
+		List<Pair<XPathRule, XPathRule>> extractionRules = new ArrayList<Pair<XPathRule, XPathRule>>();
 
-		URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
+		extractionRules.add(new Pair<XPathRule, XPathRule>(new XPathRule(subjectRule), new XPathRule(objectRule)));
 
-		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run();
+		if (!extractionRules.isEmpty()) {
+			extractionRules = extractionRules.subList(0, 1);
+			System.out.println("Top rule:\n" + extractionRules);
 
-		for (Quadruple<Node, Node, Node, String> quadruple : triples) {
-			System.out.println(quadruple);
+			// extract results from the corpus
+			Set<ExtractionResult> results = xpath.getExtractionResults(extractionRules, domain);
+			System.out.println("XpathResults extracted: " + results.size());
+
+			// triple generation
+			quads = uriGenerator.getTriples(results, property);
+			System.out.println("Quadrupels generated extracted: " + quads.size());
+
+			// triple filtering
+			Set<Triple> triples = quadsToTriples(quads);
+			triples = consistency.getConsistentTriples(triples);
+			quads = triplesToQuads(triples, quads);
+
+			// triples = consistency.getConsistentTriples(triples,
+			// consistency.generateAxioms(endpoint));
+			System.out.println("Consistency checked: " + quads.size());
+
 		}
-	}
 
+		return quads;
+	}
 }
