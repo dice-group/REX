@@ -6,7 +6,11 @@ import model.Page;
 import model.Rule;
 
 import org.slf4j.LoggerFactory;
-
+/**
+ * used to calculate the F-measure of the wrapper inducation
+ * @author r.usbeck
+ *
+ */
 public class QualityEvaluator {
 	private org.slf4j.Logger log = LoggerFactory.getLogger(QualityEvaluator.class);
 	

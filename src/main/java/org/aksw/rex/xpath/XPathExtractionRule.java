@@ -4,6 +4,7 @@
 package org.aksw.rex.xpath;
 
 /**
+ * Pair of subject, object Xpaths
  * @author Lorenz Buehmann
  *
  */
@@ -40,6 +41,9 @@ public class XPathExtractionRule {
 		return "Subject:" + subjectXPathExpression + "\nObject" + objectXPathExpression;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,6 +54,9 @@ public class XPathExtractionRule {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

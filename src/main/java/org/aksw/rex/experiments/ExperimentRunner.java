@@ -24,7 +24,11 @@ import rules.xpath.XPathRule;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-
+/**
+ * Experiment runner for Alfrex Evaluation
+ * @author q.disheng
+ *
+ */
 public class ExperimentRunner implements Runnable {
 
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ExperimentRunner.class);

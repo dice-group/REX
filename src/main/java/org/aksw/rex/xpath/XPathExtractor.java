@@ -26,20 +26,28 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import rules.xpath.XPathRule;
-
+/**
+ * simple XPath Extractor
+ * @author l.buehmann
+ *
+ */
 public class XPathExtractor {
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(XPathExtractor.class);
 
 	private CrawlIndex index;
-
+/**
+ * standard constructor using htmlindex/ as CrawlIndex
+ */
 	public XPathExtractor() {
 		index = new CrawlIndex("htmlindex/");
 	}
-	
+	/**
+	 * 
+	 * @param crawlIndex
+	 */
 	public XPathExtractor(CrawlIndex crawlIndex) {
 		index = crawlIndex;
 	}
-	
 	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		return extractPathsFromCrawlIndex(subject, object, null);
 	}
@@ -51,7 +59,19 @@ public class XPathExtractor {
 	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, String domainURL) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		return extractPathsFromCrawlIndex(subject, object, domainURL, true);
 	}
-	
+	/**
+	 * 
+	 * @param subject
+	 * @param object
+	 * @param domainURL
+	 * @param exactMatch
+	 * @return List<Pair<XPathRule, XPathRule>>
+	 * @throws ParserConfigurationException
+	 * @throws FileNotFoundException
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws XPathExpressionException
+	 */
 	public List<Pair<XPathRule, XPathRule>> extractPathsFromCrawlIndex(String subject, String object, String domainURL, boolean exactMatch) throws ParserConfigurationException, FileNotFoundException, SAXException, IOException, XPathExpressionException {
 		List<Pair<XPathRule, XPathRule>> paths = new ArrayList<Pair<XPathRule, XPathRule>>();
 		// search for all pages containing subject and object

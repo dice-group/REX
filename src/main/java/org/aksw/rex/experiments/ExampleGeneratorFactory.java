@@ -7,7 +7,11 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
-
+/**
+ * A factory to produce a example generator,  multi-thread safe
+ * @author r.usbeck
+ *
+ */
 public class ExampleGeneratorFactory {
 	
 	private static ExampleGeneratorFactory instance;
@@ -17,7 +21,13 @@ public class ExampleGeneratorFactory {
 			instance = new ExampleGeneratorFactory();
 		return instance;
 	}
-	
+	/**
+	 * 
+	 * @param predicate
+	 * @param number of pairs
+	 * @param random distribution or uniform distribution
+	 * @return ExampleGenerator
+	 */
 	public ExampleGenerator getExampleGenerator(Property p, int pairs, boolean random){
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		ExampleGenerator exampleGenerator = null;

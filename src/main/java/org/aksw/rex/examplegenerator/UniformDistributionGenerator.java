@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.aksw.rex.examplegenerator;
 
 import java.util.HashSet;
@@ -15,7 +11,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
- *
+ *Samples evenly across the rank distribution
  * @author ngonga
  */
 public class UniformDistributionGenerator extends SimpleExampleGenerator {
@@ -25,8 +21,8 @@ public class UniformDistributionGenerator extends SimpleExampleGenerator {
     private List<Pair<Resource, Resource>> examples = null;;
 
     @Override
-    /** Samples evenly across the rank distribution
-     * 
+    /** 
+     * Samples evenly across the rank distribution
      */
     public Set<Pair<Resource, Resource>> getPositiveExamples() {
         // get all examples if we do not have any

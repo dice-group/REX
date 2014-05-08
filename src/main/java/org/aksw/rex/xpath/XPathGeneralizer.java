@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
+ * Least general generalization used for XPATH combination
  * @author Lorenz Buehmann
  * 
  */

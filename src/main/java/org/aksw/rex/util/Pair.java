@@ -1,5 +1,11 @@
 package org.aksw.rex.util;
-
+/**
+ * generic class to represent pairs
+ * @author r.usbeck
+ *
+ * @param <L>
+ * @param <R>
+ */
 public class Pair<L, R> {
 
     private final L left;

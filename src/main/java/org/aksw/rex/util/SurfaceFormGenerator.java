@@ -25,6 +25,7 @@ import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import com.hp.hpl.jena.query.ResultSet;
 
 /**
+ * generates surface forms for semantic web resources
  * @author Lorenz Buehmann
  *
  */
@@ -32,7 +33,11 @@ public class SurfaceFormGenerator {
 
 	private static IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	private static QueryExecutionFactory qef;
-	
+	/**
+	 * 
+	 * @param endpoint
+	 * @param cacheDirectory
+	 */
 	public SurfaceFormGenerator(SparqlEndpoint endpoint, String cacheDirectory) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		if(cacheDirectory != null){
@@ -48,7 +53,12 @@ public class SurfaceFormGenerator {
 			}
 		}
 	}
-	
+	/**
+	 * retrieves the label of the given resource
+	 * @param endpoint
+	 * @param uri of a target resource
+	 * @return
+	 */
 	public Set<String> getSurfaceForms(SparqlEndpoint endpoint, String uri){
 		Set<String> surfaceforms = new HashSet<String>();
 		

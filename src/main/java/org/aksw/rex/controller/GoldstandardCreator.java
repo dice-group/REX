@@ -14,7 +14,6 @@ import org.aksw.rex.controller.dao.PropertyXPathSupplier;
 import org.aksw.rex.controller.dao.PropertyXPathSupplierAKSW;
 import org.aksw.rex.controller.dao.RexPropertiesWithGoldstandard;
 import org.aksw.rex.crawler.CrawlIndex;
-import org.aksw.rex.uris.URIGeneratorImpl;
 import org.aksw.rex.util.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -54,7 +53,6 @@ public class GoldstandardCreator {
 		indizes.add(new CrawlIndex("espnfc-player-index/"));
 		indizes.add(new CrawlIndex("espnfc-team-index/"));
 		for (CrawlIndex index : indizes) {
-			URIGeneratorImpl gen = new URIGeneratorImpl();
 			for (PropertyXPathSupplier x : ps) {
 				BufferedWriter bw = new BufferedWriter(new FileWriter(index.getName().replace("/", "") + "_" + x.getClass().getCanonicalName() + ".nt"));
 				for (int j = 0; j < index.size(); ++j) {

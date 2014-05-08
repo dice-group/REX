@@ -19,7 +19,20 @@ import com.hp.hpl.jena.graph.Node;
 
 import edu.stanford.nlp.util.Quadruple;
 
+/**
+ * URI Disambiguation using AGDISTIS https://github.com/AKSW/AGDISTIS
+ * 
+ * @author r.usbeck
+ * 
+ */
 public class AGDISTISPost {
+	/**
+	 * testing main
+	 * 
+	 * @param args
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws ParseException, IOException {
 		AGDISTISPost post = new AGDISTISPost();
 		String subjectString = "Tom Cruise";
@@ -51,6 +64,15 @@ public class AGDISTISPost {
 		System.out.println(t);
 	}
 
+	/**
+	 * 
+	 * @param inputText
+	 *            with encoded entities,e.g.,
+	 *            "<entity> Barack </entity> meets <entity>Angela</entity>"
+	 * @return map of string to disambiguated URL
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	HashMap<String, String> runDisambiguation(String inputText) throws ParseException, IOException {
 		String urlParameters = "text=" + URLEncoder.encode(inputText, "UTF-8");
 		urlParameters += "&type=agdistis";

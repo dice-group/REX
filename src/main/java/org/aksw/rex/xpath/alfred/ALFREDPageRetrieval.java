@@ -28,6 +28,11 @@ import rules.dom.TextElementFinder;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
+/**
+ * used to retrieve pages from the crawl index
+ * @author d.qui
+ * 
+ */
 public class ALFREDPageRetrieval {
 
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ALFREDPageRetrieval.class);
@@ -39,16 +44,21 @@ public class ALFREDPageRetrieval {
 		this.sfp = new SimpleIRIShortFormProvider();
 	}
 
+	/**
+	 * returns a number of pages for the previously set crawl index
+	 * 
+	 * @param number
+	 * @return
+	 */
 	public List<Page> getPages(int number) {
 		List<Page> pages = new LinkedList<Page>(this.index.getPages(number));
 		log.debug("Retrieving: " + pages.size() + " of " + number);
 		return pages;
 	}
 
-	public List<Page> getPages(Property property, int numPages, String domainS, boolean random) {
+	private List<Page> getPages(Property property, int numPages, String domainS, boolean random) {
 		// retrieve a big number of pairs
-		ExampleGenerator generator = ExampleGeneratorFactory.getInstance().getExampleGenerator(
-				property, numPages * 100, random);
+		ExampleGenerator generator = ExampleGeneratorFactory.getInstance().getExampleGenerator(property, numPages * 100, random);
 
 		Set<Pair<Resource, Resource>> examples = generator.getPositiveExamples();
 
@@ -65,11 +75,9 @@ public class ALFREDPageRetrieval {
 
 		URL domain = domainIdentifier.getDomain(property, examples, null, false);
 
-		List<Page> trainingPages = this.getPages(generator.getPositiveExamples(), page2valueLeft,
-				page2valueRight, domain);
+		List<Page> trainingPages = this.getPages(generator.getPositiveExamples(), page2valueLeft, page2valueRight, domain);
 
-		List<Page> res = (trainingPages.size() > numPages) ? trainingPages.subList(0, numPages)
-				: trainingPages;
+		List<Page> res = (trainingPages.size() > numPages) ? trainingPages.subList(0, numPages) : trainingPages;
 		return res;
 	}
 
@@ -82,9 +90,7 @@ public class ALFREDPageRetrieval {
 	 * @param domain
 	 * @return
 	 */
-	public List<Page> getPages(Collection<Pair<Resource, Resource>> resources,
-			Map<String, List<String>> page2valueLeft, Map<String, List<String>> page2valueRight,
-			URL domain) {
+	public List<Page> getPages(Collection<Pair<Resource, Resource>> resources, Map<String, List<String>> page2valueLeft, Map<String, List<String>> page2valueRight, URL domain) {
 		Set<Page> pages = new HashSet<Page>();
 
 		Iterator<Pair<Resource, Resource>> iterResources = resources.iterator();
@@ -95,13 +101,8 @@ public class ALFREDPageRetrieval {
 				pages.addAll(tempPages);
 
 				for (Page p : tempPages) {
-					this.addToMap(
-							p.getTitle(),
-							sfp.getShortForm(IRI.create(pair.getLeft().getURI())).replace("_", " "),
-							page2valueLeft);
-					this.addToMap(p.getTitle(),
-							sfp.getShortForm(IRI.create(pair.getRight().getURI()))
-									.replace("_", " "), page2valueRight);
+					this.addToMap(p.getTitle(), sfp.getShortForm(IRI.create(pair.getLeft().getURI())).replace("_", " "), page2valueLeft);
+					this.addToMap(p.getTitle(), sfp.getShortForm(IRI.create(pair.getRight().getURI())).replace("_", " "), page2valueRight);
 				}
 			}
 		}
@@ -137,8 +138,7 @@ public class ALFREDPageRetrieval {
 					Page page = new Page(pair.getRight(), null, pair.getLeft());
 					TextElementFinder TEfinderL = new TextElementFinder(page, leftValue);
 					TextElementFinder TEfinderR = new TextElementFinder(page, rightValue);
-					if (TEfinderL.getNodeWithTextContent() != null
-							&& TEfinderR.getNodeWithTextContent() != null) {
+					if (TEfinderL.getNodeWithTextContent() != null && TEfinderR.getNodeWithTextContent() != null) {
 						res.add(page);
 						// log.debug("Retrieved page: " + pair.getLeft());
 					}
@@ -153,10 +153,6 @@ public class ALFREDPageRetrieval {
 		// log.debug("Looking for resources " +
 		// sfp.getShortForm(IRI.create(resources.getLeft().getURI())) + " - "
 		// + sfp.getShortForm(IRI.create(resources.getRight().getURI())));
-		return index.searchHTML("\""
-				+ sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ")
-				+ "\" AND \""
-				+ sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ")
-				+ "\"");
+		return index.searchHTML("\"" + sfp.getShortForm(IRI.create(resources.getLeft().getURI())).replace("_", " ") + "\" AND \"" + sfp.getShortForm(IRI.create(resources.getRight().getURI())).replace("_", " ") + "\"");
 	}
 }

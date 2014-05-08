@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.results.ExtractionResultImpl;
+import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.uris.URIGeneratorAGDISTIS;
-import org.aksw.rex.uris.URIGeneratorImpl;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class URLGeneratorTest {
 
 	@Test
 	public void testAGDISTIS() throws Exception {
-		URIGeneratorAGDISTIS gen = new URIGeneratorAGDISTIS();
+		URIGenerator gen = new URIGeneratorAGDISTIS();
 		// filling the test cases
 		ExtractionResultImpl res = new ExtractionResultImpl("Tom Cruise", "Mission Impossible","");
 		Property p = ResourceFactory.createProperty("http://dbpedia.org/ontology/starring");
@@ -41,7 +41,7 @@ public class URLGeneratorTest {
 
 	@Test
 	public void testAGDISTISNotExistingValues() throws Exception {
-		URIGeneratorAGDISTIS gen = new URIGeneratorAGDISTIS();
+		URIGenerator gen = new URIGeneratorAGDISTIS();
 		// filling the test cases
 		ExtractionResultImpl res = new ExtractionResultImpl("Axel Ngonga", "Mission Impossible","");
 		Property p = ResourceFactory.createProperty("http://dbpedia.org/ontology/starring");
@@ -56,7 +56,7 @@ public class URLGeneratorTest {
 	
 	@Test
 	public void testURLGeneratorEmptySet() throws Exception {
-		URIGeneratorImpl gen = new URIGeneratorImpl();
+		URIGenerator gen = new URIGeneratorAGDISTIS();
 		// filling the test cases
 		Set<ExtractionResult> posNegEx = null;
 		Property p = null;
@@ -67,7 +67,7 @@ public class URLGeneratorTest {
 	@Test
 	public void testURLGeneratorExistingURLs() throws Exception {
 		log.debug("testURLGeneratorExistingURLs");
-		URIGeneratorImpl gen = new URIGeneratorImpl();
+		URIGenerator gen = new URIGeneratorAGDISTIS();
 		// filling the test cases
 		ExtractionResultImpl res = new ExtractionResultImpl("Paris", "London","");
 		Property p = ResourceFactory.createProperty("http://dbpedia.org/ontology/near");
@@ -93,7 +93,7 @@ public class URLGeneratorTest {
 
 	@Test
 	public void testURLGeneratorNonExistingURLs() throws Exception {
-		URIGeneratorImpl gen = new URIGeneratorImpl();
+		URIGenerator gen = new URIGeneratorAGDISTIS();
 		// filling the test cases
 		ExtractionResultImpl r = new ExtractionResultImpl("AKSW", "AKSW","");
 

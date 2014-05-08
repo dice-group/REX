@@ -34,16 +34,18 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
- * 
+ * retrieves a valid domain for a certian predicate via google search
  * @author ngonga, usbeck
  */
 public class GoogleDomainIdentifier implements DomainIdentifier {
-	public static org.slf4j.Logger log = LoggerFactory.getLogger(GoogleDomainIdentifier.class);
-	public static String google = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=";
-	public String charset = "UTF-8";
-	public static String cacheLocation = "resources/googlecache";
-	public Map<Property, URL> cache;
-
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(GoogleDomainIdentifier.class);
+	private static String google = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=";
+	private String charset = "UTF-8";
+	private static String cacheLocation = "resources/googlecache";
+	private Map<Property, URL> cache;
+/**
+ * standard constructor, reading the cache of previous google searches
+ */
 	public GoogleDomainIdentifier() {
 		readCache();
 	}
@@ -51,7 +53,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 	/**
 	 * Read the cache to a file
 	 */
-	public void readCache() {
+	private void readCache() {
 		cache = new HashMap<Property, URL>();
 		try {
 			if (new File(cacheLocation).exists()) {
@@ -73,7 +75,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 	/**
 	 * Write the cache to a file
 	 */
-	public void writeCache() {
+	private void writeCache() {
 		try {
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(cacheLocation)));
 			for (Property p : cache.keySet()) {
@@ -165,7 +167,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 	 *            Resource
 	 * @return Label of resource
 	 */
-	public String getLabel(Resource r) {
+	private String getLabel(Resource r) {
 		return splitAtCamelCase(r.getLocalName());
 	}
 
@@ -183,7 +185,7 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 	 *            Google result
 	 * @return URL
 	 */
-	public URL getHost(Result r) {
+	private URL getHost(Result r) {
 		URL result = null;
 		try {
 			URL url = new URL(r.getUrl());
@@ -193,7 +195,10 @@ public class GoogleDomainIdentifier implements DomainIdentifier {
 		}
 		return result;
 	}
-
+/**
+ * test main class
+ * @param args
+ */
 	public static void main(String args[]) {
 		Set<Pair<Resource, Resource>> posExamples = new HashSet<Pair<Resource, Resource>>();
 		Resource r1 = ResourceFactory.createResource("http://dbpedia.org/resource/Tom_Cruise");

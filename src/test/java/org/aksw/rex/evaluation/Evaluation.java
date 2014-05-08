@@ -14,7 +14,7 @@ import org.aksw.rex.domainidentifier.ManualDomainIdentifier;
 import org.aksw.rex.examplegenerator.ExampleGenerator;
 import org.aksw.rex.examplegenerator.SimpleExampleGenerator;
 import org.aksw.rex.uris.URIGenerator;
-import org.aksw.rex.uris.URIGeneratorImpl;
+import org.aksw.rex.uris.URIGeneratorAGDISTIS;
 import org.aksw.rex.xpath.XPathExtractor;
 import org.aksw.rex.xpath.XPathLearner;
 import org.aksw.rex.xpath.XPathLearnerImpl;
@@ -52,7 +52,7 @@ public class Evaluation {
     	XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
     	xPathLearner.setUseExactMatch(exactMatch);
     	
-    	URIGenerator uriGenerator = new URIGeneratorImpl();
+    	URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
     	
 		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
@@ -84,7 +84,7 @@ public class Evaluation {
     	XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
     	xPathLearner.setUseExactMatch(exactMatch);
     	
-    	URIGenerator uriGenerator = new URIGeneratorImpl();
+    	URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
     	
 		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
@@ -117,7 +117,7 @@ public class Evaluation {
     	xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
     	xPathLearner.setUseExactMatch(exactMatch);
     	
-    	URIGenerator uriGenerator = new URIGeneratorImpl();
+    	URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
     	
 		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 
@@ -149,7 +149,7 @@ public class Evaluation {
     	XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor, endpoint);
     	xPathLearner.setUseExactMatch(exactMatch);
     	
-    	URIGenerator uriGenerator = new URIGeneratorImpl();
+    	URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
     	
 		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(
 				property, 

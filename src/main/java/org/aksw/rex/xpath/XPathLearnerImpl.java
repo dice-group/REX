@@ -34,6 +34,7 @@ import com.google.common.collect.Lists;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
+ * Simple Implemention of XPath Learning
  * @author Lorenz Buehmann
  *
  */

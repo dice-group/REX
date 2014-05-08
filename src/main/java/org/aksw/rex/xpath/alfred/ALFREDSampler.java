@@ -11,6 +11,11 @@ import model.Rule;
 
 import org.slf4j.LoggerFactory;
 
+/**
+ * retrieves a number of sample pages and xpaths from crawl index
+ * @author d.qui
+ * 
+ */
 public class ALFREDSampler {
 
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ALFREDSampler.class);
@@ -28,6 +33,11 @@ public class ALFREDSampler {
 		this.representedPages = new LinkedList<Page>();
 	}
 
+	/**
+	 * adds pages to the set of samples
+	 * 
+	 * @param pageSet
+	 */
 	public void addPages(List<Page> pageSet) {
 		int numPages = pageSet.size();
 		int i = 0;
@@ -45,14 +55,26 @@ public class ALFREDSampler {
 		log.info(" done!");
 	}
 
+	/**
+	 * 
+	 * @return non represented pages
+	 */
 	public List<Page> getNonRepresentedPages() {
 		return nonRepresentedPages;
 	}
 
+	/**
+	 * 
+	 * @return in the sample represented pages
+	 */
 	public List<Page> getRepresentedPages() {
 		return representedPages;
 	}
-
+	/**
+	 * adds pages to the set of samples
+	 * 
+	 * @param pageSet
+	 */
 	public void addPage(Page pagina) {
 		if (!this.nonRepresentedPages.contains(pagina) && !this.representedPages.contains(pagina)) {
 			Map<Rule, String> rule2value = new HashMap<Rule, String>();

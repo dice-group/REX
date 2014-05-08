@@ -1,5 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 package org.aksw.rex.util;
@@ -7,7 +6,7 @@ package org.aksw.rex.util;
 import java.util.List;
 
 /**
- *
+ * DAO to store results retrieved while asking Google Search
  * @author ngonga
  */
 public class GoogleResults {
@@ -26,7 +25,11 @@ public class GoogleResults {
     public String toString() {
         return "ResponseData[" + responseData + "]";
     }
-
+/**
+ * stores the list of Google Results returned
+ * @author r.usbeck
+ *
+ */
     public static class ResponseData {
 
         private List<Result> results;
@@ -44,7 +47,11 @@ public class GoogleResults {
             return "Results[" + results + "]";
         }
     }
-
+/**
+ * DAO to store single search results (url,title)
+ * @author r.usbeck
+ *
+ */
     public static class Result {
 
         private String url;

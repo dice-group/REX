@@ -12,7 +12,11 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Property;
 
 import edu.stanford.nlp.util.Quadruple;
-
+/**
+ * implementation using AGDISTIS https://github.com/AKSW/AGDISTIS
+ * @author r.usbeck
+ *
+ */
 public class URIGeneratorAGDISTIS implements URIGenerator {
 	private org.slf4j.Logger log = LoggerFactory.getLogger(URIGeneratorAGDISTIS.class);
 	private AGDISTISPost agdistis;
@@ -21,6 +25,9 @@ public class URIGeneratorAGDISTIS implements URIGenerator {
 		this.agdistis = new AGDISTISPost();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.uris.URIGenerator#getTriples(java.util.Set, com.hp.hpl.jena.rdf.model.Property)
+	 */
 	@Override
 	public Set<Quadruple<Node, Node, Node, String>> getTriples(Set<ExtractionResult> pairs, Property p) throws Exception {
 		Set<Quadruple<Node, Node, Node, String>> set = new HashSet<Quadruple<Node, Node, Node, String>>();

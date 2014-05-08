@@ -29,7 +29,11 @@ import alfcore.AlfCoreFacade;
 import alfcore.AlfCoreFactory;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-
+/**
+ * used to learn Xpaths from an index and a predicate. Uses Alfrex as underlying algorithm.
+ * @author d.qui
+ *
+ */
 public class ALFREDXPathLearner implements XPathLearner {
 
 	private org.slf4j.Logger log = LoggerFactory.getLogger(ALFREDXPathLearner.class);
@@ -50,6 +54,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 		this(crawlIndex, 10);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.xpath.XPathLearner#getXPathExpressions(java.util.Set, java.util.Set, java.net.URL)
+	 */
 	@Override
 	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, URL Domain) {
 		List<Pair<XPathRule, XPathRule>> res = new LinkedList<Pair<XPathRule, XPathRule>>();
@@ -131,6 +138,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 		return sampler;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aksw.rex.xpath.XPathLearner#getExtractionResults(java.util.List, java.net.URL)
+	 */
 	@Override
 	public Set<ExtractionResult> getExtractionResults(List<Pair<XPathRule, XPathRule>> expressions, URL domain) {
 		Set<ExtractionResult> ex = new HashSet<ExtractionResult>();
@@ -156,6 +166,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 		return ex;
 	}
 
+	/**
+	 * @return index used to extract Xpaths
+	 */
 	public CrawlIndex getIndex() {
 		return index;
 	}
@@ -170,6 +183,9 @@ public class ALFREDXPathLearner implements XPathLearner {
 
 	}
 
+	/**
+	 * @return list of pages used while training
+	 */
 	public List<Page> getTrainingPages() {
 		return this.trainingPages;
 	}
