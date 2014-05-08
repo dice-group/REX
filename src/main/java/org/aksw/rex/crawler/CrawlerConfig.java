@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.aksw.rex.crawler;
 
 import java.util.HashMap;
@@ -8,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * DAO to keep the configuration of the crawler 
+ * This DAO also maps the index to the topLevelDomains
  * @author Lorenz Buehmann
  *
  */

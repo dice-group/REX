@@ -25,13 +25,15 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 import edu.stanford.nlp.util.Quadruple;
 
+/**
+ * 
+ * used for generating the evaluation part
+ * 
+ * @author r.usbeck
+ * 
+ */
 public class REX_Evaluation {
-	/**
-	 * used for generating the evaluation part
-	 * 
-	 * @param args
-	 * @throws Exception
-	 */
+
 	private static URL domain;
 
 	public static void main(String[] args) throws Exception {
@@ -88,7 +90,10 @@ public class REX_Evaluation {
 			}
 		}
 	}
-
+/**
+ * This method fills the array d with Xpath Data calculated by AlfRex
+ * @param d
+ */
 	private static void getESOPXpathData(ArrayList<ControllerData> d) {
 		// d.add(new ControllerData("imdb-title-index/",
 		// "http://dbpedia.org/ontology/director", "http://www.imdb.com/title/",
@@ -117,7 +122,10 @@ public class REX_Evaluation {
 		// "http://www.goodreads.com/book/", "//*[@id='bookTitle']/text()",
 		// "//*[contains(text(),\"api\")]/../../../../../../DIV[2]/DIV[1]/DIV[2]/DIV[3]/DIV[1]/DIV[2]/DIV[1]/SPAN[2]/A[1]/SPAN[1]/TEXT()[1]"));
 	}
-
+	/**
+	 * This method fills the array d with Xpath Data manually created
+	 * @param d
+	 */
 	private static void getGoldenRuleData(ArrayList<ControllerData> d) {
 
 		// d.add(new ControllerData("imdb-title-index/",

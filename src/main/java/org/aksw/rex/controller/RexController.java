@@ -17,7 +17,6 @@ import org.aksw.rex.results.ExtractionResult;
 import org.aksw.rex.uris.URIGenerator;
 import org.aksw.rex.uris.URIGeneratorAGDISTIS;
 import org.aksw.rex.util.Pair;
-import org.aksw.rex.xpath.XPathExtractor;
 import org.aksw.rex.xpath.XPathLearner;
 import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -36,6 +35,9 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import edu.stanford.nlp.util.Quadruple;
 
 /**
+ * The heart of REX This controller extracts for a given property and lucene
+ * index a set of consistent triple
+ * 
  * @author ngonga
  */
 public class RexController {
@@ -62,7 +64,8 @@ public class RexController {
 
 	public static void main(String[] args) throws Exception {
 		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
-//		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/author");
+		// Property property =
+		// ResourceFactory.createProperty("http://dbpedia.org/ontology/author");
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
@@ -71,8 +74,9 @@ public class RexController {
 		exampleGenerator.setPredicate(property);
 
 		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
-//		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.goodreads.com/author/"));
-		
+		// DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new
+		// URL("http://www.goodreads.com/author/"));
+
 		CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
 
 		XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
@@ -138,6 +142,13 @@ public class RexController {
 		return quads;
 	}
 
+	/**
+	 * util function to convert triples to quadruples
+	 * 
+	 * @param triples
+	 * @param quads
+	 * @return
+	 */
 	private Set<Quadruple<Node, Node, Node, String>> triplesToQuads(Set<Triple> triples, Set<Quadruple<Node, Node, Node, String>> quads) {
 		HashSet<Quadruple<Node, Node, Node, String>> set = Sets.newHashSet();
 		for (Triple t : triples) {
@@ -154,6 +165,12 @@ public class RexController {
 		return set;
 	}
 
+	/**
+	 * util function to convert quadruples to triples
+	 * 
+	 * @param quads
+	 * @return
+	 */
 	private Set<Triple> quadsToTriples(Set<Quadruple<Node, Node, Node, String>> quads) {
 		HashSet<Triple> set = Sets.newHashSet();
 		for (Quadruple<Node, Node, Node, String> q : quads) {

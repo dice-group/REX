@@ -22,7 +22,6 @@ import org.aksw.rex.xpath.alfred.ALFREDXPathLearner;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 

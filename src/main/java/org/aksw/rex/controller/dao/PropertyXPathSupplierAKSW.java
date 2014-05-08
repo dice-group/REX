@@ -1,4 +1,4 @@
-package org.aksw.rex.controller;
+package org.aksw.rex.controller.dao;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,9 @@ import java.util.ArrayList;
  */
 public class PropertyXPathSupplierAKSW implements PropertyXPathSupplier {
 	private ArrayList<RexPropertiesWithGoldstandard> propertiesToCheck;
-
+/**
+ * constructor that statically fills the DAO with handcrafted XPath rules
+ */
 	public PropertyXPathSupplierAKSW() {
 		propertiesToCheck = new ArrayList<RexPropertiesWithGoldstandard>();
 

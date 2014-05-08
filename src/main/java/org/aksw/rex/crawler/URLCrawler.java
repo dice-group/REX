@@ -22,6 +22,13 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+/**
+ * Crawls certain pre-identified domains to use the HTML as base for RDF
+ * extraction
+ * This class is based on the Crawler4J Webcrawler
+ * @author r.usbeck
+ * 
+ */
 public class URLCrawler extends WebCrawler {
 
 	private static Logger log = LoggerFactory.getLogger(URLCrawler.class);
@@ -50,15 +57,15 @@ public class URLCrawler extends WebCrawler {
 		}
 	}
 
-	public void writeToIndex(String url, String content) {
-		
+	private void writeToIndex(String url, String content) {
+
 		CrawlerConfig config = (CrawlerConfig) getMyController().getCustomData();
 		Map<CrawlIndex, Set<String>> index2URLs = config.getIndex2URLs();
-		
+
 		for (Entry<CrawlIndex, Set<String>> entry : index2URLs.entrySet()) {
 			CrawlIndex index = entry.getKey();
 			for (String urlPattern : entry.getValue()) {
-				if(url.matches(urlPattern)){
+				if (url.matches(urlPattern)) {
 					index.addDocumentToIndex(url, content);
 					log.debug("\tAdded document: " + url);
 				}
@@ -67,7 +74,7 @@ public class URLCrawler extends WebCrawler {
 		}
 	}
 
-	public void writeFile(String filename, String content) {
+	private void writeFile(String filename, String content) {
 		try {
 			File file = new File("crawl/" + filename + ".html");
 			Files.createParentDirs(file);
@@ -87,8 +94,10 @@ public class URLCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		return true;
-//		String href = url.getURL().toLowerCase();
-//		String allowedURL = ((CrawlerConfig) getMyController().getCustomData()).getTopLevelDomain();
-//		return !FILTERS.matcher(href).matches() && href.startsWith(allowedURL);
+		// String href = url.getURL().toLowerCase();
+		// String allowedURL = ((CrawlerConfig)
+		// getMyController().getCustomData()).getTopLevelDomain();
+		// return !FILTERS.matcher(href).matches() &&
+		// href.startsWith(allowedURL);
 	}
 }

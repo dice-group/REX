@@ -10,6 +10,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.aksw.rex.controller.dao.PropertyXPathSupplier;
+import org.aksw.rex.controller.dao.PropertyXPathSupplierAKSW;
+import org.aksw.rex.controller.dao.RexPropertiesWithGoldstandard;
 import org.aksw.rex.crawler.CrawlIndex;
 import org.aksw.rex.uris.URIGeneratorImpl;
 import org.aksw.rex.util.Pair;
@@ -21,14 +24,28 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Class to write the triples from manual gold standard and automatic AlfREX to
+ * a file This class is not used for evaluation purposes.
+ * 
+ * @author r.usbeck
+ * 
+ */
 public class GoldstandardCreator {
 	static Logger log = LoggerFactory.getLogger(GoldstandardCreator.class);
 
+	/**
+	 * extended main to extract from each page of the indizes each pair
+	 * 
+	 * @param args
+	 * @throws XPathExpressionException
+	 * @throws DOMException
+	 * @throws IOException
+	 */
 	public static void main1(String args[]) throws XPathExpressionException, DOMException, IOException {
 		ArrayList<PropertyXPathSupplier> ps = new ArrayList<PropertyXPathSupplier>();
-//		ps.add(new PropertyXPathSupplierAlfred());
+		// ps.add(new PropertyXPathSupplierAlfred());
 		ps.add(new PropertyXPathSupplierAKSW());
-		// TODO iterate indizes
 		ArrayList<CrawlIndex> indizes = new ArrayList<CrawlIndex>();
 		indizes.add(new CrawlIndex("goodreads-author-index/"));
 		indizes.add(new CrawlIndex("goodreads-book-index/"));
@@ -36,9 +53,7 @@ public class GoldstandardCreator {
 		indizes.add(new CrawlIndex("imdb-title-index/"));
 		indizes.add(new CrawlIndex("espnfc-player-index/"));
 		indizes.add(new CrawlIndex("espnfc-team-index/"));
-//		indizes.add(new CrawlIndex("allmusicIndex/"));
 		for (CrawlIndex index : indizes) {
-			// TODO change URL generation style
 			URIGeneratorImpl gen = new URIGeneratorImpl();
 			for (PropertyXPathSupplier x : ps) {
 				BufferedWriter bw = new BufferedWriter(new FileWriter(index.getName().replace("/", "") + "_" + x.getClass().getCanonicalName() + ".nt"));
@@ -57,11 +72,6 @@ public class GoldstandardCreator {
 								NodeList nodeList = (NodeList) xpathExpression.evaluate(xpath, org.aksw.rex.crawler.DOMBuilder.jsoup2DOM(doc), XPathConstants.NODESET);
 								for (int i = 0; i < nodeList.getLength(); ++i) {
 									Node item = nodeList.item(i);
-									// TODO discuss whether the subject of a new
-									// triple is the URI of the Extraction Page
-									// or a
-									// special subject marked as XPath on the
-									// site
 									bw.write("<" + url + ">\t<" + p.getPropertyURL() + ">\t" + item + ".\n");
 								}
 							} catch (Exception e) {
@@ -75,8 +85,16 @@ public class GoldstandardCreator {
 			index.close();
 		}
 	}
+
+	/**
+	 * Simple main to get the size of the indizes
+	 * 
+	 * @param args
+	 * @throws XPathExpressionException
+	 * @throws DOMException
+	 * @throws IOException
+	 */
 	public static void main(String args[]) throws XPathExpressionException, DOMException, IOException {
-		// TODO iterate indizes
 		ArrayList<CrawlIndex> indizes = new ArrayList<CrawlIndex>();
 		indizes.add(new CrawlIndex("goodreads-author-index/"));
 		indizes.add(new CrawlIndex("goodreads-book-index/"));
@@ -84,9 +102,8 @@ public class GoldstandardCreator {
 		indizes.add(new CrawlIndex("imdb-title-index/"));
 		indizes.add(new CrawlIndex("espnfc-player-index/"));
 		indizes.add(new CrawlIndex("espnfc-team-index/"));
-//		indizes.add(new CrawlIndex("allmusicIndex/"));
 		for (CrawlIndex index : indizes) {
-			System.out.println(index.getName() +" -> "+ index.size());
+			System.out.println(index.getName() + " -> " + index.size());
 			index.close();
 		}
 	}

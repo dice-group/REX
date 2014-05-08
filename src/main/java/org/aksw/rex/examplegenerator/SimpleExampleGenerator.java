@@ -172,7 +172,8 @@ public class SimpleExampleGenerator implements ExampleGenerator {
         return examples;
     }
 
-    public Set<Pair<Resource, Resource>> getAllPositiveExamples() {
+    @Override
+	public Set<Pair<Resource, Resource>> getAllPositiveExamples() {
         return new HashSet<Pair<Resource, Resource>>(getListOfPositiveExamples());
     }
 

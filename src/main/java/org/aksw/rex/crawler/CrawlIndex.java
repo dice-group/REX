@@ -37,6 +37,12 @@ import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Lucene index to provide crawled data to REX
+ * 
+ * @author r.usbeck
+ * 
+ */
 public class CrawlIndex {
 	private org.slf4j.Logger log = LoggerFactory.getLogger(CrawlIndex.class);
 	public static final String TSV = "TSV";
@@ -50,6 +56,11 @@ public class CrawlIndex {
 	private IndexWriter iwriter;
 	private String name;
 
+	/**
+	 * constructor creates or opens an already existing index
+	 * 
+	 * @param file
+	 */
 	public CrawlIndex(String file) {
 		this.name = file;
 		log.info("Building CrawlIndex!");
@@ -83,9 +94,15 @@ public class CrawlIndex {
 			e.printStackTrace();
 		}
 		log.info("Done.");
-		log.info("Number of documents: "  + ireader.numDocs());
+		log.info("Number of documents: " + ireader.numDocs());
 	}
 
+	/**
+	 * searches in the URL field of the index for the queryString
+	 * 
+	 * @param queryString
+	 * @return pairs of (URL, HTML)
+	 */
 	public ArrayList<Pair<String, String>> searchURL(String queryString) {
 		ArrayList<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
 		try {
@@ -112,6 +129,12 @@ public class CrawlIndex {
 		return sites;
 	}
 
+	/**
+	 * searches in the HTML field of the index for the queryString
+	 * 
+	 * @param queryString
+	 * @return pairs of (URL, HTML)
+	 */
 	public ArrayList<Pair<String, String>> searchHTML(String queryString) {
 		ArrayList<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
 		try {
@@ -149,6 +172,10 @@ public class CrawlIndex {
 		return sites;
 	}
 
+	/**
+	 * @param domainURL
+	 * @return all pairs of (URL, HTML) under a given domain
+	 */
 	public List<Pair<String, String>> getDocumentsWithDomain(String domainURL) {
 		List<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
 		try {
@@ -173,6 +200,11 @@ public class CrawlIndex {
 		return sites;
 	}
 
+	/**
+	 * 
+	 * @param i
+	 * @return the ith document from the index
+	 */
 	public ArrayList<Pair<String, String>> getDocument(int i) {
 		ArrayList<Pair<String, String>> sites = new ArrayList<Pair<String, String>>();
 		try {
@@ -180,7 +212,7 @@ public class CrawlIndex {
 				ireader = DirectoryReader.open(directory);
 				isearcher = new IndexSearcher(ireader);
 			}
-//			ireader.document(i);
+			// ireader.document(i);
 			Document hitDoc = ireader.document(i);
 			sites.add(new Pair<String, String>(hitDoc.get(FIELD_NAME_URL), hitDoc.get(FIELD_NAME_HTML)));
 		} catch (IOException e) {
@@ -192,6 +224,12 @@ public class CrawlIndex {
 		return sites;
 	}
 
+	/**
+	 * adds a document (URL, HTML) to the index
+	 * 
+	 * @param url
+	 * @param html
+	 */
 	public void addDocumentToIndex(String url, String html) {
 		Document doc = new Document();
 		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
@@ -215,6 +253,9 @@ public class CrawlIndex {
 		}
 	}
 
+	/**
+	 * close the index, important to prevent data loss after adding documents
+	 */
 	public void close() {
 		try {
 			iwriter.close();
@@ -224,6 +265,11 @@ public class CrawlIndex {
 		}
 	}
 
+	/**
+	 * 
+	 * @return size of index
+	 * @throws IOException
+	 */
 	public int size() throws IOException {
 		if (ireader == null) {
 			ireader = DirectoryReader.open(directory);
@@ -231,11 +277,18 @@ public class CrawlIndex {
 		}
 		return ireader.numDocs();
 	}
-
+/**
+ * 
+ * @return name aka absolute file name of the index
+ */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return all pages of the index. might be huge.
+	 */
 	public Set<Page> getAllPages() {
 		Set<Page> pages = new HashSet<Page>();
 		for (int i = 0; i < ireader.maxDoc(); i++) {
@@ -251,10 +304,15 @@ public class CrawlIndex {
 		return pages;
 	}
 
+	/**
+	 * 
+	 * @param pageNumber
+	 * @return all pages from index 0 to pageNumber
+	 */
 	public Set<Page> getPages(int pageNumber) {
 		Set<Page> pages = new HashSet<Page>();
-		int maxPages = ireader.maxDoc() > pageNumber ? pageNumber : ireader.maxDoc(); 
-		
+		int maxPages = ireader.maxDoc() > pageNumber ? pageNumber : ireader.maxDoc();
+
 		for (int i = 0; i < maxPages; i++) {
 			try {
 				Document doc = ireader.document(i);

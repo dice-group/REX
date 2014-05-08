@@ -26,6 +26,7 @@ public class URIGeneratorImpl implements URIGenerator {
 		index = new SurfaceFormIndex(file, idxDirectory, type, baseURI);
 	}
 
+	@Override
 	public Set<Quadruple<Node, Node, Node, String>> getTriples(Set<ExtractionResult> posNegEx, Property p) throws Exception {
 		Set<Quadruple<Node, Node, Node, String>> set = new HashSet<Quadruple<Node, Node, Node, String>>();
 		// for each pos and neg example

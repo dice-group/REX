@@ -89,7 +89,8 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		       .maximumSize(10000)
 		       .build(
 		           new CacheLoader<Individual, Set<NamedClass>>() {
-		             public Set<NamedClass> load(Individual individual)  {
+		             @Override
+					public Set<NamedClass> load(Individual individual)  {
 		            	 Set<NamedClass> types = reasoner.getTypes(individual);
 		            	 filterByNamespace(types);
 		               return types;
@@ -100,7 +101,8 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		       .maximumSize(100)
 		       .build(
 		           new CacheLoader<ObjectProperty, Set<NamedClass>>() {
-		             public Set<NamedClass> load(ObjectProperty property)  {
+		             @Override
+					public Set<NamedClass> load(ObjectProperty property)  {
 		               return getDomain(ks, property);
 		             }
 		           });
@@ -109,7 +111,8 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		       .maximumSize(100)
 		       .build(
 		           new CacheLoader<ObjectProperty, Set<NamedClass>>() {
-		             public Set<NamedClass> load(ObjectProperty property)  {
+		             @Override
+					public Set<NamedClass> load(ObjectProperty property)  {
 		               return getRange(ks, property);
 		             }
 		           });
@@ -118,7 +121,8 @@ public class ConsistencyCheckerImpl implements ConsistencyChecker{
 		       .maximumSize(1000)
 		       .build(
 		           new CacheLoader<Set<NamedClass>, EvaluatedAxiom>() {
-		             public EvaluatedAxiom load(Set<NamedClass> classes)  {
+		             @Override
+					public EvaluatedAxiom load(Set<NamedClass> classes)  {
 		               return disjointnessLearner.computeDisjointness(classes).iterator().next();
 		             }
 		           });

@@ -1,4 +1,4 @@
-package org.aksw.rex.controller;
+package org.aksw.rex.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,11 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Version;
-
+/**
+ * Utility class to merge several indizes into one big index
+ * @author r.usbeck
+ *
+ */
 public class IndexMerger {
 	/**
 	 * Index all text files under a directory.

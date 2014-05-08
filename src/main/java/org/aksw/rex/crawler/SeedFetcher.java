@@ -10,7 +10,11 @@ import java.util.Random;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * used to provide seed URLs to the Crawler
+ * @author r.usbeck
+ *
+ */
 public class SeedFetcher {
 	public static Logger log = LoggerFactory.getLogger(SeedFetcher.class);
 
