@@ -45,7 +45,7 @@ public class ALFREDXPathLearnerTest {
 
 	@Test
 	public void testGetXPathExpressions() {
-		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(posExamples, null, null);
+		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(posExamples, null);
 		Assert.assertEquals(1, xpaths.size());
 		log.debug(xpaths.get(0).getLeft().toString());
 		log.debug(xpaths.get(0).getRight().toString());
