@@ -1,4 +1,0 @@
-# property	index	goldenL	goldenR	domain
-http://dbpedia.org/ontology/director	imdb-title-index	//*[@id='overview-top']/H1/SPAN[1]/text()	//*[contains(text(),\"Director:\") or contains(text(),\"Directors:\")]/../A[1]/SPAN[1]/TEXT()[1]	http://www.imdb.com/title/
-http://dbpedia.org/ontology/starring	imdb-title-index	//*[@id='overview-top']/H1/SPAN[1]/text()	//*[@id='titleCast']/TABLE/TBODY/TR/TD/A/SPAN	http://www.imdb.com/title/
-# http://dbpedia.org/ontology/starring	imdb-name-index	//*[@id='overview-top']/H1/SPAN[1]/text()	//*[@id='overview-top']/H1/SPAN	http://www.imdb.com/name/
