@@ -11,18 +11,22 @@ If you want to know, how to run REX, have a look <a href="https://github.com/AKS
 ### Javadoc
 <a href="http://aksw.github.io/REX/">JavaDocs</a> for our projects are provided here and will be contiously updated.
 
+### Support and Feedback
+If you need help or you have questions do not hesitate to write an email to  <a href="mailto:ngonga@informatik.uni-leipzig.de">Axel Ngonga-Ngomo</a>. Or use the issue tracker in the right sidebar.
+
 ### How to cite
 ```Tex
  @InProceedings{ REX,
 	Title = "REX - Web-Scale Extension of RDF Knowledge Bases",
 	Author = {Lorenz B{\"u}hmann and Ricardo Usbeck and Axel-Cyrille {Ngonga Ngomo} and 
-                   Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and 
-                   Disheng Qui and Andreas Both},
+                   Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and Disheng Qui and Andreas Both},
 	booktitle = {International Semantic Web Conference},
 	Year = "2014",
 }
 ```
 
+### Acknowlegements
+This work has been supported by the ESF and the Free State of Saxony and the FP7 project GeoKnow (GA No. 318159).
 
 
 ### Licence
