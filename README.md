@@ -12,7 +12,7 @@ If you want to know, how to run REX, have a look <a href="https://github.com/AKS
 <a href="http://aksw.github.io/REX/">JavaDocs</a> for our projects are provided here and will be contiously updated.
 
 ### Support and Feedback
-If you need help or you have questions do not hesitate to write an email to  <a href="mailto:ngonga@informatik.uni-leipzig.de">Axel Ngonga-Ngomo</a>. Or use the issue tracker in the right sidebar.
+If you need help or you have questions do not hesitate to write an email to  <a href="mailto:buehmann@informatik.uni-leipzig.de">Lorenz B&uuml;hmann</a>. Or use the issue tracker in the right sidebar.
 
 ### How to cite
 ```Tex
@@ -20,7 +20,7 @@ If you need help or you have questions do not hesitate to write an email to  <a 
 	Title = "REX - Web-Scale Extension of RDF Knowledge Bases",
 	Author = {Lorenz B{\"u}hmann and Ricardo Usbeck and Axel-Cyrille {Ngonga Ngomo} and 
                    Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and Disheng Qui and Andreas Both},
-	booktitle = {International Semantic Web Conference},
+	booktitle = {Submitted to International Semantic Web Conference},
 	Year = "2014",
 }
 ```
