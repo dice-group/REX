@@ -58,7 +58,7 @@ public class ALFREDXPathLearner implements XPathLearner {
 	 * @see org.aksw.rex.xpath.XPathLearner#getXPathExpressions(java.util.Set, java.util.Set, java.net.URL)
 	 */
 	@Override
-	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, URL Domain) {
+	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, URL Domain) {
 		List<Pair<XPathRule, XPathRule>> res = new LinkedList<Pair<XPathRule, XPathRule>>();
 
 		Map<String, List<String>> page2valueLeft = new HashMap<String, List<String>>();
