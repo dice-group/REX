@@ -14,7 +14,8 @@ To find out more about REX have a look at our exhaustive <a href="https://github
  @InProceedings{ REX,
 	Title = "REX - Web-Scale Extension of RDF Knowledge Bases",
 	Author = {Lorenz B{\"u}hmann and Ricardo Usbeck and Axel-Cyrille {Ngonga Ngomo} and 
-                   Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and Disheng Qui and Andreas Both},
+                   Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and 
+                   Disheng Qui and Andreas Both},
 	booktitle = {International Semantic Web Conference},
 	Year = "2014",
 }
