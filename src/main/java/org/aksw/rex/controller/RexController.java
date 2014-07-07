@@ -128,7 +128,7 @@ public class RexController {
 		URL domain = di.getDomain(property, posExamples, negExamples, false);
 
 		// XPath expression generation
-		List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
+		List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, domain);
 
 		if (!extractionRules.isEmpty()) {
 			// currently, we assume that the best rule is the first one in the
