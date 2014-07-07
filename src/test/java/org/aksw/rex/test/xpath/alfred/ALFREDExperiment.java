@@ -84,7 +84,7 @@ public class ALFREDExperiment {
 		
 		CrawlIndex index = new CrawlIndex("htmlindex");
 		ALFREDXPathLearner learner = new ALFREDXPathLearner(index);
-		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(posExamples, null, domain);
+		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(posExamples, domain);
 		Rule regolaL = xpaths.get(0).getLeft();
 		Rule regolaR = xpaths.get(0).getRight();
 				
