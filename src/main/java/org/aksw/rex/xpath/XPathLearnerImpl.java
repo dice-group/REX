@@ -64,8 +64,7 @@ public class XPathLearnerImpl implements XPathLearner{
 	 * @see org.aksw.rex.xpath.XPathLearner#getXPathExpressions(java.util.Set, java.util.Set, java.net.URL)
 	 */
 	@Override
-	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples,
-			Set<Pair<Resource, Resource>> negExamples, URL domain) {
+	public List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, URL domain) {
 		
 		//generate XPath extraction rules for each positive example
 		List<Pair<XPathRule, XPathRule>> extractionRules = Lists.newArrayList();
