@@ -1,0 +1,12 @@
+org.aksw.rex.consistency
+org.aksw.rex.controller
+org.aksw.rex.controller.dao
+org.aksw.rex.crawler
+org.aksw.rex.domainidentifier
+org.aksw.rex.examplegenerator
+org.aksw.rex.experiments
+org.aksw.rex.results
+org.aksw.rex.uris
+org.aksw.rex.util
+org.aksw.rex.xpath
+org.aksw.rex.xpath.alfred
