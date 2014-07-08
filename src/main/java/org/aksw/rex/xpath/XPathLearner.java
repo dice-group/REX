@@ -25,7 +25,7 @@ public interface XPathLearner {
 	 * @param Domain
 	 * @return
 	 */
-	List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, Set<Pair<Resource, Resource>> negExamples, URL Domain);
+	List<Pair<XPathRule, XPathRule>> getXPathExpressions(Set<Pair<Resource, Resource>> posExamples, URL Domain);
     /**
      * this method does not need examples to learn extraction rules
      * @param expressions

@@ -63,36 +63,47 @@ public class RexController {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
-		// Property property =
+	  // Determine which property p you are looking for generating new triples <s p o>
+        Property property = ResourceFactory.createProperty("http://dbpedia.org/ontology/director");
+        
+        		// Property property =
 		// ResourceFactory.createProperty("http://dbpedia.org/ontology/author");
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		
+        // The SPARQL endpoint provides examples as well as an underlying schema to validate generated triples
+        SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
-		ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
-		exampleGenerator.setMaxNrOfPositiveExamples(100);
-		exampleGenerator.setEndpoint(endpoint);
-		exampleGenerator.setPredicate(property);
+        // The SimpleExampleGenerator retrieves 100 random triples from the underlying knowledge base with property p
+        ExampleGenerator exampleGenerator = new SimpleExampleGenerator();
+        exampleGenerator.setMaxNrOfPositiveExamples(100);
+        exampleGenerator.setEndpoint(endpoint);
+        exampleGenerator.setPredicate(property);
 
-		DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
+        // The ManualDomainIdentifier provides a starting point domain for the crawler. REX would also be capable of identifying a domain only by examples.
+        DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new URL("http://www.imdb.com/title/"));
 		// DomainIdentifier domainIdentifier = new ManualDomainIdentifier(new
 		// URL("http://www.goodreads.com/author/"));
 
-		CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
+        // The CrawlIndex is a LUCENE 4.X Index which will store the crawled information and provide it to the XPATHLearner.
+        CrawlIndex crawlIndex = new CrawlIndex("imdb-title-index/");
 
-		XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
-		xPathLearner.setUseExactMatch(false);
-
-		// XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
+        // Our XPATHLearner learns a pair of XPATHs containing s,o for the given p
+        XPathLearner xPathLearner = new ALFREDXPathLearner(crawlIndex);
+        xPathLearner.setUseExactMatch(false);
+	// XPathExtractor xPathExtractor = new XPathExtractor(crawlIndex);
 		// XPathLearner xPathLearner = new XPathLearnerImpl(xPathExtractor,
 		// endpoint);
 
-		URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
-		Set<Quadruple<Node, Node, Node, String>> triples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run();
+        // The URIGenerator is based on the AGDISTIS web service which will generate for a pair of s,o XPATH strings corresponding URIs from the knowledge base or new URIs if there are no to be found
+        URIGenerator uriGenerator = new URIGeneratorAGDISTIS();
 
-		for (Quadruple<Node, Node, Node, String> quadruple : triples) {
-			System.out.println(quadruple);
-		}
+        // After initialising the REX Controller with instances of components needed for our pipeline you can run the controller and see the results in the returned set of quadruples (provenance)
+        Set<Quadruple<Node, Node, Node, String>> quadruples = new RexController(property, exampleGenerator, domainIdentifier, xPathLearner, uriGenerator, new ConsistencyCheckerImpl(endpoint), endpoint).run();
+
+        for (Quadruple<Node, Node, Node, String> quadruple : quadruples) {
+            System.out.println(quadruple);
+        }
+	
 	}
 
 	/**
@@ -117,7 +128,7 @@ public class RexController {
 		URL domain = di.getDomain(property, posExamples, negExamples, false);
 
 		// XPath expression generation
-		List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, negExamples, domain);
+		List<Pair<XPathRule, XPathRule>> extractionRules = xpath.getXPathExpressions(posExamples, domain);
 
 		if (!extractionRules.isEmpty()) {
 			// currently, we assume that the best rule is the first one in the

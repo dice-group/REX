@@ -176,7 +176,7 @@ public class ExperimentRunner implements Runnable {
 
 		long now = System.currentTimeMillis();
 
-		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(this.training, null,
+		List<Pair<XPathRule, XPathRule>> xpaths = learner.getXPathExpressions(this.training,
 				domain);
 
 		now = System.currentTimeMillis() - now;
