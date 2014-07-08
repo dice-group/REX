@@ -137,7 +137,7 @@
 
 		<!-- ALFRED repository -->
 		<repository>
-			<id>snapshots</id>
+			<id>alfred-snapshots</id>
 			<url>http://ortles.dia.uniroma3.it:8888/nexus/content/repositories/snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>
