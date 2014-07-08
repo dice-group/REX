@@ -6,7 +6,7 @@ REX is a Web-Scale Extension Framework for RDF knowledge bases. You can find mor
 ### Introduction & Tutorial & Running REX
 To find out more about REX have a look at our exhaustive <i><b><a href="https://github.com/AKSW/REX/wiki">Tutorial</a></i></b> which talks through getting data, installing REX and running it. By using the tutorial you should be able to extract valid triples that have not been there before for a knowledge base and a domain of your choice!
 
-If you want to know, how to run REX, have a look <a href="https://github.com/AKSW/REX/wiki/Run">here</a>.
+If you want to know, how to run REX, have a look <a href="https://github.com/AKSW/REX/wiki/4---Run">here</a>.
 
 ### Javadoc
 <a href="http://aksw.github.io/REX/">JavaDocs</a> for our projects are provided here and will be contiously updated.
