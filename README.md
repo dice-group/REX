@@ -16,11 +16,11 @@ If you need help or you have questions do not hesitate to write an email to  <a 
 
 ### How to cite
 ```Tex
- @InProceedings{ REX,
+ @InProceedings{rexIswc2014,
 	Title = "REX - Web-Scale Extension of RDF Knowledge Bases",
 	Author = {Lorenz B{\"u}hmann and Ricardo Usbeck and Axel-Cyrille {Ngonga Ngomo} and 
                    Muhammed Saleem and Valter Crescenzi and Paolo Merialdo and Disheng Qui and Andreas Both},
-	booktitle = {International Semantic Web Conference},
+	booktitle = {Proceedings of International Semantic Web Conference},
 	Year = "2014",
 }
 ```
