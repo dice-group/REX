@@ -29,13 +29,13 @@
         </developer>
     </developers>
 
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>http://opensource.org/licenses/MIT</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+<!-- LICENSE -->
+	<licenses>
+		<license>
+			<name>LGPL 3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+		</license>
+	</licenses>
 
     <build>
         <finalName>REX</finalName>
